@@ -1,0 +1,131 @@
+#register__container {
+    max-width: 1200px;
+    width: 90%;
+    height: 100vh;
+    margin: 0 auto;
+}
+
+.register__content {
+    width: 568px;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+}
+
+.register__content header {
+    padding: 0 24px;
+    min-height: 64px;
+    color: #222;
+}
+
+#register__header--back {
+    display: none;
+    cursor: pointer;
+}
+
+#register__header--title {
+    color: #222;
+    text-align: center;
+    font-weight: 600;
+    flex: 1;
+    font-size: 22px;
+}
+
+#authOptions {
+    margin-bottom: 10px;
+}
+
+#authOptions a { 
+    color: rgb(93, 93, 207);
+    text-decoration: underline;
+}
+
+#register__body {
+    padding: 24px;
+}
+
+.register__or--option {
+    font-size: 12px;
+    color: #484848;
+    padding: 14px;
+}
+
+.half-divider {
+    width: 100%;
+    height: 1px;
+    background-color: rgb(228, 228, 228);
+}
+
+.register__login {
+    margin-bottom: 20px;
+}
+
+.register__login--button {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    margin: 0px;
+    position: relative;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: normal;
+    color: rgb(72, 72, 72);
+    padding: 10px 12px;
+    font-weight: 500;
+    border-radius: 8px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(176, 176, 176);
+    background: transparent;
+    box-shadow: none;
+    min-width: 71.1935px;
+    width: 100%;
+}
+
+#register__second--form {
+    display: none;
+}
+
+.register__login--button span:last-child {
+    flex: 1;
+}
+
+.c-validation {
+    background: #c51244;
+    padding: 10px 5px;
+    border-radius: 2px;
+    position: relative;
+    display: inline-block;
+    box-shadow: 1px 1px 1px #aaaaaa;
+    margin-top: 5px;
+    width: 100%;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.c-validation:before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #c51244;
+    position: absolute;
+    top: -10px;
+}
+.c-label:after {
+    color: #c51244;
+}
+
+.duplicateEmailError {
+    display: none;
+    color: red;
+    font-size: 14px;
+    font-style: italic;
+    transition: all 0.2 ease-in;
+}
+
+.duplicateEmailError.hasError {
+    display: block;
+}

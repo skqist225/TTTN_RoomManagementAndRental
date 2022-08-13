@@ -1,0 +1,67 @@
+.become-a-host__right-cancelBtn {
+    -webkit-box-direction: normal;
+    -webkit-box-orient: horizontal;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    cursor: pointer;
+    text-align: center;
+    border: none rgb(176, 176, 176);
+    background-color: rgb(34, 34, 34);
+    outline: none;
+    padding: 0px 16px;
+    margin: 0px;
+    border-radius: 32px;
+    color: rgb(255, 255, 255);
+    position: relative;
+    height: 32px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    border-radius: 32px;
+    height: 32px;
+    width: calc(64px * 2);
+    max-width: calc(64px * 2);
+}
+
+#right--content__prev--step {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0px;
+    position: relative;
+    text-align: center;
+    border-color: black;
+    width: auto;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 600;
+    border-radius: 8px;
+    border-width: 1px;
+    border-style: solid;
+    outline: none;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    -webkit-transition: box-shadow 0.2s ease, -webkit-transform 0.1s ease, transform 0.1s ease;
+    -moz-transition: box-shadow 0.2s ease, transform 0.1s ease;
+    transition: box-shadow 0.2s ease, -ms-transform 0.1s ease, -webkit-transform 0.1s ease,
+        transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    background: transparent;
+    color: #222222;
+    text-decoration: underline;
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.room-group__prev-step:hover {
+    color: #222222;
+    text-decoration: underline;
+}

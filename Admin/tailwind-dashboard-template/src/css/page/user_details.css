@@ -1,0 +1,35 @@
+main#userDetailsPage {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    right: 0;
+    width: 1200px;
+    max-width: 95%;
+    margin: 0 auto;
+    background-color: white;
+}
+
+#udpleftBlock {
+    /* display: none !important; */
+    margin-left: 0px !important;
+    margin-right: auto !important;
+    border: 1px solid rgb(221, 221, 221) !important;
+    border-radius: 12px !important;
+    max-width: 308px !important;
+    padding: 24px !important;
+}
+
+#udpleftBlock img {
+    object-fit: cover;
+    vertical-align: bottom;
+}
+
+#udpleftBlock span {
+    display: inline-block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    width: 90% !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+}
