@@ -1,16 +1,16 @@
 package com.airtnt.airtntapp.booking;
 
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import com.airtnt.airtntapp.booking.dto.*;
+import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
+import com.airtnt.airtntapp.exception.*;
+import com.airtnt.airtntapp.user.UserRepository;
+import com.airtnt.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,16 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.airtnt.airtntapp.booking.dto.BookingDTO;
-import com.airtnt.airtntapp.booking.dto.BookingListResponse;
-import com.airtnt.airtntapp.booking.dto.CreateReviewDTO;
 import com.airtnt.airtntapp.email.SendEmail;
-import com.airtnt.airtntapp.exception.AlreadyCancelException;
-import com.airtnt.airtntapp.exception.BookingNotFoundException;
-import com.airtnt.airtntapp.exception.ForbiddenException;
-import com.airtnt.airtntapp.exception.RoomHasBeenBookedException;
-import com.airtnt.airtntapp.exception.RoomNotFoundException;
-import com.airtnt.airtntapp.exception.UserHasBeenBookedThisRoomException;
 import com.airtnt.airtntapp.firebase.FirebaseInitialize;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.error.BadResponse;
@@ -43,10 +34,6 @@ import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.airtntapp.review.ReviewService;
 import com.airtnt.airtntapp.room.RoomService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
-import com.airtnt.entity.Booking;
-import com.airtnt.entity.Review;
-import com.airtnt.entity.SubRating;
-import com.airtnt.entity.User;
 
 @RestController
 @RequestMapping("/api/booking")
@@ -59,71 +46,30 @@ public class BookingRestController {
 	private BookingService bookingService;
 
 	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
 	private FirebaseInitialize firebaseInitialize;
 
 	@Autowired
 	private ReviewService reviewService;
 
-	@GetMapping(value = "/{roomid}/create")
+	@Autowired
+	private BookingDetailService bookingDetailService;
+
+	@PostMapping(value = "create")
 	public ResponseEntity<StandardJSONResponse<BookingDTO>> createBooking(
-			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("roomid") Integer roomId,
-			@RequestParam("checkin") String checkin, @RequestParam("checkout") String checkout,
-			@RequestParam("clientMessage") String clientMessage) throws ParseException {
-		String errorMessage = "";
-		try {
-			User customer = userDetailsImpl.getUser();
-			String userToken = UUID.randomUUID().toString();
-			Booking booking;
-
-			booking = bookingService.createBooking(checkin, checkout, roomService.getRoomById(roomId), clientMessage,
-					customer, userToken);
-
-			// if (booking != null) {
-			// firebaseInitialize.initialize();
-			// firebaseInitialize.writeBooking(booking.getId(), booking.getUserToken(),
-			// "Pending");
-			// }
-			if (booking != null) {
-				return new OkResponse<BookingDTO>(BookingDTO.build(booking)).response();
-			}
-
-			return new BadResponse<BookingDTO>("Cannot create booking").response();
-		} catch (ParseException e) {
-			errorMessage = e.getMessage();
-		} catch (RoomNotFoundException e) {
-			errorMessage = e.getMessage();
-		} catch (RoomHasBeenBookedException e) {
-			errorMessage = e.getMessage();
-		} catch (UserHasBeenBookedThisRoomException e) {
-			errorMessage = e.getMessage();
-		}
-
-		return new BadResponse<BookingDTO>(errorMessage).response();
-	}
-
-	@GetMapping(value = "/{roomid}/create-mobile")
-	public ResponseEntity<StandardJSONResponse<BookingDTO>> createBookingMobile(
-			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("roomid") Integer roomId,
-			@RequestParam("checkin") String checkin, @RequestParam("checkout") String checkout,
-			@RequestParam("cardNumber") String cardNumber, @RequestParam("cardExp") String cardExp,
-			@RequestParam("cardCVV") String cardCVV, @RequestParam("clientMessage") String clientMessage)
+			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+			 @RequestBody CreateBookingDTO createBookingDTO)
 			throws ParseException {
-		String errorMessage = "";
 		try {
+			List<User> users =(List<User>) userRepository.findAll();
 			User customer = userDetailsImpl.getUser();
 			String userToken = UUID.randomUUID().toString();
-			if (!cardNumber.equals("4242424242424242")) {
-				return new BadResponse<BookingDTO>("Card number does not correct").response();
-			}
-			if (!cardExp.equals("240224")) {
-				return new BadResponse<BookingDTO>("Card exp does not correct").response();
-			}
-			if (!cardCVV.equals("424")) {
-				return new BadResponse<BookingDTO>("Card CVV does not correct").response();
-			}
+			Random rand = new Random();
+			User randomElement = users.get(rand.nextInt(users.size()));
 
-			Booking booking;
-			booking = bookingService.createBooking(checkin, checkout, roomService.getRoomById(roomId), clientMessage,
+			Booking booking = bookingService.createBooking(createBookingDTO,
 					customer, userToken);
 
 			if (booking != null) {
@@ -131,20 +77,14 @@ public class BookingRestController {
 			}
 
 			return new BadResponse<BookingDTO>("Cannot create booking").response();
-		} catch (ParseException e) {
-			errorMessage = e.getMessage();
-		} catch (RoomNotFoundException e) {
-			errorMessage = e.getMessage();
-		} catch (RoomHasBeenBookedException e) {
-			errorMessage = e.getMessage();
-		} catch (UserHasBeenBookedThisRoomException e) {
-			errorMessage = e.getMessage();
+		} catch (ParseException | RoomNotFoundException | RoomHasBeenBookedException
+				| UserHasBeenBookedThisRoomException | ReserveDateInThePastException e) {
+			return new BadResponse<BookingDTO>(e.getMessage()).response();
 		}
-		return new BadResponse<BookingDTO>(errorMessage).response();
 	}
 
 	@GetMapping(value = "/listings/{page}")
-	public ResponseEntity<StandardJSONResponse<BookingListResponse>> listings(
+	public ResponseEntity<StandardJSONResponse<BookingListDTO>> listings(
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("page") Integer page,
 			@RequestParam(name = "booking_date_month", required = false, defaultValue = "") String bookingDateMonth,
 			@RequestParam(name = "booking_date_year", required = false, defaultValue = "") String bookingDateYear,
@@ -169,9 +109,9 @@ public class BookingRestController {
 		filters.put("bookingDateYear", bookingDateYear);
 		filters.put("totalFee", totalFee);
 
-		BookingListResponse bookings = bookingService.getBookingListByRooms(roomIds, filters, page);
+//		BookingListResponse bookings = bookingDetailService.getBookingListByRooms(roomIds, filters, page);
 
-		return new OkResponse<BookingListResponse>(bookings).response();
+		return new OkResponse<BookingListDTO>(null).response();
 
 	}
 
@@ -191,7 +131,6 @@ public class BookingRestController {
 		} catch (BookingNotFoundException e) {
 			return new NotFoundResponse<String>(e.getMessage()).response();
 		}
-
 	}
 
 	@PutMapping(value = "/{bookingid}/user/canceled")
@@ -213,6 +152,10 @@ public class BookingRestController {
 				return new OkResponse<String>(e.getMessage()).response();
 			} catch (BookingNotFoundException e) {
 				return new NotFoundResponse<String>(e.getMessage()).response();
+			} catch (CancelDateGreaterThanCheckinDateException e) {
+				throw new RuntimeException(e);
+			} catch (BookingDetailNotFoundException e) {
+				return new BadResponse<String>(e.getMessage()).response();
 			}
 		} catch (ForbiddenException e) {
 			return new ForbiddenResponse<String>(e.getMessage()).response();
@@ -226,9 +169,6 @@ public class BookingRestController {
 			User customer = userDetailsImpl.getUser();
 			Booking booking = bookingService.approveBooking(bookingId, customer);
 
-			// firebaseInitialize.initialize();
-			// firebaseInitialize.updateBookingState(booking.getId(), "Successful");
-
 			return booking != null ? new OkResponse<String>("Approve booking successfully").response()
 					: new BadResponse<String>("Can not approve booking").response();
 
@@ -237,8 +177,9 @@ public class BookingRestController {
 		}
 	}
 
-	@PostMapping(value = "/{bookingId}/create-review")
-	public ResponseEntity<StandardJSONResponse<String>> approveBooking(@PathVariable("bookingId") Integer bookingId,
+	@PostMapping(value = "/{bookingDetailId}/create-review")
+	public ResponseEntity<StandardJSONResponse<String>> approveBooking(
+			@PathVariable("bookingDetailId") Integer bookingDetailId,
 			@RequestBody CreateReviewDTO createReviewDTO, @AuthenticationPrincipal UserDetailsImpl userDetailsImpl)
 			throws ForbiddenException, BookingNotFoundException {
 		User customer = userDetailsImpl.getUser();
@@ -252,21 +193,26 @@ public class BookingRestController {
 		SubRating subRating = SubRating.builder().cleanliness(cleanlinessRating).contact(contactRating)
 				.checkin(checkinRating).accuracy(accuracyRating).location(locationRating).value(valueRating).build();
 
-		Booking booking = bookingService.getBookingById(bookingId);
-		if (booking.getReview() != null) {
-			Review review = booking.getReview();
-			review.setSubRating(subRating);
-			review.setComment(createReviewDTO.getRatingComment());
+		BookingDetail bookingDetail = null;
+		try {
+			bookingDetail = bookingDetailService.findById(bookingDetailId);
 
-			reviewService.updateReview(review);
-		} else {
-			Review review = Review.builder().comment(createReviewDTO.getRatingComment()).subRating(subRating)
-					.booking(new Booking(bookingId)).build();
+			if (bookingDetail.getReview() != null) {
+				Review review = bookingDetail.getReview();
+				review.setSubRating(subRating);
+				review.setComment(createReviewDTO.getRatingComment());
 
-			reviewService.createReview(review);
+				reviewService.updateReview(review);
+			} else {
+				Review review = Review.builder().comment(createReviewDTO.getRatingComment()).subRating(subRating)
+						.bookingDetail(bookingDetail).build();
+
+				reviewService.createReview(review);
+			}
+
+			return new OkResponse<String>("OK").response();
+		} catch (BookingDetailNotFoundException e) {
+			return new BadResponse<String>(e.getMessage()).response();
 		}
-
-		return new OkResponse<String>("OK").response();
-
 	}
 }

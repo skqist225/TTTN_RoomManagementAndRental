@@ -30,23 +30,13 @@ public class Address {
 	private int id;
 
 	@ManyToOne
-	@JoinColumn(name = "country_id")
-	private Country country;
-
-	@ManyToOne
-	@JoinColumn(name = "state_id")
-	private State state;
-
-	@ManyToOne
 	@JoinColumn(name = "city_id")
 	private City city;
 
 	@Column(name = "apartment_no_street")
 	private String street;
 
-	public Address(Country country, State state, City city, String street) {
-		this.country = country;
-		this.state = state;
+	public Address(City city, String street) {
 		this.city = city;
 		this.street = street;
 	}

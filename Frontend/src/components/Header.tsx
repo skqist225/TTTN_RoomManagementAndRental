@@ -59,7 +59,7 @@ const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigatio
                         onClick={refreshPage}
                     >
                         <img
-                            src={getImage("/images/airtntlogo.png")}
+                            src={getImage("/images/web_logologow.png")}
                             id='airj18-logo'
                             alt='application-logo'
                             className='image'

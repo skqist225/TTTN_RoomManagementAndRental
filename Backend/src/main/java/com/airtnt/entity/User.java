@@ -100,11 +100,6 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "host", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	private List<Room> ownedRooms = new ArrayList<>();
 
-	@Builder.Default
-	@JsonIgnore
-	@OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	private List<Card> cards = new ArrayList<>();
-
 	@JsonIgnore
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "address_id")
@@ -168,9 +163,11 @@ public class User extends BaseEntity {
 
 	@Transient
 	public String getFullPathAddress() {
+		City city = this.address.getCity();
+		State state= city.getState();
 		if (this.address != null) {
-			return String.format("%s, %s, %s, %s", this.address.getStreet(), this.address.getCity().getName(),
-					this.address.getState().getName(), this.address.getCountry().getName());
+			return String.format("%s, %s, %s, %s", this.address.getStreet(), city.getName(),
+					state.getName(), state.getCountry().getName());
 		}
 
 		return "";
@@ -185,9 +182,9 @@ public class User extends BaseEntity {
 		ObjectNode cityNode = mapper.createObjectNode();
 
 		if (this.address != null) {
-			Country country = this.address.getCountry();
-			State state = this.address.getState();
 			City city = this.address.getCity();
+			State state = city.getState();
+			Country country = state.getCountry();
 
 			objectNode.set("country", countryNode.put("id", country.getId()).put("name", country.getName()));
 			objectNode.set("state", stateNode.put("id", state.getId()).put("name", state.getName()));

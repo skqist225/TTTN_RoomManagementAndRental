@@ -385,7 +385,7 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                     </Div>
                                 </div>
                                 <div>
-                                    {booking.complete === true && booking.refund === false && (
+                                    {booking.state === "APPROVED" && (
                                         <div
                                             style={{
                                                 padding: "1px 6px",
@@ -416,7 +416,7 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                             <span className='booking-status'> Hoàn tất </span>
                                         </div>
                                     )}{" "}
-                                    {booking.complete === false && booking.refund === false && (
+                                    {booking.state === "PENDING" && (
                                         <div
                                             style={{
                                                 padding: "1px 6px",
@@ -456,7 +456,7 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                             </span>
                                         </div>
                                     )}
-                                    {booking.refund === true && (
+                                    {booking.state === "CANCELLED" && (
                                         <div
                                             style={{
                                                 backgroundColor: "#dc3545",
@@ -626,7 +626,7 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                     </Link>
                                     {booking.refund === false && (
                                         <div className='mr-10'>
-                                            {booking.complete && (
+                                            {booking.state === "APPROVED" && (
                                                 <button
                                                     className='button bg-normal'
                                                     data-booking-id={booking.bookingId}
@@ -867,8 +867,7 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                         data-is-complete={booking.complete}
                                     />
 
-                                    {booking.refund === false &&
-                                        booking.complete === false &&
+                                    {booking.state === "PENDING" &&
                                         today.getTime() <= checkinDate.getTime() && (
                                             <div className='cancelBookingBtn mr-10'>
                                                 <button

@@ -116,7 +116,7 @@ public class UserRestController {
 	public String addToWishLists(@AuthenticationPrincipal UserDetails userDetails,
 			@PathVariable("roomId") Integer roomId) throws UserNotFoundException {
 		try {
-			Room room = roomService.getRoomById(roomId);
+			Room room = roomService.findById(roomId);
 
 			User user = userService.findByEmail(userDetails.getUsername());
 
@@ -135,7 +135,7 @@ public class UserRestController {
 	public String removeFromWishLists(@AuthenticationPrincipal UserDetails userDetails,
 			@PathVariable("roomId") Integer roomId) throws UserNotFoundException {
 		try {
-			Room room = roomService.getRoomById(roomId);
+			Room room = roomService.findById(roomId);
 
 			User user = userService.findByEmail(userDetails.getUsername());
 

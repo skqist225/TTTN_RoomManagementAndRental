@@ -219,7 +219,7 @@ public class UserORestController {
 				State state = stateService.getStateById(stateId);
 				City city = cityService.getCityById(cityId);
 
-				Address newAddress = new Address(country, state, city, aprtNoAndStreet);
+				Address newAddress = new Address(city, aprtNoAndStreet);
 				currentUser.setAddress(newAddress);
 				savedUser = userService.saveUser(currentUser);
 				break;
@@ -342,7 +342,7 @@ public class UserORestController {
 		User user = userDetailsImpl.getUser();
 
 		try {
-			user.addToWishLists(roomService.getRoomById(roomid));
+			user.addToWishLists(roomService.findById(roomid));
 
 			User savedUser = userService.saveUser(user);
 			if (savedUser != null) {
@@ -360,7 +360,7 @@ public class UserORestController {
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("roomid") Integer roomId) {
 		User user = userDetailsImpl.getUser();
 		try {
-			user.removeFromWishLists(roomService.getRoomById(roomId));
+			user.removeFromWishLists(roomService.findById(roomId));
 
 			User savedUser = userService.saveUser(user);
 			if (savedUser != null) {
@@ -415,9 +415,9 @@ public class UserORestController {
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 			@RequestParam(value = "query", required = false, defaultValue = "") String query) {
 		User user = userDetailsImpl.getUser();
-		List<BookedRoomDTO> bookings = bookingService.getBookedRoomsByUser(user.getId(), query);
+//		List<BookedRoomDTO> bookings = bookingService.getBookedRoomsByUser(user.getId(), query);
 
-		return new OkResponse<List<BookedRoomDTO>>(bookings).response();
+		return new OkResponse<List<BookedRoomDTO>>(null).response();
 	}
 
 	@GetMapping("inbox")

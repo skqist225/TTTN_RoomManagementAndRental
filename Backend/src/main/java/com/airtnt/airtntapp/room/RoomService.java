@@ -86,7 +86,7 @@ public class RoomService {
 		return roomRepository.findByHost(host);
 	}
 
-	public Room getRoomById(int id) throws RoomNotFoundException {
+	public Room findById(int id) throws RoomNotFoundException {
 		Optional<Room> optionalRoom = roomRepository.findById(id);
 		if (optionalRoom.isPresent()) {
 			return optionalRoom.get();

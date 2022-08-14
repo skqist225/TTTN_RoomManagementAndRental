@@ -11,7 +11,7 @@ export interface IBooking {
     numberOfDays: number;
     siteFee: number;
     refundPaid: number;
-    complete: boolean;
+    state: string;
     refund: boolean;
     customerName: string;
     customerAvatar: string;

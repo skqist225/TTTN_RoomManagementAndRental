@@ -89,13 +89,15 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
                 <td>
                     <div className='h-100 normal-flex'>
                         <div>
-                            {bookingRowData.complete === true && bookingRowData.refund === false && (
+                            {bookingRowData.state === "APPROVED" && (
                                 <div
                                     style={{
                                         padding: "1px 6px",
                                         borderRadius: "4px",
                                         backgroundColor: "rgb(203 244 201)",
                                         width: "90px",
+                                        display: "flex",
+                                        alignItems: "center",
                                     }}
                                 >
                                     <span style={{ color: "rgba(14, 98, 69, 1)" }}>
@@ -122,16 +124,18 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
                                         className='booking-status fs-14 inline-block'
                                         style={{ paddingLeft: "4px" }}
                                     >
-                                        Hoàn tất
+                                        Approved
                                     </span>
                                 </div>
                             )}
-                            {bookingRowData.complete === false && bookingRowData.refund === false && (
+                            {bookingRowData.state === "PENDING" && (
                                 <div
                                     style={{
                                         padding: "1px 6px",
                                         borderRadius: "4px",
                                         backgroundColor: "rgb(227 232 238)",
+                                        display: "flex",
+                                        alignItems: "center",
                                     }}
                                 >
                                     <span style={{ color: "rgba(14, 98, 69, 1)" }}>
@@ -159,19 +163,20 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
                                         className='booking-status fs-14 inline-block'
                                         style={{ paddingLeft: "4px" }}
                                     >
-                                        Phê duyệt
+                                        Pending
                                     </span>
                                 </div>
                             )}
-                            {bookingRowData.refund === true && (
+                            {bookingRowData.state === "CANCELLED" && (
                                 <div
                                     style={{
                                         backgroundColor: "rgb(255, 56, 92)",
                                         padding: "1px 6px",
                                         borderRadius: "4px",
                                         width: "90px",
+                                        display: "flex",
+                                        alignItems: "center",
                                     }}
-                                    className='normal-flex'
                                 >
                                     <span className='inline-block mr-5'>
                                         <svg
@@ -195,7 +200,7 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
                                             color: "white",
                                         }}
                                     >
-                                        Đã hủy
+                                        Cancelled
                                     </span>
                                 </div>
                             )}
@@ -269,8 +274,7 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
                     />
                 </td>
                 <td>
-                    {bookingRowData.complete === false &&
-                        bookingRowData.refund === false &&
+                    {bookingRowData.state === "PENDING" &&
                         today <= checkinDate &&
                         !bookingRowData.cancelDate && (
                             <button
@@ -281,18 +285,16 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
                                 Hủy bỏ
                             </button>
                         )}
-                    {bookingRowData.complete === false &&
-                        bookingRowData.refund === false &&
-                        today <= checkinDate && (
-                            <button
-                                className='listings__complete-room-making listings__td-text'
-                                data-booking-id={bookingRowData.bookingId}
-                                onClick={apprvBooking}
-                            >
-                                Phê duyệt
-                            </button>
-                        )}
-                    {bookingRowData.complete === true && bookingRowData.refund === false && (
+                    {bookingRowData.state === "PENDING" && (
+                        <button
+                            className='listings__complete-room-making listings__td-text'
+                            data-booking-id={bookingRowData.bookingId}
+                            onClick={apprvBooking}
+                        >
+                            Phê duyệt
+                        </button>
+                    )}
+                    {bookingRowData.state === "APPROVED" && (
                         <button
                             className='listings__complete-room-making listings__td-text'
                             data-booking-id={bookingRowData.bookingId}

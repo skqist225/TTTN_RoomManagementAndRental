@@ -2,9 +2,8 @@ package com.airtnt.airtntapp.room.dto.page.listings;
 
 import java.io.Serializable;
 import java.util.Date;
-import com.airtnt.entity.Room;
-import com.airtnt.entity.User;
-import com.airtnt.entity.Address;
+
+import com.airtnt.entity.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -44,8 +43,10 @@ public class RoomListingsDTO implements Serializable {
     @JsonIgnore
     public static RoomListingsDTO buildRoomListingsDTO(Room room) {
         Address address = room.getAddress();
-        String location = address.getCountry().getName();
-        location += " " + address.getState().getName();
+        City city =address.getCity();
+        State state = ((City) city).getState();
+        String location = state.getCountry().getName();
+        location += " " + city.getState().getName();
         location += " " + address.getCity().getName();
         location += " " + address.getStreet();
 

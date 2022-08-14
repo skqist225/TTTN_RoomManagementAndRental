@@ -2,19 +2,20 @@ import { FC, useEffect, useState } from "react";
 import { Image } from "../../globalStyle";
 import { callToast, getImage } from "../../helpers";
 import axios from "../../axios";
-import $ from "jquery";
-import "./css/room_images_main_content.css";
 import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import { addEmptyImage } from "./script/manage_photos";
 import { userState } from "../../features/user/userSlice";
+import "./css/room_images_main_content.css";
+import $ from "jquery";
 
 let photos = [];
-const AddRoomImages = () => {
-    let fileReaderResult = new Map();
-    let isUploaded = false;
+let fileReaderResult = new Map();
+let isUploaded = false;
 
+const AddRoomImages = () => {
     const { user } = useSelector(userState);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const uploadPhotos = $("#uploadPhotos");
@@ -29,6 +30,7 @@ const AddRoomImages = () => {
 
         restoreRoomImages(uploadPhotos);
     }, []);
+
     async function restoreRoomImages(uploadPhotos) {
         if (localStorage.getItem("room")) {
             const { roomImages, username } = JSON.parse(localStorage.getItem("room"));
@@ -72,8 +74,6 @@ const AddRoomImages = () => {
             </button>
             <div class="photo-action__div-hidden">
                 <ul data-index="${modifier}">
-                    <li class="moveImageBackward">Di chuyển về phía sau</li>
-                    <li class="moveImageForward">Di chuyển về phía trước</li>
                     <li class="makeMainImage">Chọn làm ảnh chính</li>
                     <li class="deleteImage">Xóa ảnh</li>
                 </ul>
@@ -81,19 +81,22 @@ const AddRoomImages = () => {
         </div>
     `);
 
+        // <li class="moveImageBackward">Di chuyển về phía sau</li>
+        // <li class="moveImageForward">Di chuyển về phía trước</li>
+
         fileReader.onload = function (e) {
             if (!thumbnail) {
                 const div = $(`
                 <div class="photo-cover">
                     <img class="photo" src="${e.target.result}" data-index="${modifier}"/>
                 </div>
-            `);
+                `);
 
                 div.append(photoAction);
                 parent.append(div);
             } else {
                 const image = $(
-                    ` <img class="photo" src="${e.target.result}" data-index="${modifier}"/>`
+                    `<img class="photo" src="${e.target.result}" data-index="${modifier}"/>`
                 );
                 parent.append(image);
                 parent.append(photoAction);
@@ -152,6 +155,7 @@ const AddRoomImages = () => {
 
     function doPreviewImage(files, subImagesContainer) {
         //first image for thumbnail
+        setLoading(true);
         const defer = $.Deferred();
 
         var promise = previewImage(files[0], $("#thumbnailPhotos"), true, 0);
@@ -160,13 +164,17 @@ const AddRoomImages = () => {
 
             if (photos.length === files.length) {
                 defer.resolve();
+                setLoading(false);
             }
 
             for (let i = 1; i < files.length; i++) {
                 const promise = previewImage(files[i], subImagesContainer, false, i);
                 promise.done(function () {
                     photos.push(files[i]);
-                    if (photos.length === files.length) defer.resolve();
+                    if (photos.length === files.length) {
+                        defer.resolve();
+                        setLoading(false);
+                    }
                 });
             }
         });
@@ -178,6 +186,7 @@ const AddRoomImages = () => {
     function doPreviewImageSecondTime(files, subImagesContainer) {
         const defer = $.Deferred();
         let count = 0;
+        setLoading(true);
 
         var promise = previewImage(files[0], subImagesContainer, false, photos.length);
 
@@ -187,6 +196,7 @@ const AddRoomImages = () => {
 
             if (count === files.length) {
                 defer.resolve();
+                setLoading(false);
             } else {
                 let lastIndex = photos.length;
 
@@ -198,6 +208,7 @@ const AddRoomImages = () => {
                         count++;
                         if (count === files.length) {
                             defer.resolve();
+                            setLoading(false);
                         }
                     });
                 }
@@ -215,7 +226,7 @@ const AddRoomImages = () => {
                 $(".photosContainer").addClass("active");
                 $(".drag_n_drop_zone").addClass("disabled");
 
-                if (files.length === 5) $("#addAtLeast5Images").text("Hoàn tất! Bạn thấy thế nào?");
+                if (files.length === 5) $("#addAtLeast5Images").text("Done! How do you feel?");
 
                 var promise = doPreviewImage(files, subImagesContainer);
                 promise.done(function () {
@@ -226,7 +237,7 @@ const AddRoomImages = () => {
             const singleImageContainer = $(".singleImageContainer");
             singleImageContainer.remove();
 
-            if (photos.length === 5) $("#addAtLeast5Images").text("Hoàn tất! Bạn thấy thế nào?");
+            if (photos.length === 5) $("#addAtLeast5Images").text("Done! How do you feel?");
 
             var promise = doPreviewImageSecondTime(files, subImagesContainer);
             promise.done(function () {
@@ -234,50 +245,6 @@ const AddRoomImages = () => {
             });
         }
     }
-
-    // function addEmptyImage(
-    //     files: File[] | FileList,
-    //     uploadPhotos,
-    //     subImagesContainer: JQuery<HTMLElement>
-    // ) {
-    //     if (files.length - 1 < 4) {
-    //         for (let i = 0; i <= 4 - files.length; i++) {
-    //             const div = $(
-    //                 `<div class="singleImageContainer containerOfImageIcon">
-    //                 <img class="imageIcon" src="${getImage('/amentity_images/single_image.svg')}"/>
-    //             </div>`
-    //             );
-    //             subImagesContainer.append(div);
-    //         }
-    //     } else {
-    //         const div = $(
-    //             `<div class="singleImageContainer containerOfImageIcon">
-    //             <img class="imageIcon" src="${getImage('/amentity_images/single_image.svg')}"/>
-    //         </div>`
-    //         );
-
-    //         subImagesContainer.append(div);
-    //     }
-
-    //     const singleImageContainer = $('.singleImageContainer');
-    //     if (singleImageContainer.length > 0) {
-    //         singleImageContainer.each(function (e) {
-    //             if (
-    //                 !$(this).children(`img[src="${getImage('/amentity_images/single_image.svg')}"]`)
-    //             ) {
-    //                 $(this).removeClass('singleImageContainer');
-    //                 $(this).off('click');
-    //             } else {
-    //                 $(this).on('click', function (e) {
-    //                     e.preventDefault();
-    //                     e.stopPropagation();
-
-    //                     uploadPhotos.trigger('click');
-    //                 });
-    //             }
-    //         });
-    //     }
-    // }
 
     function displayAction(self) {
         const sibling = self.siblings(".photo-action__div-hidden");
@@ -330,6 +297,7 @@ const AddRoomImages = () => {
     }
 
     function makeMainImage(index) {
+        console.log(index);
         swapPosition(0, index);
         changePreviewImage(0, index);
         closeAction(index);
@@ -458,6 +426,23 @@ const AddRoomImages = () => {
         e.dataTransfer.dropEffect = "copy";
     }
 
+    useEffect(() => {
+        if (!loading) {
+            $(".photo").each(function (index) {
+                $(this).attr("data-index", index);
+                $(this)
+                    .siblings("div.photoAction")
+                    .children("button.photo-action__btn")
+                    .attr("data-index", index);
+                $(this)
+                    .siblings("div.photoAction")
+                    .children("div.photo-action__div-hidden")
+                    .children("ul")
+                    .attr("data-index", index);
+            });
+        }
+    }, [loading]);
+
     return (
         <>
             <div
@@ -468,11 +453,11 @@ const AddRoomImages = () => {
                 <div>
                     <Image src={getImage("/amentity_images/photos.svg")} size='64px' />
                 </div>
-                <div className='photos__drag-title'>Kéo ảnh của bạn vào đây</div>
-                <div id=''>Thêm ít nhất 5 ảnh</div>
+                <div className='photos__drag-title'>Drag your images</div>
+                <div id=''>Choose at least 5 images</div>
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                     <button className='photos__btn__load-images' id='triggerUploadPhotosInput'>
-                        Tải lên từ thiết bị của bạn
+                        Upload from your device
                     </button>
                     <input
                         type='file'
@@ -496,7 +481,7 @@ const AddRoomImages = () => {
                             }}
                             id='addAtLeast5Images'
                         >
-                            Thêm ít nhất 5 ảnh
+                            Choose at least 5 pictures
                         </div>
                         <div
                             style={{
@@ -505,19 +490,19 @@ const AddRoomImages = () => {
                                 fontWeight: "400",
                             }}
                         >
-                            Kéo để sắp xếp lại
+                            {/* Drag to arrange */}
                         </div>
                     </div>
                     <div>
                         <button className='upload__btn' onClick={uploadImagesToFolder}>
                             <Image src={getImage("/amentity_images/upload.svg")} size='22px' />
-                            <span>Tải lên</span>
+                            <span>Upload</span>
                         </button>
                     </div>
                 </div>
                 <div id='photosContainer__body'>
                     <div id='thumbnailPhotos'>
-                        <div className='thumbnail-title'>Ảnh bìa</div>
+                        <div className='thumbnail-title'>Thumbnail</div>
                     </div>
                     <div id='subImages'></div>
                 </div>

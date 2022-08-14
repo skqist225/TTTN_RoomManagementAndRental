@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import $ from "jquery";
 import { getImage } from "../../../helpers";
 import { Image } from "../../../globalStyle";
-import { FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import "../css/price_main_content.css";
 import { currencyState, fetchCurrencies } from "../../../features/currency/currencySlice";
+import { FormControl, InputLabel, MenuItem, Select, Typography } from "@material-ui/core";
 
 const PropertyPriceMainContent = ({ values, setValues }) => {
     const [currencySymbol, setCurrencySymbol] = useState("đ");

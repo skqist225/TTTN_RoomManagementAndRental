@@ -1,7 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import $ from "jquery";
 
-const IncAndDecBtn = ({ dataEdit, dataTrigger, data = 0 }) => {
+const IncAndDecBtn = ({ dataEdit, dataTrigger, info, data = 0 }) => {
+    useEffect(() => {
+        console.log(info);
+        if (info) {
+            // console.log()
+            switch (dataEdit) {
+                case "guestNumber": {
+                    if (info.accomodatesCount) {
+                        $("#" + dataEdit).text(info.accomodatesCount);
+                    }
+                    break;
+                }
+                case "bathRoomNumber": {
+                    if (info.bathroomCount) {
+                        $("#" + dataEdit).text(info.bathroomCount);
+                    }
+                    break;
+                }
+                case "bedNumber": {
+                    if (info.bedroomCount) {
+                        $("#" + dataEdit).text(info.bedroomCount);
+                    }
+                    break;
+                }
+                case "bedRoomNumber": {
+                    if (info.bedCount) {
+                        $("#" + dataEdit).text(info.bedCount);
+                    }
+                    break;
+                }
+            }
+        }
+    }, [info]);
+
     $(".incAndDecBtn").each(function () {
         $(this)
             .off("click")

@@ -74,14 +74,31 @@ export const fetchUserBookings = createAsyncThunk(
 
 export const fetchBookings = createAsyncThunk(
     "booking/fetchBookings",
-    async (page, { dispatch, getState, rejectWithValue }) => {
+    async ({ page, type }, { dispatch, getState, rejectWithValue }) => {
         try {
             const {
                 data: { bookings, totalElements, totalPages },
-            } = await api.get(`/admin/bookings?page=${page}`);
+            } = await api.get(`/admin/bookings?page=${page}&type=${type}`);
 
             return { bookings, totalElements, totalPages };
-        } catch (error) {}
+        } catch ({ data: { error } }) {
+            rejectWithValue(error);
+        }
+    }
+);
+
+export const fetchBookingsCount = createAsyncThunk(
+    "booking/fetchBookingsCount",
+    async (_, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const {
+                data: { numberOfApproved, numberOfPending, numberOfCancelled },
+            } = await api.get(`/admin/bookings/count`);
+
+            return { numberOfApproved, numberOfPending, numberOfCancelled };
+        } catch ({ data: { error } }) {
+            rejectWithValue(error);
+        }
     }
 );
 
@@ -172,8 +189,8 @@ export const cancelBooking = createAsyncThunk(
             dispatch(fetchUserBookings({ ...fetchData }));
 
             return { data };
-        } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            rejectWithValue(error);
         }
     }
 );
@@ -184,8 +201,20 @@ export const approveBooking = createAsyncThunk(
         try {
             const { data } = await api.put(`/booking/${bookingid}/approved`);
             return { data };
-        } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            rejectWithValue(error);
+        }
+    }
+);
+
+export const deleteBooking = createAsyncThunk(
+    "booking/deleteBooking",
+    async ({ bookingid }, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const { data } = await api.delete(`/admin/bookings/${bookingid}`);
+            return { data };
+        } catch ({ data: { error } }) {
+            rejectWithValue(error);
         }
     }
 );
@@ -209,13 +238,31 @@ const initialState = {
     },
     totalPages: 0,
     createReviewSuccess: false,
-    cancelBookingSuccess: false,
-    cancelledBookingId: 0,
     listing: {
         bookings: [],
         loading: true,
         totalPages: 0,
         totalElements: 0,
+    },
+    deleteBookingAction: {
+        loading: true,
+        successMessage: null,
+        errorMessage: null,
+    },
+    approveBookingAction: {
+        loading: true,
+        successMessage: null,
+        errorMessage: null,
+    },
+    cancelBookingAction: {
+        loading: true,
+        successMessage: null,
+        errorMessage: null,
+    },
+    countBookingAction: {
+        numberOfApproved: 0,
+        numberOfPending: 0,
+        numberOfCancelled: 0,
     },
 };
 
@@ -267,11 +314,36 @@ const bookingSlice = createSlice({
     },
     extraReducers: builder => {
         builder
+            .addCase(fetchBookings.pending, (state, { payload }) => {
+                state.listing.loading = true;
+                state.cancelBookingAction.successMessage = null;
+                state.cancelBookingAction.errorMessage = null;
+                state.approveBookingAction.successMessage = null;
+                state.approveBookingAction.errorMessage = null;
+            })
             .addCase(fetchBookings.fulfilled, (state, { payload }) => {
                 state.listing.loading = false;
                 state.listing.bookings = payload.bookings;
                 state.listing.totalElements = payload.totalElements;
                 state.listing.totalPages = payload.totalPages;
+            })
+            .addCase(deleteBooking.pending, (state, { payload }) => {
+                state.deleteBookingAction.loading = true;
+                state.deleteBookingAction.successMessage = null;
+                state.deleteBookingAction.errorMessage = null;
+            })
+            .addCase(deleteBooking.fulfilled, (state, { payload }) => {
+                state.deleteBookingAction.loading = false;
+                state.deleteBookingAction.successMessage = payload.data;
+            })
+            .addCase(deleteBooking.rejected, (state, { payload }) => {
+                state.deleteBookingAction.loading = false;
+                state.deleteBookingAction.errorMessage = payload.data;
+            })
+            .addCase(fetchBookingsCount.fulfilled, (state, { payload }) => {
+                state.countBookingAction.numberOfApproved = payload.numberOfApproved;
+                state.countBookingAction.numberOfPending = payload.numberOfPending;
+                state.countBookingAction.numberOfCancelled = payload.numberOfCancelled;
             })
             .addCase(fetchUserBookings.fulfilled, (state, { payload }) => {
                 state.loading = false;
@@ -287,11 +359,31 @@ const bookingSlice = createSlice({
                 state.loading = false;
                 state.newlyCreatedBooking = payload;
             })
+            .addCase(cancelBooking.pending, (state, { payload }) => {
+                state.cancelBookingAction.loading = true;
+                state.cancelBookingAction.successMessage = null;
+                state.cancelBookingAction.errorMessage = null;
+            })
             .addCase(cancelBooking.fulfilled, (state, { payload }) => {
-                state.cancelMessage = payload?.data;
+                state.cancelBookingAction.loading = true;
+                state.cancelBookingAction.successMessage = payload?.data;
+            })
+            .addCase(cancelBooking.rejected, (state, { payload }) => {
+                state.cancelBookingAction.loading = true;
+                state.cancelBookingAction.errorMessage = payload?.data;
+            })
+            .addCase(approveBooking.pending, (state, { payload }) => {
+                state.approveBookingAction.loading = true;
+                state.approveBookingAction.successMessage = null;
+                state.approveBookingAction.errorMessage = null;
             })
             .addCase(approveBooking.fulfilled, (state, { payload }) => {
-                state.cancelMessage = payload?.data;
+                state.approveBookingAction.loading = false;
+                state.approveBookingAction.successMessage = payload?.data;
+            })
+            .addCase(approveBooking.rejected, (state, { payload }) => {
+                state.approveBookingAction.loading = false;
+                state.approveBookingAction.errorMessage = payload?.data;
             })
             .addCase(makeReview.fulfilled, (state, { payload }) => {
                 state.createReviewSuccess = true;

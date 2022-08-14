@@ -2,8 +2,12 @@ package com.airtnt.airtntapp.user.dto;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.airtnt.entity.Booking;
+import com.airtnt.entity.BookingDetail;
 import com.airtnt.entity.Status;
 import com.airtnt.entity.SubRating;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,7 +38,6 @@ public class BookedRoomDTO {
     private float pricePerDay;
     private long numberOfDays;
     private float siteFee;
-    private Status state;
 
     private Integer roomId;
     private String roomThumbnail;
@@ -47,25 +50,30 @@ public class BookedRoomDTO {
 
     private String bookingReview;
     private SubRating reviewRating;
+    private Status state;
 
-    public static BookedRoomDTO build(Booking b) {
-        String roomThumbnail = b.getRoom().renderThumbnailImage();
-        String userFullName = b.getRoom().getHost().getFullName();
-        String userAvatar = b.getRoom().getHost().getAvatarPath();
-        String bookingReview = null;
-        SubRating reviewRating = null;
+    public static List<BookedRoomDTO> build(Booking booking) {
+        Set<BookingDetail> bookingDetailsSet = booking.getBookingDetails();
 
-        if (b.getReview() != null) {
-            bookingReview = b.getReview().getComment();
-            reviewRating = b.getReview().getSubRating();
-        }
+        return bookingDetailsSet.stream().map(b -> {
+            String roomThumbnail = b.getRoom().renderThumbnailImage();
+            String userFullName = b.getRoom().getHost().getFullName();
+            String userAvatar = b.getRoom().getHost().getAvatarPath();
+            String bookingReview = null;
+            SubRating reviewRating = null;
 
-        return new BookedRoomDTO(b.getId(), b.getBookingDate(), b.getCheckinDate(), b.getCheckoutDate(),
-                b.getPricePerDay(), b.getNumberOfDays(),
-                b.getSiteFee(), b.getState(), b.getRoom().getId(), roomThumbnail, b.getRoom().getName(),
-                userFullName,
-                userAvatar, b.getRoom().getCurrency().getSymbol(), b.getRoom().getPrivacyType().getName(),
-                b.getRoom().getCategory().getName(),
-                bookingReview, reviewRating);
+            if (b.getReview() != null) {
+                bookingReview = b.getReview().getComment();
+                reviewRating = b.getReview().getSubRating();
+            }
+
+          return new BookedRoomDTO(b.getId(), b.getBookingDate(), b.getCheckinDate(), b.getCheckoutDate(),
+                    b.getPricePerDay(), b.getNumberOfDays(),
+                    b.getSiteFee(), b.getRoom().getId(), roomThumbnail, b.getRoom().getName(),
+                    userFullName,
+                    userAvatar, b.getRoom().getCurrency().getSymbol(), b.getRoom().getPrivacyType().getName(),
+                    b.getRoom().getCategory().getName(),
+                    bookingReview, reviewRating, b.getBooking().getState());
+        }).collect(Collectors.toList());
     }
 }

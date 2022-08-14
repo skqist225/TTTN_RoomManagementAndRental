@@ -24,18 +24,19 @@ public class BookingsRestController {
 
     @PutMapping("/bookings")
     public void updateBookings(@RequestBody List<BookingDTO> bookings) {
-        bookings.forEach(booking -> {
-            bookingsDatabase.put(booking.getId(), booking);
-            booking.setLastUpdated(System.currentTimeMillis());
-        });
+//        bookings.forEach(booking -> {
+//            bookingsDatabase.put(booking.getId(), booking);
+//            booking.setLastUpdated(System.currentTimeMillis());
+//        });
     }
 
     private List<BookingDTO> getUpdatedBookings() {
-        LinkedList<BookingDTO> updatedBookings = new LinkedList<>();
-        bookingsDatabase.values().stream()
-                .filter(booking -> booking.getLastUpdated() > System.currentTimeMillis() - 1000)
-                .forEach(booking -> updatedBookings.add(booking));
-        return updatedBookings;
+//        LinkedList<BookingDTO> updatedBookings = new LinkedList<>();
+//        bookingsDatabase.values().stream()
+//                .filter(booking -> booking.getLastUpdated() > System.currentTimeMillis() - 1000)
+//                .forEach(booking -> updatedBookings.add(booking));
+//        return updatedBookings;
+        return null;
     }
 
     @GetMapping(value = "bookings", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)

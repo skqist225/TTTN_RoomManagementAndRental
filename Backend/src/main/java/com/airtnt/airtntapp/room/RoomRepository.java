@@ -27,7 +27,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
         @Query("SELECT AVG(r.price) FROM Room r")
         public double getAverageRoomPrice();
 
-        @Query("SELECT r FROM Room r JOIN r.amentities ra JOIN r.bookings rb WHERE r.category.id = :categoryId AND r.status = :status"
+        @Query("SELECT r FROM Room r JOIN r.amentities ra JOIN r.bookingDetails rb WHERE r.category.id = :categoryId AND r.status = :status"
                         + " AND r.name LIKE %:query%"
                         + " AND r.price >= :minPrice AND r.price <= :maxPrice"
                         + " AND r.bedroomCount >= :bedroomCount AND r.bathroomCount >= :bathroomCount AND r.bedCount >= :bedCount"
@@ -52,7 +52,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
                         int bathroomCount, @Param("privacies") List<Integer> privacies, @Param("query") String query,
                         Pageable pageable);
 
-        @Query("SELECT r FROM Room r LEFT JOIN r.bookings rb WHERE r.category.id = :categoryId AND r.status = :status"
+        @Query("SELECT r FROM Room r LEFT JOIN r.bookingDetails rb WHERE r.category.id = :categoryId AND r.status = :status"
                         + " AND r.name LIKE %:query%"
                         + " AND r.price >= :minPrice AND r.price <= :maxPrice"
                         + " AND r.bedroomCount >= :bedroomCount AND r.bathroomCount >= :bathroomCount AND r.bedCount >= :bedCount"

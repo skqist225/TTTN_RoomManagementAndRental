@@ -117,7 +117,7 @@ const GlobalStyle = createGlobalStyle`
         font-size: 20px;
     }
 
-        .fs-22 {
+    .fs-22 {
         font-size: 22px;
     }
 

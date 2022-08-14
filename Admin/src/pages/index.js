@@ -1,5 +1,7 @@
 export { default as AmenitiesPage } from "./AmenitiesPage";
 export { default as BookingsPage } from "./BookingsPage";
+export { default as BookingDetailsPage } from "./BookingDetailsPage";
+export { default as BookingOverviewPage } from "./BookingOverviewPage";
 export { default as CategoriesPage } from "./CategoriesPage";
 export { default as RoomsPage } from "./RoomsPage";
 export { default as RoomDetailsPage } from "./RoomDetailsPage";

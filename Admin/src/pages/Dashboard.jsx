@@ -21,12 +21,14 @@ import DashboardCard13 from "../partials/dashboard/DashboardCard13";
 import { useDispatch, useSelector } from "react-redux";
 import {
     RoomsPage,
-    BookingsPage,
+    BookingDetailsPage,
     UsersPage,
     CategoriesPage,
     AmenitiesPage,
     RulesPage,
     PrivaciesPage,
+    BookingsPage,
+    BookingOverviewPage,
 } from ".";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchRooms } from "../features/room/roomSlice";
@@ -37,6 +39,7 @@ import { fetchAmenities } from "../features/amenity/amenitySlice";
 import { fetchRules } from "../features/rule/ruleSlice";
 import { fetchPrivacies } from "../features/privacy/privacySlice";
 import { authState } from "../features/auth/authSlice";
+import { fetchBookingDetails } from "../features/bookingDetail/bookingDetailSlice";
 
 function Dashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -69,10 +72,6 @@ function Dashboard() {
                 dispatch(fetchRules());
                 break;
             }
-            case "/bookings": {
-                dispatch(fetchBookings(1));
-                break;
-            }
             case "/privacies": {
                 dispatch(fetchPrivacies());
                 break;
@@ -81,6 +80,9 @@ function Dashboard() {
                 dispatch(fetchUsers(1));
                 console.log("asd");
                 break;
+            }
+            case "/bookings/details": {
+                dispatch(fetchBookingDetails(1));
             }
         }
     }, [pathname]);
@@ -120,6 +122,11 @@ function Dashboard() {
                                 <BookingsPage />
                             </>
                         )}
+                        {pathname === "/bookings/details" && (
+                            <>
+                                <BookingDetailsPage />
+                            </>
+                        )}
                         {pathname === "/categories" && (
                             <>
                                 <CategoriesPage />
@@ -140,6 +147,11 @@ function Dashboard() {
                                 <PrivaciesPage />
                             </>
                         )}
+                        {pathname === "/bookings/overview" && (
+                            <>
+                                <BookingOverviewPage />
+                            </>
+                        )}
 
                         {pathname === "/" && (
                             <>
@@ -149,15 +161,11 @@ function Dashboard() {
                                 {/* Dashboard actions */}
                                 <div className='sm:flex sm:justify-between sm:items-center mb-8'>
                                     {/* Left: Avatars */}
-                                    <DashboardAvatars />
+                                    {/* <DashboardAvatars />
 
-                                    {/* Right: Actions */}
                                     <div className='grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2'>
-                                        {/* Filter button */}
                                         <FilterButton />
-                                        {/* Datepicker built with flatpickr */}
                                         <Datepicker />
-                                        {/* Add view button */}
                                         <button className='btn bg-indigo-500 hover:bg-indigo-600 text-white'>
                                             <svg
                                                 className='w-4 h-4 fill-current opacity-50 shrink-0'
@@ -167,36 +175,23 @@ function Dashboard() {
                                             </svg>
                                             <span className='hidden xs:block ml-2'>Add view</span>
                                         </button>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                                 {/* Cards */}
                                 <div className='grid grid-cols-12 gap-6'>
-                                    {/* Line chart (Acme Plus) */}
                                     <DashboardCard01 />
-                                    {/* Line chart (Acme Advanced) */}
                                     <DashboardCard02 />
-                                    {/* Line chart (Acme Professional) */}
                                     <DashboardCard03 />
-                                    {/* Bar chart (Direct vs Indirect) */}
                                     <DashboardCard04 />
-                                    {/* Line chart (Real Time Value) */}
                                     <DashboardCard05 />
-                                    {/* Doughnut chart (Top Countries) */}
                                     <DashboardCard06 />
-                                    {/* Table (Top Channels) */}
                                     <DashboardCard07 />
-                                    {/* Line chart (Sales Over Time) */}
                                     <DashboardCard08 />
-                                    {/* Stacked bar chart (Sales VS Refunds) */}
                                     <DashboardCard09 />
-                                    {/* Card (Customers) */}
                                     <DashboardCard10 />
-                                    {/* Card (Reasons for Refunds) */}
                                     <DashboardCard11 />
-                                    {/* Card (Recent Activity) */}
                                     <DashboardCard12 />
-                                    {/* Card (Income/Expenses) */}
                                     <DashboardCard13 />
                                 </div>
                             </>

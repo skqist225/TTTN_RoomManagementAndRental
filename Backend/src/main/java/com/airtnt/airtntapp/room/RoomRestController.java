@@ -190,7 +190,7 @@ public class RoomRestController {
 	public String verifyPhoneForRoom(@RequestBody Map<String, Integer> payload) {
 		Integer roomId = payload.get("roomId");
 		try {
-			Room room = roomService.getRoomById(roomId);
+			Room room = roomService.findById(roomId);
 
 			int isUpdated = userService.verifyPhoneNumber(room.getHost().getId());
 			if (isUpdated == 1) {
@@ -238,7 +238,7 @@ public class RoomRestController {
 		userService.saveUser(user);
 
 		boolean status = user.isPhoneVerified();
-		Address address = new Address(country, state, city, "");
+		Address address = new Address(city, "");
 		Room room = Room.buildRoom(payload, images, amenities, address, rules, status);
 		Room savedRoom = roomService.save(room);
 

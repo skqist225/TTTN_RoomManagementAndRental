@@ -51,6 +51,7 @@ export interface IBookedRoom {
     roomCategory: string;
     priceType: string;
     bookingReview: string;
+    state: string;
     reviewRating: {
         cleanliness: number;
         contact: number;

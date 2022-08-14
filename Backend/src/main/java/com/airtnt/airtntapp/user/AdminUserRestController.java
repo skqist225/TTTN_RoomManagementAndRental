@@ -132,12 +132,12 @@ public class AdminUserRestController {
             new UserORestController().updateAvatar(user, updateUserDTO.getAvatar(), false,
                     environment);
 
-            if (updateUserDTO.getCountry() != null) {
-                user.getAddress().setCountry(new Country(updateUserDTO.getCountry()));
-            }
-            if (updateUserDTO.getState() != null) {
-                user.getAddress().setState(new State(updateUserDTO.getState()));
-            }
+//            if (updateUserDTO.getCountry() != null) {
+//                user.getAddress().setCountry(new Country(updateUserDTO.getCountry()));
+//            }
+//            if (updateUserDTO.getState() != null) {
+//                user.getAddress().setState(new State(updateUserDTO.getState()));
+//            }
             if (updateUserDTO.getCity() != null) {
                 user.getAddress().setCity(new City(updateUserDTO.getCity()));
             }

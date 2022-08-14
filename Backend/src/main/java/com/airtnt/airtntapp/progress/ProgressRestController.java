@@ -68,29 +68,29 @@ public class ProgressRestController {
 		Map<Integer, Float> feesInMonth = new HashMap<>();
 		Map<Integer, Integer> numberOfBookingsInMonth = new HashMap<>();
 		List<BookingDTO> bookingsDTO = new ArrayList<>();
-		for (Booking booking : bookings) {
-			float totalBookingFee = booking.getTotalFee();
-
-			BookingDTO bookingDTO = BookingDTO.build(booking);
-			bookingsDTO.add(bookingDTO);
-			if (booking.getRoom().getCurrency().getSymbol().equals("$")) {
-				totalFee += totalBookingFee * 22705;
-			} else {
-				totalFee += totalBookingFee;
-			}
-
-			Integer monthValue = booking.getBookingDate().getMonthValue();
-
-			if (feesInMonth.containsKey(monthValue))
-				feesInMonth.put(monthValue, totalBookingFee + feesInMonth.get(monthValue));
-			else
-				feesInMonth.put(monthValue, totalBookingFee);
-
-			if (numberOfBookingsInMonth.containsKey(monthValue))
-				numberOfBookingsInMonth.put(monthValue, 1 + numberOfBookingsInMonth.get(monthValue));
-			else
-				numberOfBookingsInMonth.put(monthValue, 1);
-		}
+//		for (Booking booking : bookings) {
+//			float totalBookingFee = booking.getTotalFee();
+//
+//			BookingDTO bookingDTO = BookingDTO.build(booking);
+//			bookingsDTO.add(bookingDTO);
+//			if (booking.getRoom().getCurrency().getSymbol().equals("$")) {
+//				totalFee += totalBookingFee * 22705;
+//			} else {
+//				totalFee += totalBookingFee;
+//			}
+//
+//			Integer monthValue = booking.getBookingDate().getMonthValue();
+//
+//			if (feesInMonth.containsKey(monthValue))
+//				feesInMonth.put(monthValue, totalBookingFee + feesInMonth.get(monthValue));
+//			else
+//				feesInMonth.put(monthValue, totalBookingFee);
+//
+//			if (numberOfBookingsInMonth.containsKey(monthValue))
+//				numberOfBookingsInMonth.put(monthValue, 1 + numberOfBookingsInMonth.get(monthValue));
+//			else
+//				numberOfBookingsInMonth.put(monthValue, 1);
+//		}
 
 		feesInMonth.entrySet().stream().sorted(Map.Entry.comparingByKey());
 		numberOfBookingsInMonth.entrySet().stream().sorted(Map.Entry.comparingByKey());

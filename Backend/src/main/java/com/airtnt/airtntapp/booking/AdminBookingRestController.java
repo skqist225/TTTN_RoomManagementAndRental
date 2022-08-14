@@ -3,19 +3,20 @@ package com.airtnt.airtntapp.booking;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.airtnt.airtntapp.booking.dto.BookingDTO;
+import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
+import com.airtnt.airtntapp.exception.BookingNotFoundException;
+import com.airtnt.airtntapp.response.error.BadResponse;
+import com.airtnt.entity.Booking;
+import com.airtnt.entity.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.airtnt.airtntapp.booking.dto.BookingListDTO;
-import com.airtnt.airtntapp.booking.dto.BookingListResponse;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.success.OkResponse;
-import com.airtnt.entity.Booking;
 
 @RestController
 @RequestMapping("/api/admin/")
@@ -24,40 +25,35 @@ public class AdminBookingRestController {
     private BookingService bookingService;
 
     @GetMapping("bookings")
-    public ResponseEntity<StandardJSONResponse<BookingListResponse>> getAllBookings(@RequestParam("page") int page,
-            @RequestParam(value = "keyword", required = false) String keyword) {
-        Page<Booking> bookingsPage = bookingService.getAllBookings(page, keyword);
+    public ResponseEntity<StandardJSONResponse<BookingListDTO>> getAllBookings(@RequestParam("page") int page,
+            @RequestParam(value = "type", defaultValue = "all", required = false) String type) {
+        Page<Booking> bookingsPage = bookingService.getAllBookings(page, type);
 
-        List<BookingListDTO> bookingListingsDTOs = new ArrayList<>();
-        BookingListResponse bookingListResponse = new BookingListResponse();
+        List<BookingDTO> bookingListingsDTOs = new ArrayList<>();
+        BookingListDTO bookingListResponse = new BookingListDTO();
 
         for (Booking booking : bookingsPage.getContent()) {
-            bookingListingsDTOs.add(BookingListDTO.build(booking));
-            // redisTemplate.opsForHash().put("ROOM", room.getId().toString(),
-            // RoomListingsDTO.buildRoomListingsDTO(room));
+             bookingListingsDTOs.add(BookingDTO.build(booking));
         }
-
-        // if (redisTemplate.opsForHash().get("TOTAL_PAGES", "TOTAL_PAGES") != null) {
-        // roomListingsDTOs = redisTemplate.opsForHash().values("ROOM");
-
-        // roomsOwnedByUserResponseEntity.setRooms(roomListingsDTOs);
-        // roomsOwnedByUserResponseEntity
-        // .setTotalPages((int) redisTemplate.opsForHash().get("TOTAL_PAGES",
-        // "TOTAL_PAGES"));
-        // roomsOwnedByUserResponseEntity
-        // .setTotalRecords((long) redisTemplate.opsForHash().get("TOTAL_ELS",
-        // "TOTAL_ELS"));
-        // } else {
-
-        // redisTemplate.opsForHash().put("TOTAL_PAGES", "TOTAL_PAGES", (Integer)
-        // roomsPage.getTotalPages());
-        // redisTemplate.opsForHash().put("TOTAL_ELS", "TOTAL_ELS", (Long)
-        // roomsPage.getTotalElements());
 
         bookingListResponse.setBookings(bookingListingsDTOs);
         bookingListResponse.setTotalPages(bookingsPage.getTotalPages());
         bookingListResponse.setTotalElements(bookingsPage.getTotalElements());
 
-        return new OkResponse<BookingListResponse>(bookingListResponse).response();
+        return new OkResponse<BookingListDTO>(bookingListResponse).response();
+    }
+
+    @DeleteMapping("bookings/{bookingid}")
+    public ResponseEntity<StandardJSONResponse<String>> deleteBooking(@PathVariable(value = "bookingid") Integer bookingId) throws BookingNotFoundException {
+       if(bookingService.deleteById(bookingId)) {
+           return new OkResponse<String>("Delete booking successfully").response();
+       }
+
+        return new BadResponse<String>("Can not delete booking").response();
+    }
+
+    @GetMapping("bookings/count")
+    public ResponseEntity<StandardJSONResponse<CountBookingDTO>> getBookingState() throws BookingNotFoundException {
+        return new OkResponse<CountBookingDTO>(bookingService.countBookingByState()).response();
     }
 }

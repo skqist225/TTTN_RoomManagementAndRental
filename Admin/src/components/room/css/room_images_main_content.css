@@ -85,11 +85,16 @@
     height: 455px;
     position: relative;
 }
+
+li.moveImageForward {
+    width: 400px;
+}
+
 .thumbnail-title {
     position: absolute;
     top: 20px;
     left: 15px;
-    width: 65px;
+    width: 80px;
     height: 32px;
     z-index: 99;
     padding: 0 8px;

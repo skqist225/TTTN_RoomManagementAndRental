@@ -14,55 +14,67 @@ import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import { categoryState } from "../features/category/categorySlice";
-import PropertyCategoryMainContent from "../components/room/components/PropertyCategoryMainContent";
-import PropertyPrivacyMainContent from "../components/room/components/PropertyPrivacyMainContent";
 import PropertyLocationMainContent from "../components/room/components/PropertyLocationMainContent";
-import PropertyRoomInfoMainContent from "../components/room/components/PropertyRoomInfoMainContent";
-import PropertyAmenitiesMainContent from "../components/room/components/PropertyAmenitiesMainContent";
 import PropertyTitleMainContent from "../components/room/components/PropertyTitleMainContent";
 import PropertyDescriptionMainContent from "../components/room/components/PropertyDescriptionMainContent";
 import PropertyPriceMainContent from "../components/room/components/PropertyPriceMainContent";
 
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MyButton from "../components/common/MyButton";
+import {
+    FormControl,
+    InputLabel,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    useTheme,
+} from "@material-ui/core";
+import { categoryState, fetchCategories } from "../features/category/categorySlice";
+import { fetchPrivacies, privacyState } from "../features/privacy/privacySlice";
+import IncAndDecBtn from "../components/room/components/IncAndDecBtn";
+import { amenityState, fetchAmenities } from "../features/amenity/amenitySlice";
 const steps = [
-    "Category + Privacy",
+    "Category + Privacy + Basic info + Amenities",
     "Location",
-    "Basic info",
-    "Amenities",
     "Images",
     "Name + Description + Price",
     "Preview",
 ];
 
+function getStyles(name, personName, theme) {
+    return {
+        fontWeight:
+            personName.indexOf(name) === -1
+                ? theme.typography.fontWeightRegular
+                : theme.typography.fontWeightMedium,
+    };
+}
+
 const AddRoomPage = () => {
-    //     private int[] amentities;
-    //     private int host;
+    const theme = useTheme();
+
+    const dispatch = useDispatch();
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [category, setCategory] = useState(0);
+    const [privacyType, setPrivacyType] = useState(0);
+    const [amenities, setAmenities] = useState([]);
+    const [info, setInfo] = useState({
+        bedroomCount: 0,
+        bathroomCount: 0,
+        accomodatesCount: 0,
+        bedCount: 0,
+    });
     const [values, setValues] = useState({
-        privacyType: 0,
         latitude: 0,
         longitude: 0,
         country: 0,
         state: "",
         city: "",
         street: "",
-        amenities: {
-            prominentAmentity: null,
-            favoriteAmentity: null,
-            safeAmentity: null,
-        },
         currency: 0,
         name: "",
         description: "",
         price: 0,
-        bedroomCount: 0,
-        bathroomCount: 0,
-        accomodatesCount: 0,
-        bedCount: 0,
         images: [],
     });
     const [myErrors, setMyErrors] = useState({
@@ -74,6 +86,18 @@ const AddRoomPage = () => {
     const {
         addUserAction: { successMessage, errorMessage },
     } = useSelector(userState);
+
+    const {
+        listing: { categories, loading },
+    } = useSelector(categoryState);
+
+    const {
+        listing: { amenities: amenitiesLst },
+    } = useSelector(amenityState);
+
+    const {
+        listing: { privacies },
+    } = useSelector(privacyState);
 
     const clearFields = () => {
         $("#addUserForm")[0].reset();
@@ -125,6 +149,16 @@ const AddRoomPage = () => {
             newSkipped.delete(activeStep);
         }
 
+        if (activeStep === 0) {
+            console.log($("#guestNumber").text());
+            setInfo({
+                bedroomCount: parseInt($("#bedNumber").text()),
+                bathroomCount: parseInt($("#bathRoomNumber").text()),
+                accomodatesCount: parseInt($("#guestNumber").text()),
+                bedCount: parseInt($("#bedRoomNumber").text()),
+            });
+        }
+
         setActiveStep(prevActiveStep => prevActiveStep + 1);
         setSkipped(newSkipped);
     };
@@ -133,31 +167,36 @@ const AddRoomPage = () => {
         setActiveStep(prevActiveStep => prevActiveStep - 1);
     };
 
-    const handleSkip = () => {
-        if (!isStepOptional(activeStep)) {
-            // You probably want to guard against something like this,
-            // it should never occur unless someone's actively trying to break something.
-            throw new Error("You can't skip a step that isn't optional.");
-        }
-
-        setActiveStep(prevActiveStep => prevActiveStep + 1);
-        setSkipped(prevSkipped => {
-            const newSkipped = new Set(prevSkipped.values());
-            newSkipped.add(activeStep);
-            return newSkipped;
-        });
-    };
-
     const handleReset = () => {
         setActiveStep(0);
     };
 
     const handleChange = event => {
+        const { name, value } = event.target;
+
+        if (name === "category") {
+            setCategory(value);
+            return;
+        } else if (name === "privacyType") {
+            setPrivacyType(value);
+            return;
+        } else if (name === "amenities") {
+            setAmenities(typeof value === "string" ? value.split(",") : value);
+            return;
+        }
         setValues({
             ...values,
             [e.target.name]: e.target.value,
         });
     };
+
+    useEffect(() => {
+        if (activeStep === 0) {
+            dispatch(fetchPrivacies());
+            dispatch(fetchCategories());
+            dispatch(fetchAmenities());
+        }
+    }, [activeStep]);
 
     return (
         <>
@@ -195,13 +234,8 @@ const AddRoomPage = () => {
                             <React.Fragment>
                                 <div className='my-10'></div>
                                 {activeStep === 0 && (
-                                    <div className='flex items-center justify-between   '>
+                                    <div className=''>
                                         <div className='flex-1 w-45 px-20'>
-                                            <div className='mb-3'>
-                                                <Typography variant='h5' component='h2'>
-                                                    Category
-                                                </Typography>
-                                            </div>
                                             <Box
                                                 component='div'
                                                 sx={{
@@ -211,40 +245,126 @@ const AddRoomPage = () => {
                                                     height: "600px",
                                                     borderRadius: "8px",
                                                 }}
-                                                className='w-full flex items-center justify-center'
+                                                className='w-full col-flex items-center justify-evenly'
                                             >
-                                                <PropertyCategoryMainContent
-                                                    category={category}
-                                                    setCategory={setCategory}
-                                                    activeStep={activeStep}
-                                                />
-                                            </Box>
-                                        </div>
-                                        <div className='flex-1 w-45'>
-                                            <div className='mb-3'>
-                                                <Typography variant='h5' component='h2'>
-                                                    Privacy
-                                                </Typography>
-                                            </div>
-
-                                            <Box
-                                                component='div'
-                                                sx={{
-                                                    p: 2,
-                                                    border: "1px dashed grey",
-                                                    background: "#fff",
-                                                    height: "600px",
-                                                    borderRadius: "8px",
-                                                    maxWidth: "90%",
-                                                }}
-                                                className='w-full'
-                                            >
-                                                {" "}
-                                                <PropertyPrivacyMainContent
-                                                    values={values}
-                                                    setValues={setValues}
-                                                    activeStep={activeStep}
-                                                />
+                                                <div className='w-3/6'>
+                                                    <div className='mb-5'>
+                                                        <FormControl fullWidth>
+                                                            <InputLabel>Category</InputLabel>
+                                                            <Select
+                                                                name='category'
+                                                                value={category}
+                                                                label='Category'
+                                                                onChange={handleChange}
+                                                            >
+                                                                {categories.map(category => (
+                                                                    <MenuItem value={category.id}>
+                                                                        {category.name}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </div>
+                                                    <div className='mb-5'>
+                                                        <FormControl fullWidth>
+                                                            <InputLabel>Privacy</InputLabel>
+                                                            <Select
+                                                                name='privacyType'
+                                                                value={privacyType}
+                                                                label='Privacy'
+                                                                onChange={handleChange}
+                                                            >
+                                                                {privacies.map(privacy => (
+                                                                    <MenuItem value={privacy.id}>
+                                                                        {privacy.name}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </div>
+                                                    <div className='mb-5'>
+                                                        <Box
+                                                            component='div'
+                                                            sx={{
+                                                                p: 2,
+                                                                border: "1px solid grey",
+                                                                background: "#fff",
+                                                                borderRadius: "8px",
+                                                            }}
+                                                        >
+                                                            <div className='col-flex'>
+                                                                <div className='flex-space mb-4'>
+                                                                    <div className='room-info__info-title'>
+                                                                        Guest
+                                                                    </div>
+                                                                    <IncAndDecBtn
+                                                                        dataEdit='guestNumber'
+                                                                        dataTrigger='guestNumber'
+                                                                        info={info}
+                                                                    />
+                                                                </div>
+                                                                <div className='flex-space mb-4'>
+                                                                    <div className='room-info__info-title'>
+                                                                        Bed
+                                                                    </div>
+                                                                    <IncAndDecBtn
+                                                                        dataEdit='bedNumber'
+                                                                        dataTrigger='bedNumber'
+                                                                        info={info}
+                                                                    />
+                                                                </div>
+                                                                <div className='flex-space mb-4'>
+                                                                    <div className='room-info__info-title'>
+                                                                        Bedroom
+                                                                    </div>
+                                                                    <IncAndDecBtn
+                                                                        dataEdit='bedRoomNumber'
+                                                                        dataTrigger='bedRoomNumber'
+                                                                        info={info}
+                                                                    />
+                                                                </div>
+                                                                <div className='flex-space mb-4'>
+                                                                    <div className='room-info__info-title'>
+                                                                        Bathroom
+                                                                    </div>
+                                                                    <IncAndDecBtn
+                                                                        dataEdit='bathRoomNumber'
+                                                                        dataTrigger='bathRoomNumber'
+                                                                        info={info}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </Box>
+                                                    </div>
+                                                    <div className='mb-5'>
+                                                        <FormControl fullWidth>
+                                                            <InputLabel>Amenities</InputLabel>
+                                                            <Select
+                                                                name='amenities'
+                                                                value={amenities}
+                                                                multiple
+                                                                onChange={handleChange}
+                                                                input={
+                                                                    <OutlinedInput label='Amenities' />
+                                                                }
+                                                            >
+                                                                {amenitiesLst.map(amenity => (
+                                                                    <MenuItem
+                                                                        value={amenity.id}
+                                                                        key={amenity.id}
+                                                                        style={getStyles(
+                                                                            amenity.name,
+                                                                            amenities,
+                                                                            theme
+                                                                        )}
+                                                                    >
+                                                                        {amenity.name}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </div>
+                                                </div>
                                             </Box>
                                         </div>
                                     </div>
@@ -267,48 +387,13 @@ const AddRoomPage = () => {
                                         />
                                     </Box>
                                 )}
+
                                 {activeStep === 2 && (
-                                    <Box
-                                        component='div'
-                                        sx={{
-                                            p: 2,
-                                            border: "1px dashed grey",
-                                            background: "#fff",
-                                            height: "600px",
-                                            borderRadius: "8px",
-                                        }}
-                                        className='w-full flex items-center justify-center'
-                                    >
-                                        <PropertyRoomInfoMainContent
-                                            values={values}
-                                            setValues={setValues}
-                                        />
-                                    </Box>
-                                )}
-                                {activeStep === 3 && (
-                                    <Box
-                                        component='div'
-                                        sx={{
-                                            p: 2,
-                                            border: "1px dashed grey",
-                                            background: "#fff",
-                                            height: "650px",
-                                            borderRadius: "8px",
-                                        }}
-                                        className='w-full'
-                                    >
-                                        <PropertyAmenitiesMainContent
-                                            values={values}
-                                            setValues={setValues}
-                                        />
-                                    </Box>
-                                )}
-                                {activeStep === 4 && (
                                     <div className='flex justify-center'>
                                         <AddRoomImages values={values} setValues={setValues} />
                                     </div>
                                 )}
-                                {activeStep === 5 && (
+                                {activeStep === 3 && (
                                     <Box
                                         component='div'
                                         sx={{
@@ -352,16 +437,12 @@ const AddRoomPage = () => {
                                         marginTop: "20px",
                                     }}
                                 >
-                                    <Button
-                                        color='inherit'
-                                        disabled={activeStep === 0}
+                                    <MyButton
+                                        type='back'
+                                        label='Back'
                                         onClick={handleBack}
-                                        sx={{ mr: 1 }}
-                                        variant='contained'
-                                    >
-                                        <ArrowBackIcon />
-                                        Back
-                                    </Button>
+                                        disabled={activeStep === 0}
+                                    />
                                     <Box sx={{ flex: "1 1 auto" }} />
 
                                     <MyButton

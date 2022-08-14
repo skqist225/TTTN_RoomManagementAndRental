@@ -2,10 +2,6 @@ import MaterialTable from "@material-table/core";
 import { tableIcons } from "../utils/tableIcon";
 import { callToast, getImage } from "../helpers";
 import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import TablePagination from "@material-ui/core/TablePagination";
 import { Link } from "react-router-dom";
 import "../css/page/rooms.css";
@@ -126,7 +122,9 @@ const UsersPage = () => {
                                 {totalElements}
                             </span>
                         </div>
-                        <MyButton label='User' type='add' />
+                        <Link to={`/add/user`}>
+                            <MyButton label='User' type='add' />
+                        </Link>
                     </div>
                 }
                 icons={tableIcons}

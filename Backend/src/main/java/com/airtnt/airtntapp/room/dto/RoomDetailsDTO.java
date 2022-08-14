@@ -7,9 +7,7 @@ import java.util.Set;
 import com.airtnt.airtntapp.amenity.dto.AmenityRoomDetailsDTO;
 import com.airtnt.airtntapp.booking.BookedDateDTO;
 import com.airtnt.airtntapp.review.dto.ReviewDTO;
-import com.airtnt.entity.Address;
-import com.airtnt.entity.Room;
-import com.airtnt.entity.Rule;
+import com.airtnt.entity.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -65,8 +63,10 @@ public class RoomDetailsDTO {
                         List<BookedDateDTO> bookedDates,
                         float avgRatings) {
                 Address address = room.getAddress();
-                String location = address.getCountry().getName();
-                location += " " + address.getState().getName();
+                City city =address.getCity();
+                State state = ((City) city).getState();
+                String location = state.getCountry().getName();
+                location += " " + city.getState().getName();
                 location += " " + address.getCity().getName();
                 location += " " + address.getStreet();
                 

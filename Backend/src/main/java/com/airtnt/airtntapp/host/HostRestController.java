@@ -72,7 +72,7 @@ public class HostRestController {
 			}
 		}
 		// do not assign new set // get new set and push it to old set
-		Room room = roomService.getRoomById(Integer.parseInt(payload.getRoomId()));
+		Room room = roomService.findById(Integer.parseInt(payload.getRoomId()));
 		room.getImages().clear();
 		for (Image i : newImages) {
 			room.getImages().add(i);

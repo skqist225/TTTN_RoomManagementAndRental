@@ -26,9 +26,9 @@ const ClientReview = ({ room }) => {
                             marginLeft: "12px",
                         }}
                     >
-                        {room!.reviews.length > 0 && <span>{room!.averageRating}</span>}
+                        {room.reviews.length > 0 && <span>{room.averageRating}</span>}
                         <span> · </span>
-                        <span>{room!.reviews.length || 0} đánh giá</span>
+                        <span>{room.reviews.length || 0} đánh giá</span>
                     </span>
                 </div>
                 <div className='normal-flex' style={{ marginBottom: "42px" }}>
@@ -44,12 +44,12 @@ const ClientReview = ({ room }) => {
                     </div>
                 </div>
                 <div id='ratingDetailsContainer'>
-                    {room!.reviews.map(review => (
+                    {room.reviews.map(review => (
                         <div className='rdt__review-box' key={review.createdAt}>
                             {Object.keys(review.rating).map(k => {
                                 return (
                                     <ReviewValue
-                                        value={(review.rating as any)[k]}
+                                        value={review.rating[k]}
                                         className={`${k}-rating`}
                                         key={k}
                                     />

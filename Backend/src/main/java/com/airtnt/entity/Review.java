@@ -22,14 +22,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = { "booking" })
+@ToString(exclude = { "bookingDetail" })
 @Entity
 @Table(name = "reviews")
 public class Review extends BaseEntity {
 	@JsonIgnore
 	@OneToOne
-	@JoinColumn(name = "booking_id", unique = true, referencedColumnName = "id")
-	private Booking booking;
+	@JoinColumn(name = "bookingdetail_id", unique = true, referencedColumnName = "id")
+	private BookingDetail bookingDetail;
 
 	@Column(nullable = false, length = 1024)
 	private String comment;

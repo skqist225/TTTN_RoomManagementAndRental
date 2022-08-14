@@ -118,7 +118,7 @@ public class Room extends BaseEntity implements Comparable<Room> {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
-	private List<Booking> bookings = new ArrayList<>();
+	private List<BookingDetail> bookingDetails = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "rooms_rules", joinColumns = @JoinColumn(name = "room_id"), inverseJoinColumns = @JoinColumn(name = "rule_id"))
@@ -165,8 +165,8 @@ public class Room extends BaseEntity implements Comparable<Room> {
 
 	@Transient
 	public Float getAverageRatings() {
-		if (this.bookings.size() > 0) {
-			float totalAverage = this.bookings.stream().reduce(0f,
+		if (this.bookingDetails.size() > 0) {
+			float totalAverage = this.bookingDetails.stream().reduce(0f,
 					(subtotal, booking) -> {
 						if (booking.getReview() != null) {
 							return subtotal + booking.getAverageRating();
@@ -184,8 +184,8 @@ public class Room extends BaseEntity implements Comparable<Room> {
 
 	@Transient
 	public Integer getNumberOfReviews() {
-		if (this.bookings.size() > 0) {
-			return this.bookings.stream().reduce(0, (subtotal, booking) -> {
+		if (this.bookingDetails.size() > 0) {
+			return this.bookingDetails.stream().reduce(0, (subtotal, booking) -> {
 				if (booking.getReview() != null) {
 					return subtotal + 1;
 				}
@@ -199,9 +199,9 @@ public class Room extends BaseEntity implements Comparable<Room> {
 
 	@Override
 	public int compareTo(Room o) {
-		if (this.getBookings().size() > o.getBookings().size()) {
+		if (this.getBookingDetails().size() > o.getBookingDetails().size()) {
 			return 1;
-		} else if (this.getBookings().size() == o.getBookings().size())
+		} else if (this.getBookingDetails().size() == o.getBookingDetails().size())
 			return 0;
 		else {
 			return -1;

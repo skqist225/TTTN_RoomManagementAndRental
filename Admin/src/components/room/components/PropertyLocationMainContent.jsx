@@ -6,19 +6,19 @@ import { Div } from "../../../globalStyle";
 import mapboxgl from "mapbox-gl";
 import axios from "axios";
 import { userState } from "../../../features/user/userSlice";
-import {
-    Button,
-    Divider,
-    FormControl,
-    FormLabel,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
-} from "@mui/material";
 import $ from "jquery";
 import { getImage } from "../../../helpers";
 import { useForm } from "react-hook-form";
+import {
+    Divider,
+    FormControl,
+    FormLabel,
+    TextField,
+    Button,
+    Select,
+    MenuItem,
+    InputLabel,
+} from "@material-ui/core";
 
 const accessToken =
     "pk.eyJ1IjoibG9yZGVkc3dpZnQyMjUiLCJhIjoiY2t3MDJvZ2E5MDB0dDJxbndxbjZxM20wOCJ9.hYxzgffyfc93Aiogipp5bA";
