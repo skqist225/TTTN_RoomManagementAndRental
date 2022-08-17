@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.airtnt.airtntapp.category.dto.CategoryDTO;
+import com.airtnt.airtntapp.exception.ConstrainstViolationException;
 import com.airtnt.entity.Category;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CategoryService {
+    private final String DELETE_SUCCESSFULLY="Delete Category Successfully";
+    private final String DELETE_FORBIDDEN="Could not delete this category as it's being used by rooms";
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -53,8 +56,13 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public void deleteById(Integer id) {
-        categoryRepository.deleteById(id);
+    public String deleteById(Integer id) throws ConstrainstViolationException {
+        try {
+            categoryRepository.deleteById(id);
+            return DELETE_SUCCESSFULLY;
+        }catch(Exception ex) {
+            throw new ConstrainstViolationException(DELETE_FORBIDDEN);
+        }
     }
 
 }

@@ -22,6 +22,10 @@ public class StateService {
         return stateRepository.save(s);
     }
 
+    public State save(State state) {
+        return stateRepository.save(state);
+    }
+
     public List<State> listAll() {
         return (List<State>) stateRepository.findAll();
     }

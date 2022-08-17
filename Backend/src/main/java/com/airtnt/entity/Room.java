@@ -143,6 +143,7 @@ public class Room extends BaseEntity implements Comparable<Room> {
 				.price(payload.getPrice()).rules(rules).host(new User(payload.getHost()))
 				.host(new User(payload.getHost())).category(new Category(payload.getCategory()))
 				.currency(new Currency(payload.getCurrency())).privacyType(new RoomPrivacy(payload.getPrivacyType()))
+				.address(address)
 				.thumbnail(images.iterator().next().getImage()).status(status).build();
 	}
 

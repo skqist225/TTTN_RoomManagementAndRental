@@ -86,6 +86,9 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
         @Query("SELECT r FROM Room r WHERE r.name LIKE %?1%")
         public Page<Room> findAll(String keyword, Pageable pageable);
 
+        @Query("SELECT r FROM Room r ORDER BY r.createdDate DESC")
+        public Page<Room> findAllOrderByCreatedDate(Pageable pageable);
+
         public Room findByName(String name);
 
         public Long countById(Integer id);

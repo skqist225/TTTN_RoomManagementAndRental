@@ -163,9 +163,9 @@ public class User extends BaseEntity {
 
 	@Transient
 	public String getFullPathAddress() {
-		City city = this.address.getCity();
-		State state= city.getState();
 		if (this.address != null) {
+			City city = this.address.getCity();
+			State state= city.getState();
 			return String.format("%s, %s, %s, %s", this.address.getStreet(), city.getName(),
 					state.getName(), state.getCountry().getName());
 		}
@@ -201,7 +201,12 @@ public class User extends BaseEntity {
 		ArrayNode roomArray = mapper.createArrayNode();
 
 		if (this.ownedRooms.size() > 0) {
-			for (int i = 0; i < 2; i++) {
+			int loopNumber = 2;
+			if(ownedRooms.size() == 1) {
+				loopNumber = 1;
+			}
+
+			for (int i = 0; i < loopNumber; i++) {
 				ObjectNode roomNode = mapper.createObjectNode();
 				ArrayNode imagesNode = mapper.createArrayNode();
 				Room room = this.getOwnedRooms().get(i);

@@ -10,10 +10,9 @@ import "./css/room_images_main_content.css";
 import $ from "jquery";
 
 let photos = [];
-let fileReaderResult = new Map();
 let isUploaded = false;
 
-const AddRoomImages = () => {
+const AddRoomImages = ({ setIsPhotosChanged }) => {
     const { user } = useSelector(userState);
     const [loading, setLoading] = useState(true);
 
@@ -33,13 +32,16 @@ const AddRoomImages = () => {
 
     async function restoreRoomImages(uploadPhotos) {
         if (localStorage.getItem("room")) {
-            const { roomImages, username } = JSON.parse(localStorage.getItem("room"));
+            const { roomImages, username, folderno } = JSON.parse(localStorage.getItem("room"));
             if (roomImages && roomImages.length >= 5) {
                 isUploaded = true;
             }
 
             const formData = new FormData();
             formData.set("username", username);
+            if (folderno) {
+                formData.set("folderno", folderno);
+            }
             roomImages.forEach(image => formData.append("roomImages", image));
 
             const data = await axios.post(`/become-a-host/get-upload-photos`, formData, {
@@ -74,21 +76,18 @@ const AddRoomImages = () => {
             </button>
             <div class="photo-action__div-hidden">
                 <ul data-index="${modifier}">
-                    <li class="makeMainImage">Chọn làm ảnh chính</li>
-                    <li class="deleteImage">Xóa ảnh</li>
+                    <li class="makeMainImage">Make thumbnail</li>
+                    <li class="deleteImage">Delete</li>
                 </ul>
             </div>
         </div>
     `);
 
-        // <li class="moveImageBackward">Di chuyển về phía sau</li>
-        // <li class="moveImageForward">Di chuyển về phía trước</li>
-
         fileReader.onload = function (e) {
             if (!thumbnail) {
                 const div = $(`
                 <div class="photo-cover">
-                    <img class="photo" src="${e.target.result}" data-index="${modifier}"/>
+                    <img class="photo" src="${e.target.result}" data-index="${modifier}" data-name="${file.name}"/>
                 </div>
                 `);
 
@@ -96,13 +95,11 @@ const AddRoomImages = () => {
                 parent.append(div);
             } else {
                 const image = $(
-                    `<img class="photo" src="${e.target.result}" data-index="${modifier}"/>`
+                    `<img class="photo" src="${e.target.result}" data-index="${modifier}" data-name="${file.name}"/>`
                 );
                 parent.append(image);
                 parent.append(photoAction);
             }
-
-            fileReaderResult.set(modifier, e.target.result);
         };
 
         fileReader.onloadend = function () {
@@ -111,22 +108,6 @@ const AddRoomImages = () => {
                     .off("click")
                     .on("click", function () {
                         displayAction($(this));
-                    });
-            });
-
-            $(".moveImageBackward").each(function () {
-                $(this)
-                    .off("click")
-                    .on("click", function () {
-                        moveImageBackward(parseInt($(this).parent("ul").data("index")));
-                    });
-            });
-
-            $(".moveImageForward").each(function () {
-                $(this)
-                    .off("click")
-                    .on("click", function () {
-                        moveImageForward(parseInt($(this).parent("ul").data("index")));
                     });
             });
 
@@ -253,40 +234,66 @@ const AddRoomImages = () => {
         else sibling.addClass("active");
     }
 
-    function swapPosition(firstEl, secondEl) {
-        const temp = photos[firstEl];
-        photos[firstEl] = photos[secondEl];
-        photos[secondEl] = temp;
+    function changePreviewImage(swapIndex) {
+        let firstSrc = "",
+            firstImageName = "";
+        let secondSrc = "",
+            secondImageName = "";
+
+        $("img.photo").each(function (index) {
+            if (index === 0) {
+                firstSrc = $(this).attr("src");
+                firstImageName = $(this).data("name");
+            }
+
+            if (index === swapIndex) {
+                secondSrc = $(this).attr("src");
+                secondImageName = $(this).data("name");
+            }
+        });
+
+        $("img.photo").each(function (index) {
+            if (index === 0) {
+                $(this).attr("src", secondSrc);
+                $(this).data("name", secondImageName);
+            }
+
+            if (index === swapIndex) {
+                $(this).attr("src", firstSrc);
+                $(this).data("name", firstImageName);
+            }
+        });
     }
 
-    function changePreviewImage(firstEl, secondEl) {
-        const fr1 = fileReaderResult.get(firstEl);
-        const fr2 = fileReaderResult.get(secondEl);
+    function changePreviewImage2(firstImageIndex, secondImageIndex) {
+        let firstSrc = "",
+            firstImageName = "";
+        let secondSrc = "",
+            secondImageName = "";
 
-        if (firstEl === 0) {
-            console.log("first ele = ", firstEl);
-            $("#thumbnailPhotos").children("img").attr("src", fr2);
-        } else {
-            console.log("first ele = ", firstEl);
-            $("#subImages")
-                .children(".photo-cover")
-                .children(`img[data-index="${firstEl}"]`)
-                .attr("src", fr2);
-        }
+        $("img.photo").each(function (index) {
+            if (index === firstImageIndex) {
+                firstSrc = $(this).attr("src");
+                firstImageName = $(this).data("name");
+            }
 
-        if (secondEl === 0) {
-            console.log("second ele = ", secondEl);
-            $("#thumbnailPhotos").children("img").attr("src", fr1);
-        } else {
-            console.log("second ele = ", secondEl);
-            $("#subImages")
-                .children(".photo-cover")
-                .children(`img[data-index="${secondEl}"]`)
-                .attr("src", fr1);
-        }
+            if (index === secondImageIndex) {
+                secondSrc = $(this).attr("src");
+                secondImageName = $(this).data("name");
+            }
+        });
 
-        fileReaderResult.set(firstEl, fr2);
-        fileReaderResult.set(secondEl, fr1);
+        $("img.photo").each(function (index) {
+            if (index === firstImageIndex) {
+                $(this).attr("src", secondSrc);
+                $(this).data("name", secondImageName);
+            }
+
+            if (index === secondImageIndex) {
+                $(this).attr("src", firstSrc);
+                $(this).data("name", firstImageName);
+            }
+        });
     }
 
     function closeAction(index) {
@@ -296,31 +303,16 @@ const AddRoomImages = () => {
         if (sibling.hasClass("active")) sibling.removeClass("active");
     }
 
+    function swapPosition(firstEl, secondEl) {
+        const temp = photos[firstEl];
+        photos[firstEl] = photos[secondEl];
+        photos[secondEl] = temp;
+    }
+
     function makeMainImage(index) {
-        console.log(index);
         swapPosition(0, index);
-        changePreviewImage(0, index);
+        changePreviewImage(index);
         closeAction(index);
-    }
-
-    function moveImageBackward(index) {
-        if (index === 1) {
-            makeMainImage(index);
-        } else {
-            swapPosition(index, index - 1);
-            changePreviewImage(index, index - 1);
-            closeAction(index);
-        }
-    }
-
-    function moveImageForward(index) {
-        if (index === 0) {
-            makeMainImage(index + 1);
-        } else {
-            swapPosition(index, index + 1);
-            changePreviewImage(index, index + 1);
-            closeAction(index);
-        }
     }
 
     function deleteImage(index) {
@@ -333,25 +325,30 @@ const AddRoomImages = () => {
             $("#subImages").empty();
         }
 
-        for (let i = index + 1; i < photos.length; i++) {
-            //shift left all remain image
-            moveImageBackward(i);
-        }
-
-        console.log(photos[photos.length - 1]);
         if (localStorage.getItem("room")) {
             const room = JSON.parse(localStorage.getItem("room"));
             if (room.roomImages && room.roomImages.length) {
-                delete room.roomImages[index];
-                room.roomImages.length--;
+                $("img.photo").each(function (idx) {
+                    if (idx === index) {
+                        room.roomImages = room.roomImages.filter(
+                            image => image !== $(this).data("name")
+                        );
+                    }
+                });
             }
 
             localStorage.setItem("room", JSON.stringify(room));
         }
 
-        //delete image from photos
-        delete photos[photos.length - 1];
-        photos.length--;
+        for (let i = index; i < photos.length; i++) {
+            changePreviewImage2(i, i + 1);
+        }
+
+        $("img.photo").each(function (idx) {
+            if (idx === index) {
+                photos = photos.filter(image => image.name !== $(this).data("name"));
+            }
+        });
 
         if (photos.length < 5) {
             isUploaded = false;
@@ -374,7 +371,7 @@ const AddRoomImages = () => {
 
     async function uploadImagesToFolder() {
         if (photos.length < 5) {
-            callToast("warning", "Vui lòng chọn ít nhất 5 hình ảnh.");
+            callToast("warning", "Please choose at least 5 images");
             return;
         }
 
@@ -389,7 +386,7 @@ const AddRoomImages = () => {
         });
         if (data.status === "success") {
             isUploaded = true;
-            callToast("success", "Tải ảnh lên thành công");
+            callToast("success", "Upload successfully");
             const username2 = data.username;
             let room = {};
             if (!localStorage.getItem("room")) {
@@ -406,6 +403,7 @@ const AddRoomImages = () => {
                 };
             }
             localStorage.setItem("room", JSON.stringify(room));
+            setIsPhotosChanged(true);
         }
     }
 
@@ -428,7 +426,7 @@ const AddRoomImages = () => {
 
     useEffect(() => {
         if (!loading) {
-            $(".photo").each(function (index) {
+            $("img.photo").each(function (index) {
                 $(this).attr("data-index", index);
                 $(this)
                     .siblings("div.photoAction")
@@ -439,6 +437,17 @@ const AddRoomImages = () => {
                     .children("div.photo-action__div-hidden")
                     .children("ul")
                     .attr("data-index", index);
+            });
+
+            $("img.photo").each(function (index) {
+                if (photos[index].name !== $(this).data("name")) {
+                    const swapedIndex = photos.findIndex(
+                        photo => photo.name === $(this).data("name")
+                    );
+                    let temp = photos[index];
+                    photos[index] = photos[swapedIndex];
+                    photos[swapedIndex] = temp;
+                }
             });
         }
     }, [loading]);

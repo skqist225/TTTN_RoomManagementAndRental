@@ -12,8 +12,13 @@ import java.util.Set;
 
 import com.airtnt.airtntapp.FileUploadUtil;
 import com.airtnt.airtntapp.common.GetResource;
+import com.airtnt.airtntapp.exception.ConstrainstViolationException;
+import com.airtnt.airtntapp.response.StandardJSONResponse;
+import com.airtnt.airtntapp.response.error.BadResponse;
+import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.entity.Category;
 
+import com.airtnt.entity.Rule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +33,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class CategoryAdminRestController {
     @Autowired
     CategoryService service;
-    
+
     @Autowired
     Environment env;
 
@@ -42,13 +47,13 @@ public class CategoryAdminRestController {
     }
 
     @GetMapping("/categories/{id}")
-    public Category findById(
+    public ResponseEntity<StandardJSONResponse<Category>> findById(
             @PathVariable("id") Integer id) {
-        return service.findById(id);
+        return new OkResponse<Category>(service.findById(id)).response();
     }
 
     @PostMapping("/categories/save")
-    public ResponseEntity<Object> saveCategory(
+    public ResponseEntity<StandardJSONResponse<Category>> saveCategory(
             @RequestParam(name = "id", required = false) Integer id,
             @RequestParam("name") String name,
             @RequestParam(name = "fileImage", required = false) MultipartFile multipartFile,
@@ -66,39 +71,43 @@ public class CategoryAdminRestController {
             Category savedCategory = service.save(category);
 
             String uploadDir = "src/main/resources/static/category_images/";
-            
-            String environment = env.getProperty("env");
-			System.out.println(environment);
-			if (environment.equals("development")) {
-				uploadDir = "src/main/resources/static/category_images/";
-			} else {
-				String filePath = "/opt/tomcat/webapps/ROOT/WEB-INF/classes/static/category_images/";
-				Path uploadPath = Paths.get(filePath);
-				if (!Files.exists(uploadPath)) {
-					Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxr--r--");
-					FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions
-							.asFileAttribute(permissions);
 
-					Files.createDirectories(uploadPath, fileAttributes);
-				}
-				uploadDir = GetResource.getResourceAsFile("static/category_images/");
-				System.out.println(uploadDir);
-			}
+            String environment = env.getProperty("env");
+            System.out.println(environment);
+            if (environment.equals("development")) {
+                uploadDir = "src/main/resources/static/category_images/";
+            } else {
+                String filePath = "/opt/tomcat/webapps/ROOT/WEB-INF/classes/static/category_images/";
+                Path uploadPath = Paths.get(filePath);
+                if (!Files.exists(uploadPath)) {
+                    Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxr--r--");
+                    FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions
+                            .asFileAttribute(permissions);
+
+                    Files.createDirectories(uploadPath, fileAttributes);
+                }
+                uploadDir = GetResource.getResourceAsFile("static/category_images/");
+                System.out.println(uploadDir);
+            }
 
             FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
-            return ResponseEntity.ok().body(String.valueOf(savedCategory.getId()));
+            return new OkResponse<Category>(savedCategory).response();
         } else {
-        	if (id == null) {
-        		return ResponseEntity.badRequest().body("please choose image");        		
-        	}
+            if (id == null) {
+                return new BadResponse<Category>("Image is required").response();
+            }
             Category savedCategory = service.save(category);
-            return ResponseEntity.ok().body(String.valueOf(savedCategory.getId()));
+            return new OkResponse<Category>(savedCategory).response();
         }
     }
 
-    @DeleteMapping("/categories/delete/{id}")
-    public void delete(@PathVariable("id") Integer id) {
-        service.deleteById(id);
+    @DeleteMapping("/categories/{id}/delete")
+    public ResponseEntity<StandardJSONResponse<String>> delete(@PathVariable("id") Integer id) {
+        try {
+            return new OkResponse<String>(service.deleteById(id)).response();
+        } catch (ConstrainstViolationException ex) {
+            return new BadResponse<String>(ex.getMessage()).response();
+        }
     }
 }

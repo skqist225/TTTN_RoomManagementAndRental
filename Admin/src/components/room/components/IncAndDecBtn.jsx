@@ -3,7 +3,6 @@ import $ from "jquery";
 
 const IncAndDecBtn = ({ dataEdit, dataTrigger, info, data = 0 }) => {
     useEffect(() => {
-        console.log(info);
         if (info) {
             // console.log()
             switch (dataEdit) {

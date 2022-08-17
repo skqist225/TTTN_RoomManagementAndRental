@@ -30,6 +30,10 @@ public class CityService {
         return savedState;
     }
 
+    public City save(City city) {
+        return cityRepository.save(city);
+    }
+
     public List<City> listAll() {
         return (List<City>) cityRepository.findAll();
     }

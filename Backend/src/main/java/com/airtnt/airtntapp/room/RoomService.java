@@ -55,7 +55,7 @@ import com.airtnt.entity.User;
 public class RoomService {
 	public static final int MAX_ROOM_PER_FETCH = 40;
 	public static final int MAX_ROOM_PER_FETCH_BY_HOST = 100;
-	public static final int ROOMS_PER_PAGE = 10;
+	public static final int ROOMS_PER_PAGE = 15;
 
 	@Autowired
 	private RoomRepository roomRepository;
@@ -414,17 +414,13 @@ public class RoomService {
 	}
 
 	public Page<Room> getAllRooms(int pageNum, String keyword) {
-		// Sort sort = Sort.by(sortField);
-
-		// sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
-
 		Pageable pageable = PageRequest.of(pageNum - 1, ROOMS_PER_PAGE);
 
 		if (keyword != null) {
 			return roomRepository.findAll(keyword, pageable);
 		}
 
-		return roomRepository.findAll(pageable);
+		return roomRepository.findAllOrderByCreatedDate(pageable);
 	}
 
 	public boolean isNameUnique(Integer id, String name) {

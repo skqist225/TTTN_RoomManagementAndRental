@@ -32,4 +32,9 @@ public class RoomPrivacy {
     public RoomPrivacy(int id) {
         this.id = id;
     }
+
+    public RoomPrivacy(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

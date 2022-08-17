@@ -69,11 +69,11 @@ function Dashboard() {
                 break;
             }
             case "/rules": {
-                dispatch(fetchRules());
+                dispatch(fetchRules(1));
                 break;
             }
             case "/privacies": {
-                dispatch(fetchPrivacies());
+                dispatch(fetchPrivacies(1));
                 break;
             }
             case "/users": {

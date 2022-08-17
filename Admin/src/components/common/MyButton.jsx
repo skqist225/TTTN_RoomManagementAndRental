@@ -8,7 +8,7 @@ import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function MyButton(props) {
-    let { type, label } = props;
+    let { type, label, disabled } = props;
     let buttonClassName = "",
         buttonDisableClassName = "";
     switch (type) {
@@ -17,11 +17,15 @@ function MyButton(props) {
             buttonClassName = "bg-indigo-500 hover:bg-indigo-600";
             break;
         }
+        case "update": {
+            label = `Update ${label}`;
+            buttonClassName = "bg-indigo-500 hover:bg-indigo-600";
+            break;
+        }
         case "delete": {
             // label = `Delete ${label}`;
             buttonClassName = "bg-rose-500 hover:bg-rose-500";
             buttonDisableClassName = "bg-rose-200 hover:bg-rose-200";
-            console.log(props.disabled);
             break;
         }
         case "deny": {
@@ -32,6 +36,10 @@ function MyButton(props) {
         case "edit": {
             // label = `Add ${label}`;
             buttonClassName = "bg-blue-500 hover:bg-blue-500";
+            break;
+        }
+        case "cancel": {
+            buttonClassName = "bg-teal-500";
             break;
         }
         case "view": {
@@ -50,11 +58,13 @@ function MyButton(props) {
         case "next": {
             // label = `Add ${label}`;
             buttonClassName = "bg-blue-500 hover:bg-blue-500";
+            buttonDisableClassName = "bg-blue-200 hover:bg-blue-200";
             break;
         }
         case "back": {
             buttonClassName = "bg-blue-500 hover:bg-blue-500";
             buttonDisableClassName = "bg-blue-200 hover:bg-blue-200";
+            break;
         }
     }
 
@@ -74,6 +84,7 @@ function MyButton(props) {
             {type === "edit" && <EditIcon />}
             {type === "view" && <VisibilityIcon />}
             {type === "add" && <span className='hidden xs:block ml-2'>{label}</span>}
+            {type === "update" && <span className='hidden xs:block ml-2'>{label}</span>}
             {type === "next" && (
                 <>
                     {label}
@@ -88,6 +99,7 @@ function MyButton(props) {
             )}
             {type === "approve" && <CheckIcon />}
             {type === "deny" && <DoDisturbIcon />}
+            {type === "cancel" && <>Cancel</>}
         </button>
     );
 }

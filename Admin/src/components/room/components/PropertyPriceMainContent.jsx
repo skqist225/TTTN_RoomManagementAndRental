@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import $ from "jquery";
 import { getImage } from "../../../helpers";
 import { Image } from "../../../globalStyle";
 import "../css/price_main_content.css";
 import { currencyState, fetchCurrencies } from "../../../features/currency/currencySlice";
-import { FormControl, InputLabel, MenuItem, Select, Typography } from "@material-ui/core";
+import {
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+    Typography,
+} from "@material-ui/core";
 
-const PropertyPriceMainContent = ({ values, setValues }) => {
-    const [currencySymbol, setCurrencySymbol] = useState("đ");
-
+const PropertyPriceMainContent = ({ currency, setCurrency, currencySymbol, setCurrencySymbol }) => {
     const dispatch = useDispatch();
     const {
         listing: { currencies },
     } = useSelector(currencyState);
-
-    useEffect(() => {
-        if (values.price && values.currency) {
-            const input = $("#room-price");
-
-            input.val(`${values.currency}${values.price}`);
-            setCurrencySymbol(values.currency);
-        }
-    }, [values]);
 
     function decreasePrice() {
         const input = $("#room-price");
@@ -44,11 +40,6 @@ const PropertyPriceMainContent = ({ values, setValues }) => {
         const step = prevStep + 129000;
 
         input.val("₫" + step);
-
-        setValues({
-            ...values,
-            price: prevStep + 129000,
-        });
     }
 
     useEffect(() => {
@@ -62,7 +53,16 @@ const PropertyPriceMainContent = ({ values, setValues }) => {
                     Price
                 </Typography>
             </div>
-            <div className='flex items-center'>
+            <FormControl fullWidth>
+                <TextField
+                    label='Price'
+                    value={price}
+                    onChange={e => {
+                        setName(e.target.value);
+                    }}
+                />
+            </FormControl>
+            {/* <div className='flex items-center'>
                 <div>
                     <button className='room-price__btn' onClick={decreasePrice}>
                         <span>
@@ -87,7 +87,7 @@ const PropertyPriceMainContent = ({ values, setValues }) => {
                         </span>
                     </button>
                 </div>
-            </div>
+            </div> */}
             <div style={{ textAlign: "center" }} className='per-night mb-5'>
                 per night
             </div>
@@ -96,21 +96,23 @@ const PropertyPriceMainContent = ({ values, setValues }) => {
                 <InputLabel>Currencies</InputLabel>
                 <Select
                     id='demo-simple-select'
-                    value={values.currency}
+                    value={currency}
                     label='Currencies'
                     onChange={e => {
-                        $("#room-price").attr(
-                            "placeholder",
-                            `${e.target.value === 1 ? "đ00" : "$00"}`
-                        );
-                        setValues({
-                            ...values,
-                            currency: e.target.value,
-                        });
+                        console.log($("#room-price").attr("placeholder"));
+                        if (["₫00", "$00"].includes($("#room-price").attr("placeholder"))) {
+                            $("#room-price").attr(
+                                "placeholder",
+                                `${e.target.value === 1 ? "₫00" : "$00"}`
+                            );
+                        }
+                        setCurrency(e.target.value);
+                        console.log(e.target);
+                        setCurrencySymbol(e.target.value);
                     }}
                 >
                     {currencies.map(currency => (
-                        <MenuItem value={currency.id}>
+                        <MenuItem value={currency.id} id={currency.unit}>
                             {currency.symbol} ({currency.unit})
                         </MenuItem>
                     ))}

@@ -27,7 +27,7 @@ export default function callToast(status, message) {
             break;
         }
         case "success": {
-            toast.success("🦄" + message, {
+            toast.success(message, {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,

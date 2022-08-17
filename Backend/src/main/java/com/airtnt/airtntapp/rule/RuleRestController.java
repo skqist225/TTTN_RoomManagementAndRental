@@ -12,8 +12,11 @@ import java.util.Set;
 
 import com.airtnt.airtntapp.FileUploadUtil;
 import com.airtnt.airtntapp.common.GetResource;
+import com.airtnt.airtntapp.exception.ConstrainstViolationException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
+import com.airtnt.airtntapp.response.error.BadResponse;
 import com.airtnt.airtntapp.response.success.OkResponse;
+import com.airtnt.entity.RoomPrivacy;
 import com.airtnt.entity.Rule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,20 +48,20 @@ public class RuleRestController {
     }
 
     @GetMapping("/rules/{id}")
-    public Rule findById(@PathVariable("id") Integer id) {
-        return ruleService.getById(id);
+    public ResponseEntity<StandardJSONResponse<Rule>> findById(@PathVariable("id") Integer id) {
+        return new OkResponse<Rule>(ruleService.getById(id)).response();
     }
 
     @PostMapping("/rules/save")
-    public ResponseEntity<Object> saveRule(@RequestParam(name = "id", required = false) Integer id,
+    public ResponseEntity<StandardJSONResponse<Rule>> saveRule(@RequestParam(name = "id", required = false) Integer id,
             @RequestParam("name") String name,
             @RequestParam(name = "ruleImage", required = false) MultipartFile multipartFile,
-            @RequestParam("status") Boolean status) throws IOException {
+            @RequestParam(name = "status",required = false, defaultValue = "true") Boolean status) throws IOException {
         if (ruleService.checkName(id, name).equals("Duplicated")) {
-            return ResponseEntity.badRequest().body("Ten da ton tai");
+            return new BadResponse<Rule>("Name is being used by other rule").response();
         }
         if (name.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Please enter name");
+            return new BadResponse<Rule>("Name is required").response();
         }
         Rule rule;
         if (id != null)
@@ -93,19 +96,23 @@ public class RuleRestController {
 
             FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
-            return ResponseEntity.ok().body(String.valueOf(savedRule.getId()));
+            return new OkResponse<Rule>(savedRule).response();
         } else {
             if (id == null) {
-                return ResponseEntity.badRequest().body("please choose image");
+                return new BadResponse<Rule>("Image is required").response();
             }
             Rule savedRule = ruleService.save(rule);
-            return ResponseEntity.ok().body(String.valueOf(savedRule.getId()));
+            return new OkResponse<Rule>(savedRule).response();
         }
     }
 
-    @DeleteMapping("/rules/delete/{id}")
-    public void delete(@PathVariable("id") Integer id) {
-        ruleService.deleteById(id);
+    @DeleteMapping("/rules/{id}/delete")
+    public ResponseEntity<StandardJSONResponse<String>> delete(@PathVariable("id") Integer id) {
+        try {
+            return new OkResponse<String>(ruleService.deleteById(id)).response();
+        }catch (ConstrainstViolationException ex) {
+            return new BadResponse<String>(ex.getMessage()).response();
+        }
     }
 
     @PostMapping("/rules/check_name")

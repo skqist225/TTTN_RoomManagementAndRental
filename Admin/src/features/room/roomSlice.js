@@ -3,16 +3,14 @@ import api from "../../axios";
 
 export const fetchRooms = createAsyncThunk(
     "room/fetchRooms",
-    async (page,
-        { dispatch, getState, rejectWithValue }
-    ) => {
+    async (page, { dispatch, getState, rejectWithValue }) => {
         try {
-            const { data: { rooms, totalRecords, totalPages } } = await api.get(
-                `/admin/rooms?page=${page}`
-            );
+            const {
+                data: { rooms, totalRecords, totalPages },
+            } = await api.get(`/admin/rooms?page=${page}`);
 
             return { rooms, totalRecords, totalPages };
-        } catch (error) { }
+        } catch (error) {}
     }
 );
 
@@ -23,7 +21,33 @@ export const fetchRoomById = createAsyncThunk(
             const { data } = await api.get(`/room/${roomid}`);
 
             return { data };
-        } catch (error) { }
+        } catch (error) {}
+    }
+);
+
+export const addRoom = createAsyncThunk(
+    "room/addRoom",
+    async (formData, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const data = await api.post(`/admin/room/save`, formData);
+
+            if (data) localStorage.removeItem("room");
+
+            return { data };
+        } catch (error) {}
+    }
+);
+
+export const updateRoom = createAsyncThunk(
+    "room/updateRoom",
+    async ({ formData, roomId }, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const data = await api.post(`/admin/room/${roomId}/save`, formData);
+
+            if (data) localStorage.removeItem("room");
+
+            return { data };
+        } catch (error) {}
     }
 );
 
@@ -56,6 +80,11 @@ const initialState = {
     newlyCreatedRoomId: 0,
     updateSuccess: false,
     photos: [],
+    addRoomAction: {
+        loading: false,
+        successMessage: null,
+        errorMessage: null,
+    },
 };
 
 const roomSlice = createSlice({
@@ -123,6 +152,17 @@ const roomSlice = createSlice({
                 state.loading = false;
                 state.room = payload?.data;
             })
+            .addCase(addRoom.pending, (state, { payload }) => {
+                state.addRoomAction.loading = true;
+                state.addRoomAction.successMessage = null;
+                state.addRoomAction.errorMessage = null;
+            })
+            .addCase(addRoom.fulfilled, (state, { payload }) => {
+                state.addRoomAction.loading = false;
+                if (payload.data) {
+                    state.addRoomAction.successMessage = "Add Room Successfully";
+                }
+            });
     },
 });
 export const {
@@ -142,5 +182,5 @@ export const {
     },
 } = roomSlice;
 
-export const roomState = (state) => state.room;
+export const roomState = state => state.room;
 export default roomSlice.reducer;

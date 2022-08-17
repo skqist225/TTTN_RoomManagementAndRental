@@ -26,15 +26,7 @@ const PropertyTitleMainContent = ({ values, setValues }) => {
                 <Typography component='h1' variant='h4'>
                     Name
                 </Typography>
-                <FormControl fullWidth>
-                    <TextField
-                        name='name'
-                        onKeyDown={onKeyDown}
-                        id='roomName'
-                        value={values.name}
-                        onChange={handleChange}
-                    />
-                </FormControl>
+
                 <div id='numberOfTextPerMaxLength'>
                     <span id='currentLength'>0</span>/50
                 </div>

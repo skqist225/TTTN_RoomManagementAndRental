@@ -23,12 +23,29 @@ import {
 const accessToken =
     "pk.eyJ1IjoibG9yZGVkc3dpZnQyMjUiLCJhIjoiY2t3MDJvZ2E5MDB0dDJxbndxbjZxM20wOCJ9.hYxzgffyfc93Aiogipp5bA";
 
-const PropertyLocationMainContent = ({ values, setValues, activeStep }) => {
+const PropertyLocationMainContent = ({
+    values,
+    setValues,
+    activeStep,
+    setUserLat,
+    setUserLng,
+    latitude,
+    longitude,
+}) => {
     mapboxgl.accessToken = accessToken;
-    const [userLat, setUserLat] = useState(0);
-    const [userLng, setUserLng] = useState(0);
-    const [placeName, setPlaceName] = useState("");
-    const [isMapHide, setIsMapHide] = useState(true);
+
+    useEffect(() => {
+        if (latitude !== 0 && longitude !== 0) {
+            const position = {
+                coords: {
+                    latitude,
+                    longitude,
+                },
+            };
+
+            showPosition(position, true, true);
+        }
+    }, [latitude, longitude]);
 
     const { user } = useSelector(userState);
     const userName = user?.firstName + " " + user?.lastName;
@@ -43,7 +60,6 @@ const PropertyLocationMainContent = ({ values, setValues, activeStep }) => {
     } = useForm();
 
     useEffect(() => {
-        console.log(values);
         if (street) {
             $("#aprtNoAndStreet").val(street);
         }
@@ -96,12 +112,9 @@ const PropertyLocationMainContent = ({ values, setValues, activeStep }) => {
     }
 
     async function getPositionFromInput(placeToSearch, accessToken) {
-        console.log(placeToSearch);
         const { data } = await axios.get(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${placeToSearch}.json?access_token=${accessToken}`
         );
-
-        setPlaceName(data.features[0].place_name);
 
         const position = {
             coords: {
@@ -149,12 +162,11 @@ const PropertyLocationMainContent = ({ values, setValues, activeStep }) => {
                 `https://api.mapbox.com/geocoding/v5/mapbox.places/${userLng2},${userLat2}.json?access_token=${accessToken}`
             );
 
-            if (data) setPlaceName(data.features[0].place_name);
-
             if (isCallFromUseCurrentLocation) {
                 let lCity = "",
                     lState = "",
-                    lStreet = "";
+                    lStreet = "",
+                    lCountry = 0;
 
                 data.features[0].context.forEach(({ id, text }) => {
                     console.log(id);
@@ -170,9 +182,19 @@ const PropertyLocationMainContent = ({ values, setValues, activeStep }) => {
                         lState = text;
                         $("#state").val(text);
                     }
+                    if (id.includes("country")) {
+                        lCountry = text;
+                        $("#country").val(text);
+                    }
                 });
 
-                setValues({ ...values, street: lStreet, city: lCity, state: lState });
+                setValues({
+                    ...values,
+                    street: lStreet,
+                    city: lCity,
+                    state: lState,
+                    country: lCountry,
+                });
             }
         }
 
@@ -282,12 +304,14 @@ const PropertyLocationMainContent = ({ values, setValues, activeStep }) => {
 
     const onSubmit = data => {
         const { street: dStreet, city: dCity, state: dState, country: dCountry } = data;
+
+        console.log(dStreet, dCity, dState, dCountry);
+
         setValues({ ...values, street: dStreet, city: dCity, state: dState, country: dCountry });
 
         const placeToSearch = street + " " + city + " " + state + " " + country;
         $("#map").empty();
         getPositionFromInput(placeToSearch, accessToken);
-        setIsMapHide(false);
     };
 
     return (
@@ -341,20 +365,14 @@ const PropertyLocationMainContent = ({ values, setValues, activeStep }) => {
                                 </div>
                                 <div className='mb-5'>
                                     <FormControl fullWidth>
-                                        <InputLabel>Country</InputLabel>
-                                        <Select
-                                            value={"Vietnam"}
-                                            label='Country'
+                                        <FormLabel>Country</FormLabel>
+                                        <TextField
                                             name='country'
                                             id='country'
                                             {...register("country")}
-                                        >
-                                            {countries.map(c => (
-                                                <MenuItem value={c.name} key={c.id}>
-                                                    {c.name} {c.code}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
+                                            defaultValue=''
+                                            required
+                                        />
                                     </FormControl>
                                 </div>
                                 <div>

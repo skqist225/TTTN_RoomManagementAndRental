@@ -3,6 +3,7 @@ package com.airtnt.airtntapp.rule;
 import java.util.Iterator;
 import java.util.List;
 
+import com.airtnt.airtntapp.exception.ConstrainstViolationException;
 import com.airtnt.entity.Rule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RuleService {
+    private final String DELETE_SUCCESSFULLY="Delete Rule Successfully";
+    private final String DELETE_FORBIDDEN="Could not delete this rule as it's being used by rooms";
+
     @Autowired
     RuleRepository repo;
 
@@ -36,8 +40,13 @@ public class RuleService {
         return repo.save(Rule);
     }
 
-    public void deleteById(Integer id) {
-        repo.deleteById(id);
+    public String deleteById(Integer id) throws ConstrainstViolationException {
+        try {
+            repo.deleteById(id);
+            return DELETE_SUCCESSFULLY;
+        }catch(Exception ex) {
+            throw new ConstrainstViolationException(DELETE_FORBIDDEN);
+        }
     }
 
     public String checkName(Integer id, String name) {
