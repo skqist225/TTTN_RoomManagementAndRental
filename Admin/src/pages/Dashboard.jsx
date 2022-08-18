@@ -35,7 +35,7 @@ import { fetchRooms } from "../features/room/roomSlice";
 import { fetchBookings } from "../features/booking/bookingSlice";
 import { fetchUsers, userState } from "../features/user/userSlice";
 import { fetchCategories } from "../features/category/categorySlice";
-import { fetchAmenities } from "../features/amenity/amenitySlice";
+import { fetchAmenities, fetchAmenityCategories } from "../features/amenity/amenitySlice";
 import { fetchRules } from "../features/rule/ruleSlice";
 import { fetchPrivacies } from "../features/privacy/privacySlice";
 import { authState } from "../features/auth/authSlice";
@@ -65,7 +65,8 @@ function Dashboard() {
                 break;
             }
             case "/amenities": {
-                dispatch(fetchAmenities());
+                dispatch(fetchAmenities(1));
+                dispatch(fetchAmenityCategories());
                 break;
             }
             case "/rules": {

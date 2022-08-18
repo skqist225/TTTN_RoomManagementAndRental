@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { amenityState, fetchAmenities } from "../../../features/amenity/amenitySlice";
+import { amenityState, fetchAmenities} from "../../../features/amenity/amenitySlice";
 import { Div } from "../../../globalStyle";
 import AmenitiyPartial from "./AmenitiyPartial";
 import $ from "jquery";
@@ -13,7 +13,7 @@ const PropertyAmenitiesMainContent = ({ values, setValues }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(fetchAmenities());
+        dispatch(fetchAmenities(1));
     }, []);
 
     const {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.airtnt.airtntapp.exception.ConstrainstViolationException;
 import com.airtnt.entity.Amentity;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AmentityService {
+    private final String DELETE_SUCCESSFULLY="Delete Amenity Successfully";
+    private final String DELETE_FORBIDDEN="Could not delete this amenity as it's being used by rooms";
+
+
     @Autowired
     AmentityRepository amentityRepository;
 
@@ -61,8 +66,13 @@ public class AmentityService {
         return amentityRepository.save(amentity);
     }
 
-    public void delete(Integer id) {
-        amentityRepository.deleteById(id);
+    public String deleteById(Integer id) throws ConstrainstViolationException {
+        try {
+            amentityRepository.deleteById(id);
+            return DELETE_SUCCESSFULLY;
+        }catch(Exception ex) {
+            throw new ConstrainstViolationException(DELETE_FORBIDDEN);
+        }
     }
 
     public String checkName(Integer id, String name) {

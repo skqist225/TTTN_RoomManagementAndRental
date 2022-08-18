@@ -15,4 +15,8 @@ public class AmentityCategorySerivce {
     public List<AmentityCategory> listAll() {
         return (List<AmentityCategory>) repo.findAll();
     }
+    public AmentityCategory findById(Integer id) {
+        return repo.findById(id).get();
+    }
+
 }
