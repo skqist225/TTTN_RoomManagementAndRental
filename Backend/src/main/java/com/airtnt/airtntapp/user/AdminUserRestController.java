@@ -93,14 +93,11 @@ public class AdminUserRestController {
     }
 
     @DeleteMapping("users/{id}")
-    public ResponseEntity<StandardJSONResponse<Boolean>> deleteUser(@PathVariable(value = "id") Integer id) {
+    public ResponseEntity<StandardJSONResponse<String>> deleteUser(@PathVariable(value = "id") Integer id) {
         try {
-            userService.deleteUser(id);
-
-            return new OkResponse<Boolean>(true).response();
-        } catch (UserNotFoundException | SQLIntegrityConstraintViolationException | VerifiedUserException e) {
-            System.out.println(e.getMessage());
-            return new BadResponse<Boolean>(e.getMessage()).response();
+            return new OkResponse<String>(userService.deleteUser(id)).response();
+        } catch (UserNotFoundException | VerifiedUserException e) {
+            return new BadResponse<String>(e.getMessage()).response();
         }
     }
 

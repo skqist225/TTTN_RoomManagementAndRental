@@ -1,19 +1,17 @@
 package com.airtnt.airtntapp.room;
 
+import com.airtnt.entity.Room;
+import com.airtnt.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
-
-import com.airtnt.entity.Room;
-import com.airtnt.entity.User;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecificationExecutor<Room> {
@@ -28,18 +26,18 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
         public double getAverageRoomPrice();
 
         @Query("SELECT r FROM Room r JOIN r.amentities ra JOIN r.bookingDetails rb WHERE r.category.id = :categoryId AND r.status = :status"
-                        + " AND r.name LIKE %:query%"
-                        + " AND r.price >= :minPrice AND r.price <= :maxPrice"
-                        + " AND r.bedroomCount >= :bedroomCount AND r.bathroomCount >= :bathroomCount AND r.bedCount >= :bedCount"
-                        + " AND ra.id IN (:amentitiesID) AND r.privacyType.id IN (:privacies)"
-                        + " AND ((rb.checkinDate NOT IN (:bookingDates) OR rb.checkinDate = NULL) AND (rb.checkoutDate NOT IN (:bookingDates) OR rb.checkoutDate = NULL)) GROUP BY r.id")
+                + " AND r.name LIKE %:query%"
+                + " AND r.price >= :minPrice AND r.price <= :maxPrice"
+                + " AND r.bedroomCount >= :bedroomCount AND r.bathroomCount >= :bathroomCount AND r.bedCount >= :bedCount"
+                + " AND ra.id IN (:amentitiesID) AND r.privacyType.id IN (:privacies)"
+                + " AND ((rb.checkinDate NOT IN (:bookingDates) OR rb.checkinDate = NULL) AND (rb.checkoutDate NOT IN (:bookingDates) OR rb.checkoutDate = NULL)) GROUP BY r.id")
         public Page<Room> getRoomByCategoryAndConditions(Integer categoryId, boolean status,
-                        float minPrice, float maxPrice, int bedroomCount,
-                        int bedCount,
-                        int bathroomCount,
-                        @Param("privacies") List<Integer> privacies, @Param("amentitiesID") List<Integer> amentitiesID,
-                        @Param("bookingDates") List<Date> bookingDates, @Param("query") String query,
-                        Pageable pageable);
+                                                         float minPrice, float maxPrice, int bedroomCount,
+                                                         int bedCount,
+                                                         int bathroomCount,
+                                                         List<Integer> privacies, List<Integer> amentitiesID,
+                                                         List<Date> bookingDates, String query,
+                                                         Pageable pageable);
 
         @Query("SELECT r FROM Room r WHERE r.category.id = :categoryId AND r.status = :status"
                         + " AND r.name LIKE %:query%"
@@ -47,10 +45,10 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
                         + " AND r.bedroomCount >= :bedroomCount AND r.bathroomCount >= :bathroomCount AND r.bedCount >= :bedCount"
                         + " AND r.privacyType.id IN (:privacies)")
         public Page<Room> getRoomByCategoryAndConditions(Integer categoryId, boolean status, float minPrice,
-                        float maxPrice, int bedroomCount,
-                        int bedCount,
-                        int bathroomCount, @Param("privacies") List<Integer> privacies, @Param("query") String query,
-                        Pageable pageable);
+                                                         float maxPrice, int bedroomCount,
+                                                         int bedCount,
+                                                         int bathroomCount, List<Integer> privacies, String query,
+                                                         Pageable pageable);
 
         @Query("SELECT r FROM Room r LEFT JOIN r.bookingDetails rb WHERE r.category.id = :categoryId AND r.status = :status"
                         + " AND r.name LIKE %:query%"
@@ -59,12 +57,11 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
                         + " AND r.privacyType.id IN (:privacies)"
                         + " AND ((rb.checkinDate NOT IN (:bookingDates) OR rb.checkinDate = NULL) AND (rb.checkoutDate NOT IN (:bookingDates) OR rb.checkoutDate = NULL)) GROUP BY r.id")
         public Page<Room> getRoomByCategoryAndConditions(Integer categoryId, boolean status, float minPrice,
-                        float maxPrice, int bedroomCount,
-                        int bedCount,
-                        int bathroomCount, @Param("privacies") List<Integer> privacies,
-                        @Param("bookingDates") List<Date> bookingDates,
-                        @Param("query") String query,
-                        Pageable pageable);
+                                                         float maxPrice, int bedroomCount,
+                                                         int bedCount,
+                                                         int bathroomCount, List<Integer> privacies, List<Date> bookingDates,
+                                                         String query,
+                                                         Pageable pageable);
 
         @Query("SELECT r FROM Room r WHERE r.category.id = :categoryId AND r.status = :status")
         public Page<Room> getByCategoryAndStatus(Integer categoryId, boolean status,
@@ -76,8 +73,8 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
                         + " AND r.bedroomCount >= :bedroomCount AND r.bathroomCount >= :bathroomCount AND r.bedCount >= :bedCount"
                         + " AND ra.id IN (:amentitiesID)" + " AND r.status IN (:statusesID)")
         public Page<Room> getRoomsByHost(User host, String query, int bedroomCount, int bathroomCount, int bedCount,
-                        @Param("amentitiesID") List<Integer> amentitiesID,
-                        @Param("statusesID") List<Boolean> statusesID, Pageable pageable);
+                      List<Integer> amentitiesID,
+                    List<Boolean> statusesID, Pageable pageable);
 
         @Modifying
         @Query("Update Room r set r.status = true where r.id = ?1")

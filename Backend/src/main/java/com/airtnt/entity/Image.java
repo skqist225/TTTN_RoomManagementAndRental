@@ -59,11 +59,11 @@ public class Image {
 		if (getClass() != obj.getClass())
 			return false;
 		Image other = (Image) obj;
-		return id == other.id && Objects.equals(image, other.image);
+		return Objects.equals(image, other.image);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, image);
+		return Objects.hash(image);
 	}
 }

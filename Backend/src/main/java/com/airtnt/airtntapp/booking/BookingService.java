@@ -1,5 +1,20 @@
 package com.airtnt.airtntapp.booking;
 
+import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
+import com.airtnt.airtntapp.booking.dto.CreateBookingDTO;
+import com.airtnt.airtntapp.booking.dto.PostCreateBookingDetailDTO;
+import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
+import com.airtnt.airtntapp.exception.*;
+import com.airtnt.airtntapp.room.RoomService;
+import com.airtnt.entity.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -9,19 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-import javax.transaction.Transactional;
-
-import com.airtnt.airtntapp.booking.dto.*;
-import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
-import com.airtnt.airtntapp.exception.*;
-import com.airtnt.airtntapp.room.RoomService;
-import com.airtnt.entity.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 
 @Service
 public class BookingService {
@@ -282,8 +284,11 @@ public class BookingService {
         Booking approvedBooking;
         try {
             approvedBooking = findById(bookingId);
-            if (!user.getId().equals(approvedBooking.getBookingDetails().iterator().next().getRoom().getHost().getId()) || !user.getRole().getName().equals("Admin")) {
-                throw new ForbiddenException(); // if user sent request is not host of the room
+            System.out.println(user.getId());
+            System.out.println(approvedBooking.getBookingDetails().iterator().next().getRoom().getHost().getId());
+            System.out.println(user.getRole().getName());
+            if (!user.getId().toString().equals(approvedBooking.getBookingDetails().iterator().next().getRoom().getHost().getId().toString()) && !user.getRole().getName().equals("Admin")) {
+                throw new ForbiddenException("You does not have permission to approve this booking"); // if user sent request is not host of the room
             }
 
             approvedBooking.setState(Status.APPROVED);

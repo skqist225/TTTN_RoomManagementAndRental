@@ -224,21 +224,22 @@ public class RoomRestController {
 		Country country = new Country(payload.getCountry());
 
 		// check if state exist
-		State state = stateService.getStateByName(payload.getState());
-		if (state == null)
-			state = new State(payload.getState(), country);
-
-		// check if city exist
-		City city = cityService.getCityByName(payload.getCity());
-		if (city == null)
-			city = new City(payload.getCity(), state);
+//		State state = stateService.getStateById(payload.getState());
+//		if (state == null)
+//			state = new State(payload.getState(), country);
+//
+//		// check if city exist
+//		City city = cityService.getCityByName(payload.getCity());
+//		if (city == null)
+//			city = new City(payload.getCity(), state);
 
 		User user = userService.findById(payload.getHost());
 		user.setRole(new Role(1));
 		userService.saveUser(user);
 
 		boolean status = user.isPhoneVerified();
-		Address address = new Address(city, "");
+//		Address address = new Address(city, "");
+		Address address = null;
 		Room room = Room.buildRoom(payload, images, amenities, address, rules, status);
 		Room savedRoom = roomService.save(room);
 

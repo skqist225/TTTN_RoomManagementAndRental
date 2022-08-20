@@ -157,6 +157,30 @@ public class Room extends BaseEntity implements Comparable<Room> {
 		return ChronoUnit.DAYS.between(dateBefore, currentdate);
 	}
 
+	public void addAmenity(Amentity amentity) {
+		this.amentities.add(amentity);
+	}
+
+	public void removeAmenity(Amentity amentity) {
+		this.amentities.remove(amentity);
+	}
+
+	public void addRule(Rule rule) {
+		this.rules.add(rule);
+	}
+
+	public void removeRule(Rule rule) {
+		this.rules.remove(rule);
+	}
+
+	public void addImage(Image image) {
+		this.images.add(image);
+	}
+
+	public void removeImage(Image image) {
+		this.images.remove(image);
+	}
+
 	@Transient
 	public List<String> getImagesPath() {
 		return this.getImages().stream().filter(image -> !image.getImage().equals(this.thumbnail)).map(image -> {

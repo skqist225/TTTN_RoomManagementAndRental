@@ -47,6 +47,7 @@ public class RoomPrivacyService {
     public String delete(Integer privacyId) throws ConstrainstViolationException {
         try {
             roomPrivacyRepository.deleteById(privacyId);
+            System.out.println("hello world");
             return DELETE_SUCCESSFULLY;
         }catch(Exception ex) {
             throw new ConstrainstViolationException(DELETE_FORBIDDEN);

@@ -20,7 +20,7 @@ public class AmentityCategory {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 
 	@Column(unique = true, nullable = false)
 	private String name;
@@ -30,5 +30,16 @@ public class AmentityCategory {
 	public AmentityCategory(int id) {
 		this.id = id;
 	}
+	
+	public AmentityCategory (String name) {
+		this.name = name;
+	}
+
+	public AmentityCategory (String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
+	
+	
 
 }

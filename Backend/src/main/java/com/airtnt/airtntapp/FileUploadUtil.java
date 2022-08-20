@@ -24,7 +24,7 @@ public class FileUploadUtil {
         }
     }
 
-    public static void cleanDir(String dir) {
+    public static void cleanDir(String dir) throws IOException {
         Path dirPath = Paths.get(dir);
 
         try {
@@ -39,11 +39,12 @@ public class FileUploadUtil {
                 }
             });
         } catch (IOException ex) {
+            Files.createDirectories(dirPath);
             System.out.println("Could not list directory: " + dirPath);
         }
     }
 
-    public static void removeDir(String dir) {
+    public static void removeDir(String dir) throws IOException {
         cleanDir(dir);
 
         try {

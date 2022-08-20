@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../Admin/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Admin/.idea/Admin.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Admin/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Admin/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Admin/.idea/prettier.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Admin/src/pages/AmenityCategoriesPage.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/amenity/dto/PostCreateAmenity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/components/room/AddRoomImages.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/components/room/AddRoomImages.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/features/amenity/amenitySlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/features/amenity/amenitySlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/features/room/roomSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/features/room/roomSlice.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/globalStyle.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/globalStyle.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/AmenitiesPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/AmenitiesPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/Dashboard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/EditRoomContent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/EditRoomContent.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/partials/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/partials/Sidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/httpRequests/http-client.cookies" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jpa-buddy-datasource.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jpa-buddy.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.jpb/persistence-units.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/.jsdtscope" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.core.resources.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.m2e.core.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.wst.common.component" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.wst.common.project.facet.core.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.wst.jsdt.ui.superType.container" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.wst.jsdt.ui.superType.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.eclipse.wst.validation.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.settings/org.springframework.ide.eclipse.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/AirTntApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/AirTntApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/FileUploadUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/FileUploadUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/amenity/AmenityRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/amenity/AmenityRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/amenity/category/AmentityCategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/amenity/category/AmentityCategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/amenity/category/AmentityCategorySerivce.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/amenity/category/AmentityCategorySerivce.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/AdminBookingRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/AdminBookingRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/AdminRoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/AdminRoomRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/PostAddRoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/PostAddRoomDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomDetailsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomDetailsDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/privacy/RoomPrivacyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/privacy/RoomPrivacyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/state/StateRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/state/StateRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Amentity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Amentity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/AmentityCategory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/AmentityCategory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Image.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Image.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2Da7yOokgxJ3tauzIvoB70JNrgj" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable": "ALL",
+    "last_opened_file_path": "/home/skqist225/Projects/AirTn_DATN/Backend",
+    "settings.editor.selected.configurable": "build.tools",
+    "spring.configuration.checksum": "c94958ada0c81bb4e847abe659379e76"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="AirTntApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="AirTNT" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.airtnt.airtntapp.AirTntApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.airtnt.airtntapp.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="" />
+      <created>1660925596070</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1660925596070</updated>
+      <workItem from="1660925599140" duration="705000" />
+      <workItem from="1660926318269" duration="19485000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

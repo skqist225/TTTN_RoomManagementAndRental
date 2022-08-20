@@ -10,13 +10,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostAddRoomDTO {
+    private Integer activeStep;
     private String name;
     private String[] images;
     private int[] rules;
     private int[] amentities;
-    private int country;
-    private String state;
-    private String city;
+    private Integer country;
+    private Integer state;
+    private Integer city;
     private int bedroomCount;
     private int bathroomCount;
     private int accomodatesCount;

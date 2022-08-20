@@ -8,7 +8,6 @@ import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
 import com.airtnt.airtntapp.exception.BookingNotFoundException;
 import com.airtnt.airtntapp.response.error.BadResponse;
 import com.airtnt.entity.Booking;
-import com.airtnt.entity.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,7 @@ public class AdminBookingRestController {
         BookingListDTO bookingListResponse = new BookingListDTO();
 
         for (Booking booking : bookingsPage.getContent()) {
-             bookingListingsDTOs.add(BookingDTO.build(booking));
+            bookingListingsDTOs.add(BookingDTO.build(booking));
         }
 
         bookingListResponse.setBookings(bookingListingsDTOs);
@@ -44,10 +43,11 @@ public class AdminBookingRestController {
     }
 
     @DeleteMapping("bookings/{bookingid}")
-    public ResponseEntity<StandardJSONResponse<String>> deleteBooking(@PathVariable(value = "bookingid") Integer bookingId) throws BookingNotFoundException {
-       if(bookingService.deleteById(bookingId)) {
-           return new OkResponse<String>("Delete booking successfully").response();
-       }
+    public ResponseEntity<StandardJSONResponse<String>> deleteBooking(
+            @PathVariable(value = "bookingid") Integer bookingId) throws BookingNotFoundException {
+        if (bookingService.deleteById(bookingId)) {
+            return new OkResponse<String>("Delete booking successfully").response();
+        }
 
         return new BadResponse<String>("Can not delete booking").response();
     }

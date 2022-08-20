@@ -10,13 +10,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaSpecificationExecutor<Booking> {
 
         @Query("SELECT b FROM Booking b WHERE b.state = :type")
-        public Page<Booking> findAll(Status type, Pageable pageable);
+        public Page<Booking> findAll(@Param("type") Status type, Pageable pageable);
 
         // @Query("SELECT b FROM Booking b WHERE b.room.id = :roomId AND b.state =
         // 'APPROVED'")

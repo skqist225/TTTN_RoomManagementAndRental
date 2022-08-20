@@ -20,7 +20,8 @@ public class Amentity extends BaseEntity {
 
     @Column(name = "icon_image", columnDefinition = "TEXT NOT NULL")
     private String iconImage;
-
+    
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     private boolean prominent;
@@ -46,6 +47,59 @@ public class Amentity extends BaseEntity {
         this.name = name;
         this.description = description;
         this.amentityCategory = amentityCategory;
+    }
+
+    public Amentity(String name, String description, String type) {
+        this.name = name;
+        this.description = description;
+        switch (type) {
+            case "prominent": {
+                this.prominent = true;
+                this.favorite = false;
+                this.safe = false;
+                break;
+            }
+            case "favorite": {
+                this.prominent = false;
+                this.favorite = true;
+                this.safe = false;
+                break;
+            }
+            case "safe": {
+                this.prominent = false;
+                this.favorite = false;
+                this.safe = true;
+                break;
+            }
+
+        }
+    }
+
+    public Amentity(int id, String name, String description, String type) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        switch (type) {
+            case "prominent": {
+                this.prominent = true;
+                this.favorite = false;
+                this.safe = false;
+                break;
+            }
+            case "favorite": {
+                this.prominent = false;
+                this.favorite = true;
+                this.safe = false;
+                break;
+            }
+            case "safe": {
+                this.prominent = false;
+                this.favorite = false;
+                this.safe = true;
+                break;
+            }
+
+        }
     }
 
     public Amentity(int id, String name, String description, AmentityCategory amentityCategory, String type) {
@@ -110,7 +164,7 @@ public class Amentity extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(amentityCategory, description, favorite, iconImage, name, prominent, safe);
+        return Objects.hash(this.getId(), amentityCategory, description, favorite, iconImage, name, prominent, safe);
     }
 
     @Override

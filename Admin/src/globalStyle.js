@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from 'styled-components'
 
 const GlobalStyle = createGlobalStyle`
     ul {
@@ -134,27 +134,28 @@ const GlobalStyle = createGlobalStyle`
     }
 
     .717171 {
-        color: #717171;
+      color: #717171
+    ;
     }
 
     .rounded-border {
-        border-radius: 50%;
+      border-radius: 50%;
     }
 
     .content__box--name {
-        font-size: 18px;
-        line-height: 24px;
-        font-style: bold;
+      font-size: 18px;
+      line-height: 24px;
+      font-weight: bold;
     }
 
     .grid-3 {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);        
-        gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
     }
 
     .grid-2 {
-        display: grid;
+      display: grid;
         grid-template-columns: repeat(2, 1fr);        
         gap: 10px;
     }

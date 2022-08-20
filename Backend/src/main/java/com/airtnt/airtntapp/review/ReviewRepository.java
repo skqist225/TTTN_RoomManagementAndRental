@@ -6,6 +6,7 @@ import com.airtnt.entity.Review;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,7 +19,7 @@ public interface ReviewRepository extends CrudRepository<Review, Integer> {
     public List<Review> getAllReviewsByBookings(Integer[] bookingIds, double numberOfStars);
 
     @Query("SELECT r FROM Review r WHERE r.bookingDetail.id IN (:bookingIds)")
-    public List<Review> getReviewsByBookings(List<Integer> bookingIds);
+    public List<Review> getReviewsByBookings(@Param("bookingIds") List<Integer> bookingIds);
 
     @Query("SELECT r FROM Review r WHERE r.bookingDetail.room.id = :id")
     public List<Review> getReviewByIdRoom(int id);

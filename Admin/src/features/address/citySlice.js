@@ -35,4 +35,5 @@ const citySlice = createSlice({
     },
 });
 
+export const cityState = state => state.city;
 export default citySlice.reducer;

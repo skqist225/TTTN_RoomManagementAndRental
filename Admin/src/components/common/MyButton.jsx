@@ -38,6 +38,14 @@ function MyButton(props) {
             buttonClassName = "bg-blue-500 hover:bg-blue-500";
             break;
         }
+        case "currentPosition": {
+            buttonClassName = "bg-emerald-600 hover:bg-emerald-600";
+            break;
+        }
+        case "lookGood": {
+            buttonClassName = "bg-rose-500 hover:bg-rose-500";
+            break;
+        }
         case "cancel": {
             buttonClassName = "bg-teal-500";
             break;
@@ -81,6 +89,8 @@ function MyButton(props) {
                 </svg>
             )}
             {type === "delete" && <DeleteIcon />}
+            {type === "currentPosition" && <>{label}</>}
+            {type === "lookGood" && <>{label}</>}
             {type === "edit" && <EditIcon />}
             {type === "view" && <VisibilityIcon />}
             {type === "add" && <span className='hidden xs:block ml-2'>{label}</span>}

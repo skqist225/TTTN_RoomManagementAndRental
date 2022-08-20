@@ -56,6 +56,9 @@ public class RoomDetailsDTO {
     private Integer privacyId;
     private Address address;
     private Integer currencyId;
+    private Integer state;
+    private Integer country;
+    private Integer cityId;
 
     @Transient
     @JsonIgnore
@@ -66,6 +69,7 @@ public class RoomDetailsDTO {
         Address address = room.getAddress();
         City city = address.getCity();
         State state = ((City) city).getState();
+        Country country = state.getCountry();
         String location = state.getCountry().getName();
         location += " " + city.getState().getName();
         location += " " + address.getCity().getName();
@@ -101,6 +105,9 @@ public class RoomDetailsDTO {
                 .categoryId(room.getCategory().getId())
                 .privacyId(room.getPrivacyType().getId())
                 .currencyId(room.getCurrency().getId())
+                .state(state.getId())
+                .country(country.getId())
+                .cityId(city.getId())
                 .build();
     }
 }

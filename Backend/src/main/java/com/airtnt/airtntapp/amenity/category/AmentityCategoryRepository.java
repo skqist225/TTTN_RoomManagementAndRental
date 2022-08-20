@@ -7,5 +7,5 @@ import com.airtnt.entity.AmentityCategory;
 
 @Repository
 public interface AmentityCategoryRepository extends CrudRepository<AmentityCategory, Integer> {
-
+	AmentityCategory findByName(String name);
 }

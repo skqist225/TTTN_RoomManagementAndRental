@@ -12,6 +12,8 @@ import java.util.Set;
 
 import com.airtnt.airtntapp.FileUploadUtil;
 import com.airtnt.airtntapp.amenity.category.AmentityCategorySerivce;
+import com.airtnt.airtntapp.amenity.dto.PostCreateAmenity;
+import com.airtnt.airtntapp.amenity.dto.PostCreateAmenityCategory;
 import com.airtnt.airtntapp.common.GetResource;
 import com.airtnt.airtntapp.exception.ConstrainstViolationException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
@@ -38,7 +40,6 @@ public class AmenityRestController {
     @Autowired
     private AmentityCategorySerivce amentityCategorySerivce;
 
-
     @Autowired
     private Environment env;
 
@@ -57,30 +58,46 @@ public class AmenityRestController {
         return new OkResponse<Amentity>(amentityService.getById(id)).response();
     }
 
-    @PostMapping("/amenities/save")
-    public ResponseEntity<StandardJSONResponse<Amentity>> saveAmentity(@RequestParam(name = "id", required = false) Integer id,
-                                                                       @RequestParam("name") String name,
-                                                                       @RequestParam(name = "iconImage", required = false) MultipartFile multipartFile,
-                                                                       @RequestParam(name = "description", required = false, defaultValue = "") String description,
-                                                                       @RequestParam(name = "type", required = false, defaultValue = "") String type,
-                                                                       @RequestParam(name = "amentityCategory", required = false, defaultValue = "") Integer amentityCategoryId
+    @GetMapping("/amenities/categories/{id}")
+    public ResponseEntity<StandardJSONResponse<AmentityCategory>> findAmtCategoryById(@PathVariable("id") Integer id) {
+        return new OkResponse<AmentityCategory>(amentityCategorySerivce.findById(id)).response();
+    }
 
-    ) throws IOException {
+    @PostMapping("/amenities/save")
+    public ResponseEntity<StandardJSONResponse<Amentity>> saveAmenity(
+            @ModelAttribute PostCreateAmenity postCreateAmenity) throws IOException {
+        Integer id = postCreateAmenity.getId();
+        String name = postCreateAmenity.getName();
+        String type = postCreateAmenity.getType();
+        MultipartFile multipartFile = postCreateAmenity.getIconImage();
+        String description = postCreateAmenity.getDescription();
+        Integer amenityCategoryId = postCreateAmenity.getAmenityCategoryId();
+
         if (amentityService.checkName(id, name).equals("Duplicated")) {
             return new BadResponse<Amentity>("Name is being used by other amenity").response();
         }
         if (name.trim().isEmpty()) {
             return new BadResponse<Amentity>("Name is required").response();
         }
-        Amentity amenity;
-        AmentityCategory amentityCategory = amentityCategorySerivce.findById(amentityCategoryId);
-        if (id != null)
-        {
-            amenity = new Amentity(id, name,description,amentityCategory,type);
+        Amentity amenity = null;
+        AmentityCategory amentityCategory = null;
+        System.out.println("amenityCategoryId : " + amenityCategoryId);
+        if (amenityCategoryId != null) {
+            System.out.println("amenityCategoryId : " + amenityCategoryId);
+            amentityCategory = amentityCategorySerivce.findById(amenityCategoryId);
         }
-        else {
-
-            amenity = new Amentity(name,description,amentityCategory, type);
+        if (id != null) {
+            if (amentityCategory != null) {
+                amenity = new Amentity(id, name, description, amentityCategory, type);
+            } else {
+                amenity = new Amentity(id, name, description, type);
+            }
+        } else {
+            if (amenityCategoryId != null) {
+                amenity = new Amentity(name, description, amentityCategory, type);
+            } else {
+                amenity = new Amentity(name, description, type);
+            }
         }
 
         if (multipartFile != null && !multipartFile.isEmpty()) {
@@ -107,7 +124,7 @@ public class AmenityRestController {
                 uploadDir = GetResource.getResourceAsFile("static/amentity_images/");
                 System.out.println(uploadDir);
             }
-
+            System.out.println("abc");
             FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
             return new OkResponse<Amentity>(savedAmentity).response();
@@ -120,10 +137,48 @@ public class AmenityRestController {
         }
     }
 
+    @PostMapping("/amenities/categories/save")
+    public ResponseEntity<StandardJSONResponse<AmentityCategory>> saveAmenityCategory(
+            @RequestBody PostCreateAmenityCategory postCreateAmenityCategory) throws IOException {
+        Integer id = postCreateAmenityCategory.getId();
+        String name = postCreateAmenityCategory.getName();
+        String description = postCreateAmenityCategory.getDescription();
+
+        if (amentityCategorySerivce.checkName(id, name).equals("Duplicated")) {
+            return new BadResponse<AmentityCategory>("Name is being used by other amenities's category").response();
+        }
+        if (name.trim().isEmpty()) {
+            return new BadResponse<AmentityCategory>("Name is required").response();
+        }
+
+        AmentityCategory amentityCategory;
+        if (id != null) {
+            amentityCategory = new AmentityCategory(id, name, description);
+        } else {
+            if (description != null) {
+                amentityCategory = new AmentityCategory(name, description);
+            } else {
+                amentityCategory = new AmentityCategory(name);
+            }
+        }
+        AmentityCategory savedRule = amentityCategorySerivce.save(amentityCategory);
+        return new OkResponse<AmentityCategory>(savedRule).response();
+
+    }
+
     @DeleteMapping("/amenities/{id}/delete")
     public ResponseEntity<StandardJSONResponse<String>> delete(@PathVariable("id") Integer id) {
         try {
             return new OkResponse<String>(amentityService.deleteById(id)).response();
+        } catch (ConstrainstViolationException ex) {
+            return new BadResponse<String>(ex.getMessage()).response();
+        }
+    }
+
+    @DeleteMapping("/amenities/categories/{id}/delete")
+    public ResponseEntity<StandardJSONResponse<String>> deleteAmtCategory(@PathVariable("id") Integer id) {
+        try {
+            return new OkResponse<String>(amentityCategorySerivce.deleteById(id)).response();
         } catch (ConstrainstViolationException ex) {
             return new BadResponse<String>(ex.getMessage()).response();
         }

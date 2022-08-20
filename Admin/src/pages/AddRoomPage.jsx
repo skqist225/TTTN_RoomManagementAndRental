@@ -33,6 +33,7 @@ import { amenityState, fetchAmenities } from "../features/amenity/amenitySlice";
 import { currencyState, fetchCurrencies } from "../features/currency/currencySlice";
 import { addRoom, roomState } from "../features/room/roomSlice";
 import { useNavigate } from "react-router-dom";
+import { fetchRules } from '../features/rule/ruleSlice'
 const steps = [
     "Category + Privacy + Basic info + Amenities",
     "Location",
@@ -121,7 +122,6 @@ const AddRoomPage = () => {
 
     const handleNext = () => {
         if (activeStep === 0) {
-            console.log($("#guestNumber").text());
             setInfo({
                 bedroomCount: parseInt($("#bedNumber").text()),
                 bathroomCount: parseInt($("#bathRoomNumber").text()),

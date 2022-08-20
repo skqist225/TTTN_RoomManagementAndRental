@@ -1,13 +1,13 @@
-import { FC, useEffect, useState } from "react";
-import { Image } from "../../globalStyle";
-import { callToast, getImage } from "../../helpers";
-import axios from "../../axios";
-import { useSelector } from "react-redux";
-import { toast, ToastContainer } from "react-toastify";
-import { addEmptyImage } from "./script/manage_photos";
-import { userState } from "../../features/user/userSlice";
-import "./css/room_images_main_content.css";
-import $ from "jquery";
+import { useEffect, useState } from 'react'
+import { Image } from '../../globalStyle'
+import { callToast, getImage } from '../../helpers'
+import axios from '../../axios'
+import { useSelector } from 'react-redux'
+import { ToastContainer } from 'react-toastify'
+import { addEmptyImage } from './script/manage_photos'
+import { userState } from '../../features/user/userSlice'
+import './css/room_images_main_content.css'
+import $ from 'jquery'
 
 let photos = [];
 let isUploaded = false;
@@ -425,17 +425,17 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
     }
 
     useEffect(() => {
-        if (!loading) {
-            $("img.photo").each(function (index) {
-                $(this).attr("data-index", index);
+        if (!loading && photos.length) {
+            $('img.photo').each(function (index) {
+                $(this).attr('data-index', index)
                 $(this)
-                    .siblings("div.photoAction")
-                    .children("button.photo-action__btn")
-                    .attr("data-index", index);
+                  .siblings('div.photoAction')
+                  .children('button.photo-action__btn')
+                  .attr('data-index', index)
                 $(this)
-                    .siblings("div.photoAction")
-                    .children("div.photo-action__div-hidden")
-                    .children("ul")
+                  .siblings('div.photoAction')
+                  .children('div.photo-action__div-hidden')
+                  .children('ul')
                     .attr("data-index", index);
             });
 

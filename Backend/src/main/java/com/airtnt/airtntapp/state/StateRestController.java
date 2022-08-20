@@ -25,4 +25,9 @@ public class StateRestController {
             @PathVariable("countryId") Integer countryId) {
         return new OkResponse<List<State>>(stateService.fetchStatesByCountry(countryId)).response();
     }
+
+    @GetMapping("states")
+    public ResponseEntity<StandardJSONResponse<List<State>>> fetchStates() {
+        return new OkResponse<List<State>>(stateService.listAll()).response();
+    }
 }

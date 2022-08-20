@@ -1,12 +1,12 @@
 package com.airtnt.airtntapp.user;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-import javax.transaction.Transactional;
-
+import com.airtnt.airtntapp.country.CountryRepository;
+import com.airtnt.airtntapp.exception.DuplicatedEntryPhoneNumberExeption;
+import com.airtnt.airtntapp.exception.UserNotFoundException;
+import com.airtnt.airtntapp.exception.VerifiedUserException;
+import com.airtnt.entity.Country;
+import com.airtnt.entity.Role;
+import com.airtnt.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,17 +15,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.airtnt.airtntapp.country.CountryRepository;
-import com.airtnt.airtntapp.exception.DuplicatedEntryPhoneNumberExeption;
-import com.airtnt.airtntapp.exception.UserNotFoundException;
-import com.airtnt.airtntapp.exception.VerifiedUserException;
-import com.airtnt.entity.Country;
-import com.airtnt.entity.Role;
-import com.airtnt.entity.User;
+import javax.transaction.Transactional;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class UserService {
+	private final String DELETE_SUCCESSFULLY = "Delete Rule Successfully";
+	private final String DELETE_FORBIDDEN = "Could not delete this user as constraint exception";
+
 	public static final int USERS_PER_PAGE = 10;
 
 	@Autowired
@@ -160,24 +160,35 @@ public class UserService {
 		return (List<Country>) countryRepository.findAll();
 	}
 
-	public void delete(Integer id) throws UserNotFoundException {
+	public String delete(Integer id) throws UserNotFoundException {
 		Long countById = userRepository.countById(id);
 		if ((countById == null || countById == 0)) {
 			throw new UserNotFoundException("User not found with id: " + id);
 		}
 
-		userRepository.deleteById(id);
+		try {
+			userRepository.deleteById(id);
+			return DELETE_SUCCESSFULLY;
+		} catch (Exception ex) {
+			return DELETE_FORBIDDEN;
+		}
+
 	}
 
-	public void deleteUser(Integer id)
-			throws UserNotFoundException, SQLIntegrityConstraintViolationException, VerifiedUserException {
+	public String deleteUser(Integer id)
+			throws UserNotFoundException, VerifiedUserException {
 		User user = this.findById(id);
 
 		if (user.isIdentityVerified()) {
 			throw new VerifiedUserException("Can not delete this verified user");
 		}
 
-		userRepository.deleteById(id);
+		try {
+			userRepository.deleteById(id);
+			return DELETE_SUCCESSFULLY;
+		} catch (Exception ex) {
+			return DELETE_FORBIDDEN;
+		}
 	}
 
 	public void updateUserEnabledStatus(Integer id, boolean enabled) {

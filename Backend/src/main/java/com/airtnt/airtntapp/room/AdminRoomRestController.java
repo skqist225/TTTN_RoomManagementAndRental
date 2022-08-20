@@ -1,5 +1,28 @@
 package com.airtnt.airtntapp.room;
 
+import com.airtnt.airtntapp.address.AddressService;
+import com.airtnt.airtntapp.city.CityService;
+import com.airtnt.airtntapp.exception.RoomNotFoundException;
+import com.airtnt.airtntapp.exception.UserNotFoundException;
+import com.airtnt.airtntapp.response.StandardJSONResponse;
+import com.airtnt.airtntapp.response.error.BadResponse;
+import com.airtnt.airtntapp.response.success.OkResponse;
+import com.airtnt.airtntapp.room.dto.PostAddRoomDTO;
+import com.airtnt.airtntapp.room.dto.page.listings.RoomListingsDTO;
+import com.airtnt.airtntapp.room.response.RoomsOwnedByUserResponseEntity;
+import com.airtnt.airtntapp.rule.RuleService;
+import com.airtnt.airtntapp.security.UserDetailsImpl;
+import com.airtnt.airtntapp.state.StateService;
+import com.airtnt.airtntapp.user.UserService;
+import com.airtnt.entity.Currency;
+import com.airtnt.entity.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,32 +32,6 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
-
-import com.airtnt.airtntapp.address.AddressService;
-import com.airtnt.airtntapp.booking.BookingService;
-import com.airtnt.airtntapp.city.CityService;
-import com.airtnt.airtntapp.exception.RoomNotFoundException;
-import com.airtnt.airtntapp.exception.UserNotFoundException;
-import com.airtnt.airtntapp.response.error.BadResponse;
-import com.airtnt.airtntapp.review.ReviewService;
-import com.airtnt.airtntapp.room.dto.PostAddRoomDTO;
-import com.airtnt.airtntapp.rule.RuleService;
-import com.airtnt.airtntapp.security.UserDetailsImpl;
-import com.airtnt.airtntapp.state.StateService;
-import com.airtnt.airtntapp.user.UserService;
-import com.airtnt.entity.*;
-import com.airtnt.entity.Currency;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import com.airtnt.airtntapp.response.StandardJSONResponse;
-import com.airtnt.airtntapp.response.success.OkResponse;
-import com.airtnt.airtntapp.room.dto.page.listings.RoomListingsDTO;
-import com.airtnt.airtntapp.room.response.RoomsOwnedByUserResponseEntity;
 
 @RestController
 @RequestMapping("/api/admin/")
@@ -125,7 +122,7 @@ public class AdminRoomRestController {
         }
 
         // check if city exist
-        City city = cityService.getCityByName(payload.getCity());
+        City city = cityService.getCityById(payload.getCity());
         Address address = null;
         if (city != null) {
             address = addressService.findByStreetAndCity(payload.getStreet(), city);
@@ -133,19 +130,12 @@ public class AdminRoomRestController {
                 address = new Address(city, payload.getStreet());
                 address = addressService.save(address);
             }
-        } else {
-            State state = stateService.getStateByName(payload.getState());
-            if (state == null) {
-                state = new State(payload.getState());
-                state = stateService.save(state);
-            }
-            city = new City(payload.getCity(), state);
-            city = cityService.save(city);
-            address = new Address(city, payload.getStreet());
-            address = addressService.save(address);
         }
 
-        host.setRole(new Role(1));
+        if(!host.getRole().getName().equals("Admin")) {
+            host.setRole(new Role(1));
+        }
+
         userService.saveUser(host);
 
         boolean status = host.isPhoneVerified();
@@ -185,99 +175,120 @@ public class AdminRoomRestController {
     @PostMapping("room/{roomId}/save")
     public ResponseEntity<StandardJSONResponse<String>> editRoom(@PathVariable(value = "roomId") Integer roomId, @AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @ModelAttribute PostAddRoomDTO payload)
             throws IOException, UserNotFoundException {
-        Room room = null;
+        Integer activeStep = payload.getActiveStep();
         try {
-            room = roomService.findById(roomId);
+            Room room = roomService.findById(roomId);
 
-            User host = room.getHost();
+            if (activeStep == 0) {
+                Set<Rule> rules = new HashSet<>();
+                Set<Amentity> amenities = new HashSet<>();
 
-            Set<Rule> rules = new HashSet<>();
-            Set<Amentity> amenities = new HashSet<>();
-            Set<Image> images = new HashSet<>();
+                if (payload.getRules().length > 0) {
+                    for (int i = 0; i < payload.getRules().length; i++) {
+                        rules.add(new Rule(payload.getRules()[i]));
+                    }
 
-            if (payload.getRules().length > 0) {
-                for (int i = 0; i < payload.getRules().length; i++) {
-                    rules.add(new Rule(payload.getRules()[i]));
+                    Set<Rule> removedSet = new HashSet<>();
+                    for (Rule rule : room.getRules()) {
+                        if (!Arrays.stream(payload.getRules()).anyMatch(rule.getId()::equals)) {
+                            removedSet.add(rule);
+                        }
+                    }
+
+                    System.out.println("removed set : " + removedSet);
+                    for (Rule rule : removedSet) {
+                        room.removeRule(rule);
+                    }
+
+                    for (Rule rule : rules) {
+                        room.addRule(rule);
+                    }
                 }
-                room.setRules(rules);
-            }
 
-            if (payload.getAmentities().length > 0) {
-                for (int i = 0; i < payload.getAmentities().length; i++) {
-                    amenities.add(new Amentity(payload.getAmentities()[i]));
+                if (payload.getAmentities().length > 0) {
+                    for (int i = 0; i < payload.getAmentities().length; i++) {
+                        amenities.add(new Amentity(payload.getAmentities()[i]));
+                    }
+
+                    Set<Amentity> removedSet = new HashSet<>();
+                    for (Amentity amentity : room.getAmentities()) {
+                        if (!Arrays.stream(payload.getAmentities()).anyMatch(amentity.getId()::equals)) {
+                            removedSet.add(amentity);
+                        }
+                    }
+
+                    System.out.println("removed set : " + removedSet);
+                    for (Amentity amentity : removedSet) {
+                        room.removeAmenity(amentity);
+                    }
+
+                    for (Amentity amentity : amenities) {
+                        room.addAmenity(amentity);
+                    }
                 }
-                room.setAmentities(amenities);
-            }
 
-            if (payload.getImages() != null && payload.getImages().length > 0) {
-                for (int i = 0; i < payload.getImages().length; i++) {
-                    images.add(new Image(payload.getImages()[i]));
-                }
+                room.setCategory(new Category(payload.getCategory()));
+                room.setPrivacyType(new RoomPrivacy(payload.getPrivacyType()));
 
-                Set<Image> removedSet = new HashSet<>();
-                for (Image image2 : room.getImages()) {
-                    for (Image image : images) {
-                        if (!image2.getImage().equals(image.getImage())) {
-                            removedSet.add(image2);
+                room.setAccomodatesCount(payload.getAccomodatesCount());
+                room.setBedCount(payload.getBedCount());
+                room.setBedroomCount(payload.getBedroomCount());
+                room.setBathroomCount(payload.getBathroomCount());
+
+                room.setName(payload.getName());
+                room.setDescription(payload.getDescription());
+                room.setPrice(payload.getPrice());
+                room.setCurrency(new Currency(payload.getCurrency()));
+            } else if(activeStep == 1) {
+                Address address = null;
+                if (payload.getCity() != null) {
+                    City city = cityService.getCityById(payload.getCity());
+
+                    if (city != null) {
+                        address = addressService.findByStreetAndCity(payload.getStreet(), city);
+                        if (address == null) {
+                            address = new Address(city, payload.getStreet());
+                            address = addressService.save(address);
                         }
                     }
                 }
 
-                room.getImages().removeAll(removedSet);
-                for (Image image : images) {
-                    room.getImages().add(image);
+                if (payload.getLongitude() != null) {
+                    room.setLongitude(payload.getLongitude());
+                }
+                if (payload.getLatitude() != null) {
+                    room.setLatitude(payload.getLatitude());
+                }
+                if (address != null) {
+                    room.setAddress(address);
+                }
+            } else {
+                Set<Image> images = new HashSet<>();
+
+                if (payload.getImages() != null && payload.getImages().length > 0) {
+                    for (int i = 0; i < payload.getImages().length; i++) {
+                        images.add(new Image(payload.getImages()[i]));
+                    }
+
+                    Set<Image> removedSet = new HashSet<>();
+                    for (Image image : room.getImages()) {
+                        if (!Arrays.stream(payload.getImages()).anyMatch(image.getImage()::equals)) {
+                            removedSet.add(image);
+                        }
+                    }
+
+                    System.out.println("removed set : " + removedSet);
+                    for (Image image : removedSet) {
+                        room.removeImage(image);
+                    }
+
+                    for (Image image : images) {
+                        room.addImage(image);
+                    }
                 }
             }
 
-            // check if city exist
-            Address address = null;
-            if (payload.getCity() != null) {
-                City city = cityService.getCityByName(payload.getCity());
-
-                if (city != null) {
-                    address = addressService.findByStreetAndCity(payload.getStreet(), city);
-                    if (address == null) {
-                        address = new Address(city, payload.getStreet());
-                        address = addressService.save(address);
-                    }
-                } else {
-                    State state = stateService.getStateByName(payload.getState());
-                    if (state == null) {
-                        state = new State(payload.getState());
-                        state = stateService.save(state);
-                    }
-                    city = new City(payload.getCity(), state);
-                    city = cityService.save(city);
-                    address = new Address(city, payload.getStreet());
-                    address = addressService.save(address);
-                }
-                ;
-            }
-
-            room.setCategory(new Category(payload.getCategory()));
-            room.setPrivacyType(new RoomPrivacy(payload.getPrivacyType()));
-
-            room.setAccomodatesCount(payload.getAccomodatesCount());
-            room.setBedCount(payload.getBedCount());
-            room.setBedroomCount(payload.getBedroomCount());
-            room.setBathroomCount(payload.getBathroomCount());
-
-            room.setName(payload.getName());
-            room.setDescription(payload.getDescription());
-            room.setPrice(payload.getPrice());
-            room.setCurrency(new Currency(payload.getCurrency()));
-
-            if (payload.getLongitude() != null) {
-                room.setLongitude(payload.getLongitude());
-            }
-            if (payload.getLatitude() != null) {
-                room.setLatitude(payload.getLongitude());
-            }
-
-            if (address != null) {
-                room.setAddress(address);
-            }
-
+            User host = room.getHost();
 
             Room savedRoom = roomService.save(room);
 
@@ -291,8 +302,9 @@ public class AdminRoomRestController {
                         Path sourcePath = Paths.get(source);
                         Path targetPath = Files.createDirectories(Paths.get(uploadDir));
                         for (String imageName : payload.getImages()) {
-                            Files.move(sourcePath.resolve(imageName), targetPath.resolve(imageName),
-                                    StandardCopyOption.REPLACE_EXISTING);
+                            if(Files.exists(sourcePath.resolve(imageName)))
+                                Files.move(sourcePath.resolve(imageName), targetPath.resolve(imageName),
+                                        StandardCopyOption.REPLACE_EXISTING);
                         }
                     }
                 } else {
