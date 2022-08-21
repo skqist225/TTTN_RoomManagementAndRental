@@ -1,20 +1,21 @@
 package com.airtnt.entity;
 
 import com.airtnt.airtntapp.room.dto.PostAddRoomDTO;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -192,9 +193,9 @@ public class Room extends BaseEntity implements Comparable<Room> {
 	public Float getAverageRatings() {
 		if (this.bookingDetails.size() > 0) {
 			float totalAverage = this.bookingDetails.stream().reduce(0f,
-					(subtotal, booking) -> {
-						if (booking.getReview() != null) {
-							return subtotal + booking.getAverageRating();
+					(subtotal, bookingDetail) -> {
+						if (bookingDetail.getReview() != null) {
+							return subtotal + bookingDetail.getAverageRating();
 						}
 
 						return subtotal;

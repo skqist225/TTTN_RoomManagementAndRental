@@ -17,13 +17,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 @Service
 public class BookingService {
@@ -54,9 +51,18 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
-    public List<Booking> findByCustomerAndStatus(User customer, Status status) {
+    public List<Booking> findByCustomerAndState(User customer, Status status) {
         return bookingRepository.findByCustomerAndState(customer, status);
     }
+
+    public List<Booking> findByCustomerAndCartStatus(User customer) {
+        return bookingRepository.findByCustomerAndCartStatus(customer);
+    }
+
+    public List<Booking> findByCustomerAndBookedStatus(User customer) {
+        return bookingRepository.findByCustomerAndBookedStatus(customer);
+    }
+
 
     public boolean deleteById(Integer bookingId) throws BookingNotFoundException {
         try {
@@ -206,7 +212,7 @@ public class BookingService {
             throw new ForbiddenException("You are not the host of the room");
 
         float totalFee = canceledBooking.getBookingDetails().stream().reduce(0f, (subtotal, bookingDetail) -> {
-                return subtotal + bookingDetail.getTotalFee();
+            return subtotal + bookingDetail.getTotalFee();
         }, Float::sum);
 
 
@@ -233,53 +239,20 @@ public class BookingService {
         }
 
         LocalDateTime cancelDate = LocalDateTime.now();
+        LocalDateTime bookingDate = canceledBooking.getBookingDate();
 
-        List<BookingDetail> bookingDetailList = new ArrayList<>(canceledBooking.getBookingDetails());
-        LocalDateTime checkinDate = bookingDetailList.get(0).getCheckinDate().toInstant().atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-        LocalDateTime bookingDate = bookingDetailList.get(0).getBooking().getBookingDate();
+        long hours = ChronoUnit.HOURS.between(bookingDate, cancelDate);
 
-        float totalFee = 0;
-        for (BookingDetail bookingDetail : canceledBooking.getBookingDetails()) {
-            LocalDateTime bookingDetailCheckInDate = bookingDetail.getCheckinDate().toInstant().atZone(ZoneId.systemDefault())
-                    .toLocalDateTime();
-            LocalDateTime bookingDetailBookingDate = bookingDetail.getCheckinDate().toInstant().atZone(ZoneId.systemDefault())
-                    .toLocalDateTime();
-            if (bookingDetailCheckInDate.isBefore(checkinDate)) {
-                checkinDate = bookingDetailCheckInDate;
-            }
-            if (bookingDetailBookingDate.isBefore(bookingDate)) {
-                bookingDate = bookingDetailBookingDate;
-            }
-
-            totalFee += bookingDetail.getTotalFee();
-        }
-
-        // If check in date greater than now
-        if (cancelDate.isAfter(checkinDate)) {
-            throw new CancelDateGreaterThanCheckinDateException("Could not cancel booking at current time");
-        }
-
-        if (!bookingDate.toLocalDate().toString().equals(LocalDate.now().toString())) {
-            long numOfDays = ChronoUnit.DAYS.between(bookingDate.toLocalDate(), checkinDate.toLocalDate());
-            List<LocalDate> listOfDates = LongStream.range(0, numOfDays).mapToObj(bookingDate.toLocalDate()::plusDays)
-                    .collect(Collectors.toList());
-
-            System.out.println(listOfDates);
-            LocalDateTime dateBetweenBookingDateAndCheckinDate = listOfDates
-                    .get((int) Math.floor(listOfDates.size() / 2.0)).atStartOfDay();
-
-            if (cancelDate.isBefore(dateBetweenBookingDateAndCheckinDate)) {
-                canceledBooking.setRefundPaid(totalFee);
-            } else {
-                canceledBooking.setRefundPaid(totalFee * 70 / 100);
-            }
+        // In 48 hours, free refund
+        if (hours < 48) {
+            canceledBooking.setRefundPaid(canceledBooking.getTotalFee());
         } else {
-            canceledBooking.setRefundPaid(totalFee);
+            if (!canceledBooking.getState().equals(Status.APPROVED)) {
+                canceledBooking.setRefundPaid(canceledBooking.getTotalFee());
+            } else {
+                canceledBooking.setRefundPaid(canceledBooking.getTotalFee() * 71 / 100);
+            }
         }
-
-        // If canceled date is after the date between booking date and checkin date
-        // User will only get half of the refund paid.
 
         canceledBooking.setCancelDate(cancelDate);
         canceledBooking.setState(Status.CANCELLED);
@@ -352,6 +325,7 @@ public class BookingService {
     public Integer getTotalRevenueOfBookingInLastMonth() {
         return bookingRepository.getTotalRevenueOfBookingInLastMonth();
     }
+
 
     // public Integer getRevenueInSpecificMonthYear(Integer month, Integer year) {
     // return bookingRepository.getRevenueInSpecificMonthYear(month, year);

@@ -24,19 +24,20 @@ public class BookingDetailDTO {
     private String roomName;
     private String roomThumbnail;
     private String roomCurrency;
+    private String roomCategory;
     private Status state;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDateTime bookingDate;
 
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDateTime cancelDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date checkinDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date checkoutDate;
 
     private float pricePerDay;
@@ -49,6 +50,8 @@ public class BookingDetailDTO {
     private String customerAvatar;
     private String roomHostName;
     private String roomHostAvatar;
+    private Integer numberOfReviews;
+    private Float averageRating;
 
     public static BookingDetailDTO build(BookingDetail bookingDetail) {
         Room room = bookingDetail.getRoom();
@@ -60,6 +63,7 @@ public class BookingDetailDTO {
                 .roomId(room.getId())
                 .roomName(room.getName())
                 .roomThumbnail(room.renderThumbnailImage())
+                .roomCategory(room.getCategory().getName())
                 .roomCurrency(room.getCurrency().getSymbol())
                 .state(  bookingDetail.getBooking().getState())
                 .bookingDate(bookingDetail.getBooking().getBookingDate())
@@ -73,9 +77,12 @@ public class BookingDetailDTO {
                 .refundPaid(bookingDetail.getBooking().getRefundPaid())
                 .totalFee(bookingDetail.getTotalFee())
                 .customerAvatar(bookingDetail.getBooking().getCustomer().getAvatarPath())
-                .customerName(   customer.getFullName())
+                .customerName(customer.getFullName())
                 .roomHostName(room.getHost().getFullName())
                 .roomHostAvatar(room.getHost().getAvatarPath())
+                .numberOfReviews(room.getNumberOfReviews())
+                .averageRating(room.getAverageRatings())
+                .roomCategory(room.getCategory().getName())
                 .build();
     }
 }

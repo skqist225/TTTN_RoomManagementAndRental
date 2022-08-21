@@ -13,8 +13,15 @@ import { callToast, getImage } from "../helpers";
 import $ from "jquery";
 
 import "./css/booked_rooms.css";
-import { bookingState } from "../features/booking/bookingSlice";
+import {
+    bookingState,
+    cancelUserBooking,
+    fetchUserBookedOrders,
+} from "../features/booking/bookingSlice";
 import Toast from "../components/notify/Toast";
+import { MyNumberForMat } from "../components/utils";
+import { PreviewBookingInfo, RoomAndPricePreview } from "../components/progress_booking";
+import { getFormattedCheckinAndCheckoutDate } from "./script/progress_booking";
 
 interface IBookedRoomsPageProps {}
 
@@ -24,6 +31,10 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
     const { bookedRooms } = useSelector(userState);
     const { cancelBookingSuccess, createReviewSuccess, cancelledBookingId } =
         useSelector(bookingState);
+
+    const {
+        fetchUserBookedOrdersAction: { loading, bookings },
+    } = useSelector(bookingState);
 
     useEffect(() => {
         let query = "";
@@ -46,18 +57,28 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
         dispatch(fetchBookedRooms({ query: searchValue }));
     }
 
-    useEffect(() => {
-        if (cancelBookingSuccess) {
-            callToast("success", "Hủy đặt phòng thành công");
-            $(`.button[data-booking-id="${cancelledBookingId}"]`).css("display", "none");
-            $(`.button[data-booking-id="${cancelledBookingId}"]`).remove();
-            $(`.button[data-booking-id="${cancelledBookingId}"]`).empty();
-        }
-    }, [cancelBookingSuccess]);
+    // useEffect(() => {
+    //     if (cancelBookingSuccess) {
+    //         callToast("success", "Hủy đặt phòng thành công");
+    //         $(`.button[data-booking-id="${cancelledBookingId}"]`).css("display", "none");
+    //         $(`.button[data-booking-id="${cancelledBookingId}"]`).remove();
+    //         $(`.button[data-booking-id="${cancelledBookingId}"]`).empty();
+    //     }
+    // }, [cancelBookingSuccess]);
 
     useEffect(() => {
         if (createReviewSuccess) callToast("success", "Đánh giá phòng thành công");
     }, [createReviewSuccess]);
+
+    useEffect(() => {
+        dispatch(fetchUserBookedOrders());
+    }, []);
+
+    const today = new Date();
+
+    function userCancelBooking(event: any) {
+        dispatch(cancelUserBooking($(event.currentTarget).data("booking-id")));
+    }
 
     return (
         <>
@@ -67,22 +88,10 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                 className='p-relative'
                 id='user-bookings__mainContainer'
             >
+                <div></div>
                 <div>
                     <div id='user-bookings__container'>
-                        <div style={{ textAlign: "center" }}>
-                            {/* <span
-                                style={{color: 'green'}}
-                                th:if="${cancelMessage == 'Hủy đặt phòng thành công'}"
-                            >
-                                [[${cancelMessage}]]
-                            </span>
-                            <span
-                                style='color: red'
-                                th:if="${cancelMessage == 'Hủy đặt phòng thất bại'}"
-                            >
-                                [[${cancelMessage}]]
-                            </span> */}
-                        </div>
+                        <div style={{ textAlign: "center" }}></div>
                         <div className='normal-flex f1' id='user-bookings__search-container'>
                             <div
                                 style={{ cursor: "pointer", marginRight: "10px" }}
@@ -108,9 +117,229 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                 {/* </Link> */}
                             </div>
                         </div>
-                        {bookedRooms.map(bookedRoom => (
-                            <BookedRoom booking={bookedRoom} key={bookedRoom.bookingId} />
-                        ))}
+                        {bookings.map(booking => {
+                            const hostAvatar = booking.bookingDetails[0].roomHostAvatar;
+                            const hostName = booking.bookingDetails[0].roomHostName;
+
+                            let minCheckinDate = new Date(booking.bookingDetails[0].checkinDate);
+                            booking.bookingDetails.forEach(bookingDetail => {
+                                const checkinDate = new Date(bookingDetail.checkinDate);
+                                if (checkinDate) {
+                                    if (checkinDate.getTime() < minCheckinDate.getTime()) {
+                                        minCheckinDate = checkinDate;
+                                    }
+                                }
+                            });
+
+                            return (
+                                <div
+                                    style={{
+                                        border: "1px solid rgb(221, 221, 221)",
+                                        borderRadius: "12px",
+                                        padding: "20px",
+                                        marginBottom: "12px",
+                                    }}
+                                >
+                                    <div>
+                                        <div className='host_info'>
+                                            <div>
+                                                <img
+                                                    src={getImage(hostAvatar)}
+                                                    className='rdt__host--avatar'
+                                                    alt={hostAvatar}
+                                                />
+                                            </div>
+                                            <div style={{ marginLeft: "20px" }}>
+                                                <h2 className='room-hostName'>{hostName}</h2>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            {booking.state === "APPROVED" && (
+                                                <div
+                                                    style={{
+                                                        padding: "1px 6px",
+                                                        borderRadius: "4px",
+                                                        backgroundColor: "rgb(203 244 201)",
+                                                    }}
+                                                >
+                                                    <span style={{ color: "rgba(14, 98, 69, 1)" }}>
+                                                        <svg
+                                                            aria-hidden='true'
+                                                            className='
+                                                        SVGInline-svg SVGInline--cleaned-svg
+                                                        SVG-svg
+                                                        Icon-svg Icon--check-svg Icon-color-svg
+                                                        Icon-color--green500-svg
+                                                    '
+                                                            height='12'
+                                                            width='12'
+                                                            viewBox='0 0 16 16'
+                                                            xmlns='http://www.w3.org/2000/svg'
+                                                        >
+                                                            <path
+                                                                d='M5.297 13.213L.293 8.255c-.39-.394-.39-1.033 0-1.426s1.024-.394 1.414 0l4.294 4.224 8.288-8.258c.39-.393 1.024-.393 1.414 0s.39 1.033 0 1.426L6.7 13.208a.994.994 0 0 1-1.402.005z'
+                                                                fillRule='evenodd'
+                                                            ></path>
+                                                        </svg>
+                                                    </span>
+                                                    <span className='booking-status'>
+                                                        {" "}
+                                                        Hoàn tất{" "}
+                                                    </span>
+                                                </div>
+                                            )}{" "}
+                                            {booking.state === "PENDING" && (
+                                                <div
+                                                    style={{
+                                                        padding: "1px 6px",
+                                                        borderRadius: "4px",
+                                                        backgroundColor: "#ffcc00",
+                                                    }}
+                                                >
+                                                    <span style={{ color: "white" }}>
+                                                        <svg
+                                                            aria-hidden='true'
+                                                            className='
+                                                        SVGInline-svg SVGInline--cleaned-svg
+                                                        SVG-svg
+                                                        Icon-svg Icon--clock-svg Icon-color-svg
+                                                        Icon-color--gray500-svg
+                                                    '
+                                                            height='12'
+                                                            width='12'
+                                                            viewBox='0 0 16 16'
+                                                            xmlns='http://www.w3.org/2000/svg'
+                                                            style={{ fill: "#222" }}
+                                                        >
+                                                            <path
+                                                                d='M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16zm1-8.577V4a1 1 0 1 0-2 0v4a1 1 0 0 0 .517.876l2.581 1.49a1 1 0 0 0 1-1.732z'
+                                                                fillRule='evenodd'
+                                                            ></path>
+                                                        </svg>
+                                                    </span>
+                                                    <span
+                                                        className='booking-status'
+                                                        style={{ color: "#222" }}
+                                                    >
+                                                        {" "}
+                                                        {today.getTime() >= minCheckinDate.getTime()
+                                                            ? "Quá thời hạn phê duyệt"
+                                                            : " Đang phê duyệt"}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {booking.state === "CANCELLED" && (
+                                                <div
+                                                    style={{
+                                                        backgroundColor: "#dc3545",
+                                                        padding: "1px 6px",
+                                                        borderRadius: "4px",
+                                                    }}
+                                                >
+                                                    <span style={{ color: "rgba(14, 98, 69, 1)" }}>
+                                                        <svg
+                                                            aria-hidden='true'
+                                                            className='
+                                                        SVGInline-svg SVGInline--cleaned-svg
+                                                        SVG-svg
+                                                        Icon-svg Icon--refund-svg Icon-color-svg
+                                                        Icon-color--gray500-svg
+                                                    '
+                                                            height='12'
+                                                            width='12'
+                                                            viewBox='0 0 16 16'
+                                                            xmlns='http://www.w3.org/2000/svg'
+                                                            style={{ fill: "white" }}
+                                                        >
+                                                            <path
+                                                                d='M10.5 5a5 5 0 0 1 0 10 1 1 0 0 1 0-2 3 3 0 0 0 0-6l-6.586-.007L6.45 9.528a1 1 0 0 1-1.414 1.414L.793 6.7a.997.997 0 0 1 0-1.414l4.243-4.243A1 1 0 0 1 6.45 2.457L3.914 4.993z'
+                                                                fillRule='evenodd'
+                                                            ></path>
+                                                        </svg>
+                                                    </span>
+                                                    <span
+                                                        className='booking-status fs-14'
+                                                        style={{ color: "white" }}
+                                                    >
+                                                        {" "}
+                                                        Đã hủy
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {booking.bookingDetails.map(bookingDetail => {
+                                        const room = {
+                                            id: bookingDetail.roomId,
+                                            name: bookingDetail.roomName,
+                                            thumbnail: bookingDetail.roomThumbnail,
+                                            category: bookingDetail.roomCategory,
+                                            numberOfReviews: bookingDetail.numberOfReviews,
+                                            cleanFee: bookingDetail.cleanFee,
+                                            siteFee: bookingDetail.siteFee,
+                                            currencySymbol: bookingDetail.roomCurrency,
+                                            price: bookingDetail.pricePerDay,
+                                            averageRating: bookingDetail.averageRating,
+                                            totalFee: bookingDetail.totalFee,
+                                            checkinDate: bookingDetail.checkinDate,
+                                            checkoutDate: bookingDetail.checkoutDate,
+                                        };
+
+                                        return (
+                                            <div
+                                                style={{
+                                                    marginTop: "12px",
+                                                    borderTop: "1px solid rgb(221, 221, 221)",
+                                                    paddingTop: "12px",
+                                                }}
+                                            >
+                                                <RoomAndPricePreview
+                                                    room={room}
+                                                    numberOfNights={bookingDetail.numberOfDays}
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                                    <div style={{ borderTop: "1px dashed rgb(6 182 212)" }}>
+                                        {" "}
+                                        <div id='boxPreview-footer' className='flex-space'>
+                                            <div className='fs-16 fw-600'>Tổng &nbsp;</div>
+                                            <div>
+                                                <MyNumberForMat
+                                                    isPrefix
+                                                    removeStayType
+                                                    currency={"đ"}
+                                                    price={booking.totalPrice}
+                                                    priceFontSize='16px'
+                                                    priceFontWeight='600'
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='normal-flex'>
+                                        <Link to={"/"}>
+                                            <div className='mr-10'>
+                                                <button className='button bg-normal'>
+                                                    Tiếp tục đặt phòng
+                                                </button>
+                                            </div>
+                                        </Link>
+                                        {booking.state === "PENDING" && (
+                                            // today.getTime() <= checkinDate.getTime() && (
+                                            <div className='cancelBookingBtn mr-10'>
+                                                <button
+                                                    className='button bg-normal'
+                                                    onClick={userCancelBooking}
+                                                    data-booking-id={booking.id}
+                                                >
+                                                    Hủy đặt phòng
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

@@ -1,18 +1,14 @@
-import TextArea from 'antd/lib/input/TextArea';
-import { FC } from 'react';
-import { Div, Image } from '../../globalStyle';
-import { getImage } from '../../helpers';
-import { IRoomDetails } from '../../types/room/type_RoomDetails';
+import TextArea from "antd/lib/input/TextArea";
+import { FC } from "react";
+import { Div } from "../../globalStyle";
 
 interface IContactHostProps {
-    room: IRoomDetails;
+    id: number;
 }
 
-const ContactHost: FC<IContactHostProps> = ({ room }) => {
+const ContactHost: FC<IContactHostProps> = ({ id }) => {
     return (
-        <section className='progress--booking__infoSection'>
-            <div>Bắt buộc cho chuyến đi của bạn</div>
-
+        <section style={{ marginBottom: "12px" }}>
             <div>
                 <div>
                     <div className='fs-16 fw-600'>Nhắn tin cho chủ nhà</div>
@@ -21,27 +17,11 @@ const ContactHost: FC<IContactHostProps> = ({ room }) => {
                     </div>
                 </div>
 
-                <Div className='normal-flex' padding='16px 0 32px'>
-                    <div style={{ marginRight: '16px' }}>
-                        <Image
-                            src={getImage(room!.host.avatar)}
-                            size='50px'
-                            className='rounded-border'
-                        />
-                    </div>
-                    <div>
-                        <div className='fs-16 fw-500'>{room!.host.name}</div>
-                        <div className='fs-14'>
-                            Tham gia vào năm {room!.host.createdDate.split('-')[2]}
-                        </div>
-                    </div>
-                </Div>
-
-                <Div margin='0 0 24px'>
+                <Div>
                     <TextArea
-                        rows={4}
-                        style={{ borderRadius: '16px !important' }}
-                        id='clientMessage'
+                        rows={2}
+                        style={{ borderRadius: "16px !important" }}
+                        id={`clientMessage${id}`}
                     />
                 </Div>
             </div>

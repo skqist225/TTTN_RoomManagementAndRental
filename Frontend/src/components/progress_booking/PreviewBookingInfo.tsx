@@ -1,16 +1,16 @@
-import { FC, useState } from 'react';
-import Calendar from '../utils/Calendar';
-import $ from 'jquery';
-import { getImage } from '../../helpers';
-import { Image } from '../../globalStyle';
-import { IRoomDetails } from '../../types/room/type_RoomDetails';
-import { number } from 'yup/lib/locale';
+import { FC, useState } from "react";
+import Calendar from "../utils/Calendar";
+import $ from "jquery";
+import { getImage } from "../../helpers";
+import { Image } from "../../globalStyle";
+import { IRoomDetails } from "../../types/room/type_RoomDetails";
+import { number } from "yup/lib/locale";
 
 interface IPreviewBookingInfoProps {
     title: string;
     text: string;
     componentName: React.ReactNode;
-    room: IRoomDetails;
+    room?: IRoomDetails;
 }
 
 const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, componentName, room }) => {
@@ -20,19 +20,19 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
 
     function showTriggeredComponent() {
         setShow(true);
-        if (componentName === 'calendar')
-            $('#progress--booking__changeBookingDate--box').css('display', 'block !important');
-        else $('#guest').css('display', 'block');
+        if (componentName === "calendar")
+            $("#progress--booking__changeBookingDate--box").css("display", "block !important");
+        else $("#guest").css("display", "block");
 
-        $('#progress--booking').addClass('remove-scroll');
+        $("#progress--booking").addClass("remove-scroll");
     }
 
     function closeBox() {
         setShow(false);
-        if (componentName === 'calendar')
-            $('#progress--booking__changeBookingDate--box').css('display', 'none !important');
-        else $('#guest').css('display', 'none');
-        $('#progress--booking').removeClass('remove-scroll');
+        if (componentName === "calendar")
+            $("#progress--booking__changeBookingDate--box").css("display", "none !important");
+        else $("#guest").css("display", "none");
+        $("#progress--booking").removeClass("remove-scroll");
 
         setCleanCalendar(false);
     }
@@ -42,19 +42,19 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
         newCheckinDate: string,
         newCheckoutDate: string
     ) {
-        $('#numberOfNight').text(manyDays + 2 + ' đêm');
-        $('#roomBedAndBathroom').text(room!.bed + ' giường · ' + room!.bathroom + ' phòng tắm');
-        $('#checkIn-book_it').val(newCheckinDate);
-        $('#checkOut-book_it').val(newCheckoutDate);
+        // $('#numberOfNight').text(manyDays + 2 + ' đêm');
+        // $('#roomBedAndBathroom').text(room!.bed + ' giường · ' + room!.bathroom + ' phòng tắm');
+        // $('#checkIn-book_it').val(newCheckinDate);
+        // $('#checkOut-book_it').val(newCheckoutDate);
         // displayPreviewLine();
         // setTotalPrice(manyDays + 2, room!.price);
     }
 
     function resetChangeBookingDateBox() {
-        $('#numberOfNight').text('Chọn ngày');
-        $('#roomBedAndBathroom').text('Thêm ngày đi để biết giá chính xác');
-        $('#checkIn-book_it').val('');
-        $('#checkOut-book_it').val('');
+        $("#numberOfNight").text("Chọn ngày");
+        $("#roomBedAndBathroom").text("Thêm ngày đi để biết giá chính xác");
+        $("#checkIn-book_it").val("");
+        $("#checkOut-book_it").val("");
     }
 
     function resetBookingDate() {
@@ -68,8 +68,8 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
         endDateArgs: string,
         numberOfNights: number
     ) {
-        $('.progress--booking__saveDateBtn').removeAttr('disabled');
-        $('.progress--booking__saveDateBtn').on('click', function () {
+        $(".progress--booking__saveDateBtn").removeAttr("disabled");
+        $(".progress--booking__saveDateBtn").on("click", function () {
             window.location.href = `${window.location.origin}/booking/${room?.id}?checkin=${startDateArgs}&checkout=${endDateArgs}&numberOfNights=${numberOfNights}`;
         });
     }
@@ -80,11 +80,11 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
 
     return (
         <>
-            {' '}
-            <div className='flex-space' style={{ paddingBottom: '24px' }}>
+            {" "}
+            <div className='flex-space' style={{ padding: "12px 0" }}>
                 <div className='col-flex'>
                     <div className='fs-16 fw-600'>{title}</div>
-                    <div className='fs-16' style={{ marginTop: '4px', color: '#222' }}>
+                    <div className='fs-16' style={{ marginTop: "4px", color: "#222" }}>
                         {text}
                     </div>
                 </div>
@@ -97,7 +97,7 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
                     </button>
                 </div>
             </div>
-            {componentName === 'calendar' && show ? (
+            {componentName === "calendar" && show ? (
                 <div id='progress--booking__changeBookingDate--box'>
                     <div className='p-relative'>
                         <div className='progress--booking__close--box__btn'>
@@ -106,7 +106,7 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
                                 onClick={closeBox}
                             >
                                 <Image
-                                    src={getImage('/svg/close2.svg')}
+                                    src={getImage("/svg/close2.svg")}
                                     size='16px'
                                     className='p-relative'
                                 />
@@ -119,7 +119,7 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
                                 </div>
                                 <div
                                     className='fs-14 717171'
-                                    style={{ paddingTop: '8px' }}
+                                    style={{ paddingTop: "8px" }}
                                     id='roomBedAndBathroom'
                                 >
                                     Thêm ngày đi để biết giá chính xác
@@ -128,9 +128,9 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
                             <div
                                 className='normal-flex'
                                 style={{
-                                    border: '1px solid rgb(173,173,173)',
-                                    borderRadius: '8px',
-                                    overflow: 'hidden',
+                                    border: "1px solid rgb(173,173,173)",
+                                    borderRadius: "8px",
+                                    overflow: "hidden",
                                 }}
                             >
                                 <div className='inputContainer active'>
@@ -151,7 +151,7 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
                                         >
                                             <span>
                                                 <Image
-                                                    src={getImage('/svg/close2.svg')}
+                                                    src={getImage("/svg/close2.svg")}
                                                     size='12px'
                                                 />
                                             </span>
@@ -176,7 +176,7 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
                                         >
                                             <span>
                                                 <Image
-                                                    src={getImage('/svg/close2.svg')}
+                                                    src={getImage("/svg/close2.svg")}
                                                     size='12px'
                                                 />
                                             </span>
@@ -195,7 +195,7 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
                             setResetCheckoutDate={setResetCheckoutDate}
                             resetChangeBookingDateBox={resetChangeBookingDateBox}
                         />
-                        <div className='normal-flex' style={{ justifyContent: 'flex-end' }}>
+                        <div className='normal-flex' style={{ justifyContent: "flex-end" }}>
                             <div>
                                 <button
                                     className='progress--booking__transparentBtn'

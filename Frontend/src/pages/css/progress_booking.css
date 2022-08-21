@@ -28,9 +28,6 @@
 #boxPreview-header {
     display: flex;
     align-items: flex-start;
-    height: 130px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid rgb(221, 221, 221);
 }
 
 #boxPreview-header > div:last-child {
@@ -42,18 +39,15 @@
 }
 
 #boxPreview-body {
-    flex: 1;
-    /* border-bottom: 1px solid rgb(221, 221, 221); */
+    width: 250px;
+    border-bottom: 1px solid rgb(221, 221, 221);
 }
 
 #boxPreview {
-    width: 465px;
+    width: 100%;
     height: fit-content;
-    padding: 24px;
-    border: 1px solid rgb(221, 221, 221);
-    border-radius: 12px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
 }
 
 #boxPreview-footer {

@@ -45,12 +45,9 @@ public class Booking extends BaseEntity {
 		super(bookingId);
 	}
 
-	public void addBookingDetail(BookingDetail bookingDetail) {
-		this.bookingDetails.add(bookingDetail);
-	}
-
-	public void removeBookingDetail(BookingDetail bookingDetail) {
-		this.bookingDetails.remove(bookingDetail);
+	@Transient
+	public Integer getNumberOfBookingDetails() {
+		return this.bookingDetails.size();
 	}
 
 	@Transient

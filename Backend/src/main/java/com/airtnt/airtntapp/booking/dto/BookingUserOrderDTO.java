@@ -1,6 +1,7 @@
 package com.airtnt.airtntapp.booking.dto;
 
 import com.airtnt.entity.Booking;
+import com.airtnt.entity.Status;
 import com.airtnt.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -23,6 +24,7 @@ public class BookingUserOrderDTO {
     private Integer hostId;
     private String hostFullName;
     private float totalPrice;
+    private Status state;
 
     public static BookingUserOrderDTO build(Booking booking) {
         User host = booking.getBookingDetails().iterator().next().getRoom().getHost();
@@ -35,6 +37,7 @@ public class BookingUserOrderDTO {
                 .hostId(host.getId())
                 .hostFullName(host.getFullName())
                 .totalPrice(booking.getTotalFee())
+                .state(booking.getState())
                 .build();
     }
 }

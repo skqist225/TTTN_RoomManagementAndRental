@@ -4,6 +4,7 @@ package com.airtnt.airtntapp.bookingDetail;
 import com.airtnt.airtntapp.booking.BookingService;
 import com.airtnt.airtntapp.booking.dto.PostCreateBookingDetailDTO;
 import com.airtnt.airtntapp.exception.BookingDetailNotFoundException;
+import com.airtnt.airtntapp.exception.BookingNotFoundException;
 import com.airtnt.airtntapp.exception.ConstrainstViolationException;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
@@ -67,7 +68,7 @@ public class BookingDetailRestController {
         }
 
         User customer = userDetails.getUser();
-        List<Booking> cartBookings = bookingService.findByCustomerAndStatus(customer, Status.CART);
+        List<Booking> cartBookings = bookingService.findByCustomerAndCartStatus(customer);
 
         BookingDetail bookingDetail = null;
         Booking existedBooking = null;
@@ -143,6 +144,18 @@ public class BookingDetailRestController {
         }
     }
 
+    @GetMapping("numberOfCartBookingDetails")
+    public ResponseEntity<StandardJSONResponse<Integer>> numberOfCartBookingDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User customer = userDetails.getUser();
+        List<Booking> cartBookings = bookingService.findByCustomerAndCartStatus(customer);
+
+        Integer numberOfCartBookingDetails = cartBookings.stream().reduce(0, (subtotal, booking) ->
+                        subtotal + booking.getNumberOfBookingDetails()
+                , Integer::sum);
+
+        return new OkResponse<Integer>(numberOfCartBookingDetails).response();
+    }
+
 
     @DeleteMapping("{bookingDetailId}/delete")
     public ResponseEntity<StandardJSONResponse<String>> deleteBookingDetail(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable(value = "bookingDetailId") Integer bookingDetailId) {
@@ -153,10 +166,19 @@ public class BookingDetailRestController {
                 return new ForbiddenResponse<String>("You are not the owner of this booking detail").response();
             }
 
-            System.out.println(bookingDetailId);
-            return new OkResponse<String>(bookingDetailService.deleteById(bookingDetailId)).response();
+            Integer currentNumberOfBookingDetails = bookingDetail.getBooking().getNumberOfBookingDetails();
+            Integer bookingId = bookingDetail.getBooking().getId();
+            String responseMessage = bookingDetailService.deleteById(bookingDetailId);
 
-        } catch (BookingDetailNotFoundException | ConstrainstViolationException e) {
+            if (Objects.equals(currentNumberOfBookingDetails, Integer.parseInt("1"))) {
+                System.out.println("true");
+                bookingService.deleteById(bookingId);
+            }
+
+            return new OkResponse<String>(responseMessage).response();
+
+        } catch (BookingDetailNotFoundException | ConstrainstViolationException | BookingNotFoundException |
+                 RuntimeException e) {
             return new BadResponse<String>(e.getMessage()).response();
         }
     }

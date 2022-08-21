@@ -9,29 +9,33 @@ import {
 import { userState } from "../features/user/userSlice";
 import { getImage } from "../helpers";
 import "./header.css";
-import Badge, { BadgeProps } from '@mui/material/Badge';
-import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Badge, { BadgeProps } from "@mui/material/Badge";
+import { styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { bookingDetailState, getCartNumber } from "../features/bookingDetail/bookingDetailSlice";
 
 interface IHeaderProps {
     includeMiddle: boolean;
     excludeBecomeHostAndNavigationHeader: boolean;
 }
 
-
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
-    '& .MuiBadge-badge': {
+    "& .MuiBadge-badge": {
         right: -3,
         top: 13,
         border: `2px solid ${theme.palette.background.paper}`,
-        padding: '0 4px',
+        padding: "0 4px",
     },
 }));
 
 const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigationHeader }) => {
     const dispatch = useDispatch();
     const { user } = useSelector(userState);
+
+    const {
+        getCartNumberAction: { cartNumber },
+    } = useSelector(bookingDetailState);
 
     const jQuerycode = () => {
         const headerNavButton = document.getElementsByClassName("account__button")[0];
@@ -51,6 +55,8 @@ const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigatio
 
     useEffect(() => {
         jQuerycode();
+
+        dispatch(getCartNumber());
     }, []);
 
     const handleLogout = () => {
@@ -113,18 +119,20 @@ const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigatio
                 )}
                 <div className='header__left'>
                     {!excludeBecomeHostAndNavigationHeader && (
-                       <>
-                           <IconButton aria-label="cart">
-                               <StyledBadge badgeContent={0} color="secondary">
-                                   <ShoppingCartIcon />
-                               </StyledBadge>
-                           </IconButton>
-                           <div style={{ marginRight: "20px" }}>
-                               <Link to={"/become-a-host/intro"} className='header__become-host'>
-                                   Trở thành chủ nhà
-                               </Link>
-                           </div>
-                       </>
+                        <>
+                            <Link to={"/bookings"}>
+                                <IconButton aria-label='cart'>
+                                    <StyledBadge badgeContent={cartNumber} color='secondary'>
+                                        <ShoppingCartIcon />
+                                    </StyledBadge>
+                                </IconButton>
+                            </Link>
+                            <div style={{ marginRight: "20px" }}>
+                                <Link to={"/become-a-host/intro"} className='header__become-host'>
+                                    Trở thành chủ nhà
+                                </Link>
+                            </div>
+                        </>
                     )}
 
                     <div className='navMenuHeader'>

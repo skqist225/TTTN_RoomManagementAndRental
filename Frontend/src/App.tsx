@@ -67,9 +67,6 @@ function App() {
                             element={<PublishCelebrationPage />}
                         ></Route>
                     </Route>
-                    <Route path='/booking'>
-                        <Route path=':roomId' element={<ProgressBookingPage />}></Route>
-                    </Route>
                     <Route path='/manage-your-space'>
                         <Route path=':roomId/details' element={<ManageRoomDetailsPage />}></Route>
                         <Route
@@ -99,6 +96,7 @@ function App() {
                         <Route path='login' element={<LoginPage />} />
                     </Route>
                     <Route path='/bookings' element={<CartPage />} />
+                    <Route path='/bookings/checkout' element={<ProgressBookingPage />} />
                 </Routes>
             </Router>
 
