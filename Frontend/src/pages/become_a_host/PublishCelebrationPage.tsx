@@ -1,19 +1,19 @@
-import { FC, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { LeftPageContent, RightPageContent } from "../../components/become_a_host";
-import { userState } from "../../features/user/userSlice";
-import { Div } from "../../globalStyle";
-import { getImage } from "../../helpers";
+import {FC} from "react";
+import {useSelector} from "react-redux";
+import {useLocation, useParams} from "react-router-dom";
+import {userState} from "../../features/user/userSlice";
+import {Div} from "../../globalStyle";
+import {getImage} from "../../helpers";
 
 import "./css/publish_celebration.css";
 
-interface IPublishCelebrationPageProps {}
+interface IPublishCelebrationPageProps {
+}
 
 const PublishCelebrationPage: FC<IPublishCelebrationPageProps> = () => {
-    const { user } = useSelector(userState);
-    const { pathname } = useLocation();
-    const roomid = pathname.split("/").pop();
+    const {user} = useSelector(userState);
+    const {pathname} = useLocation();
+    const {roomId} = useParams();
 
     return (
         <Div height='100vh'>

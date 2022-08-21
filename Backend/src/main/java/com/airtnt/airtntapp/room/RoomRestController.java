@@ -103,13 +103,13 @@ public class RoomRestController {
 	@RequestMapping("/api/rooms")
 	public ResponseEntity<StandardJSONResponse<List<RoomHomePageDTO>>> fetchRoomsByCategoryId(
 			@RequestParam("categoryId") Integer categoryId,
-			@RequestParam(value = "privacies", required = false, defaultValue = "") String privacies,
+			@RequestParam(value = "privacy", required = false, defaultValue = "") String privacies,
 			@RequestParam(value = "minPrice", required = false, defaultValue = "0") String minPrice,
 			@RequestParam(value = "maxPrice", required = false, defaultValue = "1000000000") String maxPrice,
 			@RequestParam(value = "bedRoom", required = false, defaultValue = "0") String bedRoom,
 			@RequestParam(value = "bed", required = false, defaultValue = "0") String bed,
 			@RequestParam(value = "bathRoom", required = false, defaultValue = "0") String bathRoom,
-			@RequestParam(value = "amentities", required = false, defaultValue = "") String amenitiesFilter,
+			@RequestParam(value = "amenities", required = false, defaultValue = "") String amenitiesFilter,
 			@RequestParam(value = "bookingDates", required = false, defaultValue = "") String bookingDates,
 			@RequestParam(value = "query", required = false, defaultValue = "") String query) throws ParseException {
 		Map<String, String> filters = new HashMap<>();

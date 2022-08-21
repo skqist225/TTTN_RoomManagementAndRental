@@ -10,3 +10,5 @@ export { default as reviewSlice } from "./review/reviewSlice";
 export { default as earningSlice } from "./progress/earningSlice";
 export { default as inboxSlice } from "./inbox/inboxSlice";
 export { default as authSlice } from "./auth/authSlice";
+export { default as cartSlice } from "./cart/cartSlice";
+export { default as bookingDetailSlice } from "./bookingDetail/bookingDetailSlice";

@@ -1,5 +1,5 @@
 package com.airtnt.entity;
 
 public enum Status {
-    PENDING, APPROVED, REJECTED, CANCELLED
+   CART, PENDING, APPROVED, REJECTED, CANCELLED
 }

@@ -31,12 +31,12 @@ type HomeProps = {};
 const HomePage: FC<HomeProps> = () => {
     const dispatch = useDispatch();
     const categoryidString = new URLSearchParams(window.location.search).get('categoryid') || '1';
-    const categoryid = parseInt(categoryidString);
+    const categoryId = parseInt(categoryidString);
     let { rooms, mockingRoomLoading, loading } = useSelector(roomState);
 
     useEffect(() => {
-        dispatch(fetchRoomsByCategoryAndConditions({ categoryid }));
-    }, [categoryid]);
+        dispatch(fetchRoomsByCategoryAndConditions({ categoryId }));
+    }, [categoryId]);
 
     useEffect(() => {
         dispatch(fetchCategories());

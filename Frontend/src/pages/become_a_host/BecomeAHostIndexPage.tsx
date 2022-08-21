@@ -23,7 +23,7 @@ const BecomeAHostIndexPage: FC<IBecomeAHostIndexPageProps> = () => {
                     ></video>
                     <div className='logoWrapper'>
                         <Link to={"/"}>
-                            <img src={getImage("/images/airtntlogo.png")} alt='' id='airTntLogo' />
+                            <img src={getImage("/images/web_logologow.png")} alt='' id='airTntLogo' />
                         </Link>
                     </div>
                 </Div>

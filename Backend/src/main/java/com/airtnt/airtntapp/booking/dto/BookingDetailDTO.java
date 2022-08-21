@@ -42,6 +42,7 @@ public class BookingDetailDTO {
     private float pricePerDay;
     private long numberOfDays;
     private float siteFee;
+    private float cleanFee;
     private float refundPaid;
     private float totalFee;
     private String customerName;
@@ -61,13 +62,14 @@ public class BookingDetailDTO {
                 .roomThumbnail(room.renderThumbnailImage())
                 .roomCurrency(room.getCurrency().getSymbol())
                 .state(  bookingDetail.getBooking().getState())
-                .bookingDate(bookingDetail.getBookingDate())
+                .bookingDate(bookingDetail.getBooking().getBookingDate())
                 .checkinDate(bookingDetail.getCheckinDate())
                 .checkoutDate(bookingDetail.getCheckoutDate())
                 .cancelDate(bookingDetail.getBooking().getCancelDate())
                 .pricePerDay(room.getPrice())
                 .numberOfDays(bookingDetail.getNumberOfDays())
                 .siteFee(bookingDetail.getSiteFee())
+                .cleanFee(bookingDetail.getCleanFee())
                 .refundPaid(bookingDetail.getBooking().getRefundPaid())
                 .totalFee(bookingDetail.getTotalFee())
                 .customerAvatar(bookingDetail.getBooking().getCustomer().getAvatarPath())

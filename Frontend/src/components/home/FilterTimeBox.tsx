@@ -15,11 +15,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import './css/filter_time.css';
 
 interface IFilterTimeBoxProps {
-    categoryid: number;
+    categoryId: number;
     triggerButton: JQuery<HTMLElement>;
 }
 
-const FilterTimeBox: FC<IFilterTimeBoxProps> = ({ categoryid, triggerButton }) => {
+const FilterTimeBox: FC<IFilterTimeBoxProps> = ({ categoryId, triggerButton }) => {
     const dispatch = useDispatch();
     const [calendarActivated, setCalendarActivated] = useState(false);
     const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
@@ -116,7 +116,7 @@ const FilterTimeBox: FC<IFilterTimeBoxProps> = ({ categoryid, triggerButton }) =
                     selectedMonth.push(parseInt(month));
                 }
             });
-            console.log(categoryid);
+
             switch (stayTime) {
                 case 'weekend': {
                     const bookingDates = await f(selectedMonth);
@@ -125,7 +125,7 @@ const FilterTimeBox: FC<IFilterTimeBoxProps> = ({ categoryid, triggerButton }) =
 
                     dispatch(
                         fetchRoomsByCategoryAndConditions({
-                            categoryid,
+                            categoryId,
                             ...filterObject,
                             bookingDates,
                         })
@@ -183,7 +183,7 @@ const FilterTimeBox: FC<IFilterTimeBoxProps> = ({ categoryid, triggerButton }) =
 
             dispatch(
                 fetchRoomsByCategoryAndConditions({
-                    categoryid,
+                    categoryId,
                     ...filterObject,
                     bookingDates: dates,
                 })

@@ -1,40 +1,32 @@
-import { FC, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import {FC, useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {Link, useLocation, useParams} from "react-router-dom";
 import Header from "../components/Header";
 import {
+    AcceptPolicy,
     CancelPolicy,
     ContactHost,
     PaymentError,
-    PaymentMethod,
-    PreviewBookingInfo,
-    RoomAndPricePreview,
-    AcceptPolicy,
     PaymentInfo,
-    ProgressBookingContainer,
-    PBTitleSection,
     PBRoomInfo,
+    PBTitleSection,
+    PreviewBookingInfo,
+    ProgressBookingContainer,
+    RoomAndPricePreview,
 } from "../components/progress_booking";
-import { fetchRoomById, roomState } from "../features/room/roomSlice";
-import { Div, Image } from "../globalStyle";
-import { getImage, useURLParams } from "../helpers";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-    bookingState,
-    createBooking,
-    getStripeClientSecret,
-} from "../features/booking/bookingSlice";
-import { Elements, useElements, useStripe } from "@stripe/react-stripe-js";
-import {
-    calculateBeforeCheckinDateDateAndMonth,
-    getFormattedCheckinAndCheckoutDate,
-} from "./script/progress_booking";
+import {fetchRoomById, roomState} from "../features/room/roomSlice";
+import {Div, Image} from "../globalStyle";
+import {getImage, useURLParams} from "../helpers";
+import {loadStripe} from "@stripe/stripe-js";
+import {bookingState, createBooking, getStripeClientSecret,} from "../features/booking/bookingSlice";
+import {Elements} from "@stripe/react-stripe-js";
+import {calculateBeforeCheckinDateDateAndMonth, getFormattedCheckinAndCheckoutDate,} from "./script/progress_booking";
 
 import $ from "jquery";
 import "./css/progress_booking.css";
-import { PaymentElement } from "@stripe/react-stripe-js";
 
-interface IProgressBookingPageProps {}
+interface IProgressBookingPageProps {
+}
 
 const stripePromise = loadStripe(
     "pk_test_51I0IBMJc966wyBI6MIJecSCfMv7UPan6N0DVxro4nTDYIAQKJOiANIUQotSTu0NP99C5tuKPHdaWCrei9iR2ASsH00gRiN3lVe"
@@ -42,9 +34,9 @@ const stripePromise = loadStripe(
 
 const ProgressBookingPage: FC<IProgressBookingPageProps> = () => {
     const dispatch = useDispatch();
-    const { pathname, search } = useLocation();
-    const roomid = pathname.split("/").pop()!;
-    const { clientSecret, newlyCreatedBooking } = useSelector(bookingState);
+    const {pathname, search} = useLocation();
+    const {roomId} = useParams();
+    const {clientSecret, newlyCreatedBooking} = useSelector(bookingState);
     const { room } = useSelector(roomState);
     const params = useURLParams(search);
 
@@ -56,8 +48,8 @@ const ProgressBookingPage: FC<IProgressBookingPageProps> = () => {
     const [cleanFee, setCleanFee] = useState<number>(0);
 
     useEffect(() => {
-        dispatch(fetchRoomById({ roomid }));
-    }, [roomid]);
+        dispatch(fetchRoomById({roomId: roomId!}));
+    }, [roomId]);
 
     useEffect(() => {
         if (newlyCreatedBooking) {
@@ -88,7 +80,7 @@ const ProgressBookingPage: FC<IProgressBookingPageProps> = () => {
     function makeBooking() {
         dispatch(
             createBooking({
-                roomid: room!.id,
+                roomId: room!.id,
                 checkinDate,
                 checkoutDate,
                 numberOfDays: numberOfNights,

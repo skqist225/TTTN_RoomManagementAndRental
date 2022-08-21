@@ -1,30 +1,29 @@
-import { FC, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ManageYSContainer } from ".";
-import { categoryState, fetchCategories } from "../../features/category/categorySlice";
-import { fetchRoomGroups, fetchRoomPrivacies, roomState } from "../../features/room/roomSlice";
-import { Div } from "../../globalStyle";
-import { IRoomDetails } from "../../types/room/type_RoomDetails";
+import {FC, useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {ManageYSContainer} from ".";
+import {categoryState, fetchCategories} from "../../features/category/categorySlice";
+import {fetchRoomPrivacies, roomState} from "../../features/room/roomSlice";
+import {Div} from "../../globalStyle";
+import {IRoomDetails} from "../../types/room/type_RoomDetails";
 import BoxFooter from "./BoxFooter";
-import { HideEditBox } from "./components";
+import {HideEditBox} from "./components";
 import DisplayEditUI from "./components/DisplayEditUI";
 
-import { hideEditBox } from "../../pages/script/manage_your_space";
-import { IncAndDecBtn } from "../utils/IncAndDecBtn";
+import {hideEditBox} from "../../pages/script/manage_your_space";
+import {IncAndDecBtn} from "../utils/IncAndDecBtn";
 
 interface IEditRoomCountProps {
     room: IRoomDetails;
 }
 
-const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
+const EditRoomCount: FC<IEditRoomCountProps> = ({room}) => {
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(fetchRoomGroups());
         dispatch(fetchCategories());
         dispatch(fetchRoomPrivacies());
     }, []);
-    const { roomGroups, roomPrivacies } = useSelector(roomState);
-    const { categories } = useSelector(categoryState);
+    const {roomPrivacies} = useSelector(roomState);
+    const {categories} = useSelector(categoryState);
 
     return (
         <ManageYSContainer id='roomInfo' data-aos='fade-up' data-aos-duration='2000'>
@@ -65,23 +64,6 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
                                     <div>
                                         <div className='manage-ys__label'>
                                             Loại nào giống nhà/phòng cho thuê của bạn nhất?
-                                        </div>
-                                        <div>
-                                            <select
-                                                id='manage-ys__group-input'
-                                                className='manage-ys__input'
-                                            >
-                                                {roomGroups.map(group => (
-                                                    <option
-                                                        key={group.id}
-                                                        defaultValue={group.id}
-                                                        selected={group.id === room?.groupId}
-                                                        value={group.id}
-                                                    >
-                                                        {group.name}
-                                                    </option>
-                                                ))}
-                                            </select>
                                         </div>
                                     </div>
                                     <div>

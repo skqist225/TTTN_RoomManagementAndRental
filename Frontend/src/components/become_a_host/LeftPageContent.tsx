@@ -24,7 +24,7 @@ const LeftPageContent: FC<ILeftPageContentProps> = ({ background, title, gradien
             <div className='logoWrapper'>
                 <Link to={'/'}>
                     <img
-                        src={getImage('/images/airtntlogo.png')}
+                        src={getImage('/images/web_logologow.png')}
                         alt='airTntLogo'
                         id='airTntLogo'
                     />

@@ -74,7 +74,7 @@
 }
 
 #personal-info__right div:first-child {
-    margin: '32px 0';
+    margin: 32px 0;
 }
 
 .personal__info_part {
@@ -105,7 +105,7 @@
 }
 
 .personal__info_title {
-    margin: 0 px;
+    margin: 0;
     overflow-wrap: break-word;
     font-size: 16px;
     font-weight: 600;
@@ -119,10 +119,10 @@
     text-decoration: none;
     appearance: none;
     background: transparent;
-    border: 0 px;
+    border: 0;
     cursor: pointer;
-    margin: 0 px;
-    padding: 0 px;
+    margin: 0;
+    padding: 0;
     -ms-user-select: auto;
     -webkit-user-select: auto;
     user-select: auto;
@@ -143,10 +143,10 @@
     text-decoration: none;
     appearance: none;
     background: transparent;
-    border: 0px;
+    border: 0;
     cursor: pointer;
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     -ms-user-select: auto;
     -webkit-user-select: auto;
     user-select: auto;
@@ -171,7 +171,7 @@
 }
 
 .personal__info_text {
-    margin: 0 px;
+    margin: 0;
     overflow-wrap: break-word;
     font-size: 16px;
     font-weight: 400;
@@ -181,7 +181,7 @@
 
 .saveEditBtn {
     display: inline-block;
-    margin: 0 px;
+    margin: 0;
     position: relative;
     text-align: center;
     text-decoration: none;
@@ -189,18 +189,17 @@
     transition-duration: 0.2s;
     transition-timing-function: ease-out;
     cursor: pointer;
-    border-radius: 4 px;
+    border-radius: 4px;
     font-size: 16px;
     line-height: 24px;
-    border-radius: 3px;
     height: 48px;
     width: 76px;
     letter-spacing: normal;
-    padding: 10 px 22 px;
+    padding: 10px 22px;
     font-weight: 800;
-    border-width: 2 px;
+    border-width: 2px;
     border-style: solid;
-    min-width: 71.1935 px;
+    min-width: 71px;
     box-shadow: none;
     background: rgb(0, 132, 137);
     border-color: transparent;
@@ -229,6 +228,7 @@
     position: absolute;
     top: -10px;
 }
+
 .c-label:after {
     color: #c51244 !important;
 }

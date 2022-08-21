@@ -31,8 +31,9 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
     }
 
     const dispatch = useDispatch();
-    function apprvBooking(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        dispatch(approveBooking({ bookingid: $(event.currentTarget).data("booking-id") }));
+    function apprBooking(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        const bookingId = $(event.currentTarget).data("booking-id")
+        dispatch(approveBooking({ bookingId: parseInt(bookingId) }));
     }
 
     function viewBooking(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -43,7 +44,7 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
     }
 
     function dropoutBooking(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        dispatch(cancelBooking({ bookingid: $(event.currentTarget).data("booking-id") }));
+        dispatch(cancelBooking({ bookingId: $(event.currentTarget).data("booking-id") }));
     }
 
     const today = new Date().getTime();
@@ -289,7 +290,7 @@ const BookingDataRow: FC<IBookingDataRowProps> = ({ bookingRowData }) => {
                         <button
                             className='listings__complete-room-making listings__td-text'
                             data-booking-id={bookingRowData.bookingId}
-                            onClick={apprvBooking}
+                            onClick={apprBooking}
                         >
                             Phê duyệt
                         </button>

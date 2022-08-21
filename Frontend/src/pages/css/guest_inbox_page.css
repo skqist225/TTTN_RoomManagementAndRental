@@ -21,13 +21,13 @@
 }
 
 .guest--inbox__title {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     contain: paint;
 }
 
 .guest--inbox__inputWrapper {
-    padding:  24px 24px;
+    padding: 24px 24px;
 }
 
 #guest--inbox__input {
@@ -37,7 +37,7 @@
     min-width: 568px;
     outline: none;
     border: 1px solid red;
-    margin: 0px 1px 0px 0px;
+    margin: 0 1px 0 0;
     box-sizing: border-box;
     background-color: rgb(255, 255, 255);
     /* appearance: none; */
@@ -54,6 +54,6 @@
 }
 
 .guest--inbox__receiverinfo {
-        padding: 24px 12px ;
-        position: relative ;
+    padding: 24px 12px;
+    position: relative;
 }

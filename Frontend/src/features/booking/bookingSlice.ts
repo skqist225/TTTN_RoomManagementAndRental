@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
 import api from "../../axios";
-import { RootState } from "../../store";
-import { IBooking } from "../../types/booking/type_Booking";
+import {RootState} from "../../store";
+import {IBooking, IBookingOrder} from "../../types/booking/type_Booking";
 
 interface IFetchUserBookings {
     page: number;
@@ -76,15 +76,29 @@ export const fetchUserBookings = createAsyncThunk(
             console.info(fetchUrl);
 
             const {
-                data: { bookings, totalElements, totalPages },
+                data: {bookings, totalElements, totalPages},
             } = await api.get(fetchUrl);
 
-            return { bookings, totalElements, totalPages };
-        } catch ({ data: { errorMessage } }) {
+            return {bookings, totalElements, totalPages};
+        } catch ({data: {errorMessage}}) {
             rejectWithValue(errorMessage);
         }
     }
 );
+
+
+export const fetchUserOrders = createAsyncThunk("booking/fetchUserOrders",
+    async (
+        _,
+        {rejectWithValue}
+    ) => {
+        try {
+            const {data} = await api.get(`/booking/user/orders`);
+            return {data};
+        } catch ({data: {errorMessage}}) {
+            rejectWithValue(errorMessage);
+        }
+    })
 
 interface IMakeReview {
     bookingId: number;
@@ -110,7 +124,7 @@ export const makeReview = createAsyncThunk(
             valueRating,
             ratingComment,
         }: IMakeReview,
-        { dispatch, getState, rejectWithValue }
+        {rejectWithValue}
     ) => {
         try {
             const data = await api.post(`/booking/${bookingId}/create-review`, {
@@ -131,21 +145,21 @@ export const makeReview = createAsyncThunk(
 
 export const cancelUserBooking = createAsyncThunk(
     "booking/cancelUserBooking",
-    async (bookingId: number, { dispatch, getState, rejectWithValue }) => {
+    async (bookingId: number, {dispatch, rejectWithValue}) => {
         try {
             const data = await api.put(`/booking/${bookingId}/user/canceled`);
 
             if (data) dispatch(setCancelledBooking(bookingId));
 
-            return { data };
-        } catch ({ data: { errorMessage } }) {
+            return {data};
+        } catch ({data: {errorMessage}}) {
             rejectWithValue(errorMessage);
         }
     }
 );
 
 interface ICreateBooking {
-    roomid: number;
+    roomId: number;
     checkinDate: string;
     checkoutDate: string;
     numberOfDays: number;
@@ -155,12 +169,12 @@ interface ICreateBooking {
 export const createBooking = createAsyncThunk(
     "booking/createBooking",
     async (
-        { roomid, checkinDate, checkoutDate, numberOfDays, clientMessage }: ICreateBooking,
-        { dispatch, getState, rejectWithValue }
+        {roomId, checkinDate, checkoutDate, numberOfDays, clientMessage}: ICreateBooking,
+        {rejectWithValue}
     ) => {
         try {
             const { data } = await api.get(
-                `/booking/${roomid}/create?checkin=${checkinDate}&checkout=${checkoutDate}&numberOfDays=${numberOfDays}&clientMessage=${clientMessage}`
+                `/booking/${roomId}/create?checkin=${checkinDate}&checkout=${checkoutDate}&numberOfDays=${numberOfDays}&clientMessage=${clientMessage}`
             );
 
             return { data };
@@ -177,11 +191,11 @@ interface IStripeArgs {
 
 export const getStripeClientSecret = createAsyncThunk(
     "booking/getStripeClientSecret",
-    async (fetchPayload: IStripeArgs, { dispatch, getState, rejectWithValue }) => {
+    async (fetchPayload: IStripeArgs, {rejectWithValue}) => {
         try {
             const data = await api.post(`/create-payment-intent`, fetchPayload);
-            return { data };
-        } catch ({ data: { errorMessage } }) {
+            return {data};
+        } catch ({data: {errorMessage}}) {
             rejectWithValue(errorMessage);
         }
     }
@@ -189,15 +203,15 @@ export const getStripeClientSecret = createAsyncThunk(
 
 export const cancelBooking = createAsyncThunk(
     "booking/cancelBooking",
-    async ({ bookingid }: { bookingid: number }, { dispatch, getState, rejectWithValue }) => {
+    async ({bookingId}: { bookingId: number }, {dispatch, getState, rejectWithValue}) => {
         try {
-            const { data } = await api.put(`/booking/${bookingid}/host/canceled`);
+            const {data} = await api.put(`/booking/${bookingId}/host/canceled`);
             const state = getState() as RootState;
-            const { fetchData } = state.booking;
-            dispatch(fetchUserBookings({ ...fetchData }));
+            const {fetchData} = state.booking;
+            dispatch(fetchUserBookings({...fetchData}));
 
-            return { data };
-        } catch ({ data: { errorMessage } }) {
+            return {data};
+        } catch ({data: {errorMessage}}) {
             rejectWithValue(errorMessage);
         }
     }
@@ -205,11 +219,11 @@ export const cancelBooking = createAsyncThunk(
 
 export const approveBooking = createAsyncThunk(
     "booking/approveBooking",
-    async ({ bookingid }: { bookingid: number }, { dispatch, getState, rejectWithValue }) => {
+    async ({bookingId}: { bookingId: number }, {rejectWithValue}) => {
         try {
-            const { data } = await api.put(`/booking/${bookingid}/approved`);
-            return { data };
-        } catch ({ data: { errorMessage } }) {
+            const {data} = await api.put(`/booking/${bookingId}/approved`);
+            return {data};
+        } catch ({data: {errorMessage}}) {
             rejectWithValue(errorMessage);
         }
     }
@@ -227,6 +241,10 @@ type BookingState = {
     createReviewSuccess: boolean;
     cancelBookingSuccess: boolean;
     cancelledBookingId: number;
+    fetchUserOrdersAction: {
+        loading: boolean;
+        bookings: IBookingOrder[];
+    }
 };
 
 const initialState: BookingState = {
@@ -250,6 +268,10 @@ const initialState: BookingState = {
     createReviewSuccess: false,
     cancelBookingSuccess: false,
     cancelledBookingId: 0,
+    fetchUserOrdersAction: {
+        loading: true,
+        bookings: []
+    }
 };
 
 const bookingSlice = createSlice({
@@ -283,7 +305,7 @@ const bookingSlice = createSlice({
         setSortDir: (state, { payload }) => {
             state.fetchData.sortDir = payload;
         },
-        clearAllFetchData: (state, action) => {
+        clearAllFetchData: (state) => {
             state.fetchData.page = 1;
             state.fetchData.query = "";
             state.fetchData.bookingDate = "";
@@ -310,21 +332,29 @@ const bookingSlice = createSlice({
                 state.loading = false;
                 state.clientSecret = (payload!.data as any).clientSecret!;
             })
-            .addCase(createBooking.fulfilled, (state, { payload }) => {
+            .addCase(createBooking.fulfilled, (state, {payload}) => {
                 state.loading = false;
                 state.newlyCreatedBooking = payload;
             })
-            .addCase(cancelBooking.fulfilled, (state, { payload }) => {
+            .addCase(cancelBooking.fulfilled, (state, {payload}) => {
                 state.cancelMessage = payload?.data;
             })
-            .addCase(approveBooking.fulfilled, (state, { payload }) => {
+            .addCase(approveBooking.fulfilled, (state, {payload}) => {
                 state.cancelMessage = payload?.data;
             })
-            .addCase(makeReview.fulfilled, (state, { payload }) => {
+            .addCase(makeReview.fulfilled, (state) => {
                 state.createReviewSuccess = true;
             })
-            .addCase(cancelUserBooking.fulfilled, (state, { payload }) => {
+            .addCase(cancelUserBooking.fulfilled, (state) => {
                 state.cancelBookingSuccess = true;
+            })
+            .addCase(fetchUserOrders.pending, (state) => {
+                state.cancelBookingSuccess = true;
+            })
+            .addCase(fetchUserOrders.fulfilled, (state, {payload}) => {
+                state.fetchUserOrdersAction.loading = false;
+                // @ts-ignore
+                state.fetchUserOrdersAction.bookings = payload.data;
             })
             .addMatcher(isAnyOf(fetchUserBookings.pending), state => {
                 state.loading = true;

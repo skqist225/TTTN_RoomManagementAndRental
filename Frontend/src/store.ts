@@ -1,18 +1,19 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { combineReducers } from "redux";
+import {configureStore} from "@reduxjs/toolkit";
+import {combineReducers} from "redux";
 import {
-    countrySlice,
-    categorySlice,
-    roomSlice,
-    userSlice,
-    stateSlice,
-    citySlice,
     amenitySlice,
+    authSlice, bookingDetailSlice,
     bookingSlice,
-    reviewSlice,
+    cartSlice,
+    categorySlice,
+    citySlice,
+    countrySlice,
     earningSlice,
     inboxSlice,
-    authSlice,
+    reviewSlice,
+    roomSlice,
+    stateSlice,
+    userSlice,
 } from "./features";
 
 const rootReducer = combineReducers({
@@ -28,6 +29,8 @@ const rootReducer = combineReducers({
     earning: earningSlice,
     inbox: inboxSlice,
     auth: authSlice,
+    cart: cartSlice,
+    bookingDetail: bookingDetailSlice
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

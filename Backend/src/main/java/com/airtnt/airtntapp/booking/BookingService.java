@@ -50,6 +50,14 @@ public class BookingService {
         throw new BookingNotFoundException("Could not find booking with id : " + bookingId);
     }
 
+    public Booking save(Booking booking) {
+        return bookingRepository.save(booking);
+    }
+
+    public List<Booking> findByCustomerAndStatus(User customer, Status status) {
+        return bookingRepository.findByCustomerAndState(customer, status);
+    }
+
     public boolean deleteById(Integer bookingId) throws BookingNotFoundException {
         try {
             bookingRepository.deleteById(bookingId);
@@ -76,18 +84,18 @@ public class BookingService {
         Integer numberOfPending = bookingRepository.countBookingByState(Status.PENDING);
         Integer numberOfCancelled = bookingRepository.countBookingByState(Status.CANCELLED);
 
-        return new CountBookingDTO(numberOfApproved,numberOfPending,numberOfCancelled);
+        return new CountBookingDTO(numberOfApproved, numberOfPending, numberOfCancelled);
     }
 
-    public Booking createBooking(CreateBookingDTO createBookingDTO, User customer,
-                                 String userToken) throws ParseException, RoomHasBeenBookedException, UserHasBeenBookedThisRoomException, RoomNotFoundException, ReserveDateInThePastException {
+    public Booking createBooking(CreateBookingDTO createBookingDTO, User customerUser
+    ) throws ParseException, RoomHasBeenBookedException, UserHasBeenBookedThisRoomException, RoomNotFoundException, ReserveDateInThePastException {
         Set<BookingDetail> bookingDetails = new HashSet<>();
 
         LocalDateTime currentDate = LocalDateTime.now();
         for (PostCreateBookingDetailDTO bookingDetailDTO : createBookingDTO.getBookingDetails()) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-            Date checkinDate = sdf.parse(bookingDetailDTO.getCheckin());
-            Date checkoutDate = sdf.parse(bookingDetailDTO.getCheckout());
+            Date checkinDate = sdf.parse(bookingDetailDTO.getCheckinDate());
+            Date checkoutDate = sdf.parse(bookingDetailDTO.getCheckoutDate());
 
             Room room = roomService.findById(bookingDetailDTO.getRoomId());
 
@@ -103,23 +111,24 @@ public class BookingService {
                 throw new RoomHasBeenBookedException("This room has been booked");
             }
 
-            if (bookingDetailService.isBookedByUser(checkinDate, checkoutDate, room.getId(), customer.getId())) {
+            if (bookingDetailService.isBookedByUser(checkinDate, checkoutDate, room.getId(), customerUser.getId())) {
                 throw new UserHasBeenBookedThisRoomException("You have been booked this room");
             }
 
             float cleanFee = room.getPrice() * 2 / 100;
-            float siteFee = room.getPrice() * 5 / 100;
+            float siteFee = room.getPrice() * 3 / 100;
 
             BookingDetail bookingDetail = BookingDetail.builder().checkinDate(checkinDate).checkoutDate(checkoutDate).siteFee(siteFee)
-                    .room(room).bookingDate(LocalDateTime.now()).cleanFee(cleanFee).build();
+                    .room(room).cleanFee(cleanFee).build();
             bookingDetails.add(bookingDetail);
         }
 
         Booking booking = Booking.builder()
-                .customer(customer)
+                .customer(customerUser)
                 .bookingDetails(bookingDetails)
                 .state(Status.PENDING)
                 .clientMessage(createBookingDTO.getClientMessage())
+                .bookingDate(LocalDateTime.now())
                 .build();
 
         Booking savedBooking = bookingRepository.save(booking);
@@ -172,8 +181,7 @@ public class BookingService {
 
 
     public List<Booking> getBookingsByUser(Integer customerId, String query) {
-//		return bookingRepository.getByCustomer(customerId, query);
-        return null;
+        return bookingRepository.getByCustomer(customerId, query);
     }
 
     public List<Booking> getBookedRoomsByUser(Integer customerId, String query) {
@@ -198,7 +206,7 @@ public class BookingService {
             throw new ForbiddenException("You are not the host of the room");
 
         float totalFee = canceledBooking.getBookingDetails().stream().reduce(0f, (subtotal, bookingDetail) -> {
-            return subtotal + bookingDetail.getTotalFee();
+                return subtotal + bookingDetail.getTotalFee();
         }, Float::sum);
 
 
@@ -211,7 +219,7 @@ public class BookingService {
 
     @Transactional
     public Booking userCancelBooking(Integer bookingId, User user)
-            throws ForbiddenException, BookingNotFoundException, AlreadyCancelException, BookingDetailNotFoundException, CancelDateGreaterThanCheckinDateException {
+            throws ForbiddenException, BookingNotFoundException, AlreadyCancelException, BookingDetailNotFoundException, CancelDateGreaterThanCheckinDateException, ParseException {
         Booking canceledBooking = findById(bookingId);
 
         // if user sent request is not customer of the room
@@ -229,7 +237,7 @@ public class BookingService {
         List<BookingDetail> bookingDetailList = new ArrayList<>(canceledBooking.getBookingDetails());
         LocalDateTime checkinDate = bookingDetailList.get(0).getCheckinDate().toInstant().atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
-        LocalDateTime bookingDate = bookingDetailList.get(0).getBookingDate();
+        LocalDateTime bookingDate = bookingDetailList.get(0).getBooking().getBookingDate();
 
         float totalFee = 0;
         for (BookingDetail bookingDetail : canceledBooking.getBookingDetails()) {

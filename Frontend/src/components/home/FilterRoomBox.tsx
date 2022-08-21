@@ -1,25 +1,26 @@
-import { FC, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Div, Image } from "../../globalStyle";
-import { getImage, seperateNumber } from "../../helpers";
-import { IncAndDecBtn } from "../utils/IncAndDecBtn";
-import { Switch, Checkbox, Slider } from "antd";
-import { MyNumberForMat } from "../utils";
-import {
-    fetchRoomsByCategoryAndConditions,
-    roomState,
-    setCurrentFilterObject,
-} from "../../features/room/roomSlice";
-import { amenityState } from "../../features/amenity/amenitySlice";
+import {FC, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {Div, Image} from "../../globalStyle";
+import {getImage, seperateNumber} from "../../helpers";
+import {IncAndDecBtn} from "../utils/IncAndDecBtn";
+import {Checkbox, Slider} from "antd";
+import {MyNumberForMat} from "../utils";
+import {fetchRoomsByCategoryAndConditions, roomState, setCurrentFilterObject,} from "../../features/room/roomSlice";
+import {amenityState} from "../../features/amenity/amenitySlice";
 
 import $ from "jquery";
+import {CheckboxChangeEvent} from "antd/es/checkbox";
 
-interface IFilterRoomBoxProps {}
+interface IFilterRoomBoxProps {
+}
 
 const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
     const dispatch = useDispatch();
-    const { roomPrivacies, averageRoomPriceByType, filterObject } = useSelector(roomState);
-    const { amenities } = useSelector(amenityState);
+
+    const [amenitiesState, setAmenitiesState] = useState<number[]>([]);
+
+    const {roomPrivacies, averageRoomPriceByType, filterObject} = useSelector(roomState);
+    const {amenities} = useSelector(amenityState);
 
     function hideEditThumbnailBox() {
         // $('.radioThumbnail').each(function () {
@@ -31,11 +32,16 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
         $("#chooseRoomThumbnail").css("display", "none");
         $("#home__mainContainer").removeClass("remove-scroll");
     }
+
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(10000000);
 
-    function onChange(checked: any) {
-        console.log(`switch to ${checked}`);
+    function onChange(event: CheckboxChangeEvent) {
+        if (event.target.checked) {
+            setAmenitiesState((prev: number[]) => [...prev, parseInt(event.target.value)])
+        } else {
+            setAmenitiesState((prev: number[]) => prev.filter(value => value !== parseInt(event.target.value)))
+        }
     }
 
     function sliderOnChange(value: [number, number]) {
@@ -50,46 +56,41 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
                 parseInt(new URLSearchParams(window.location.search).get("categoryid") as string) ||
                 1;
 
-            let choosenPrivacy: number[] = [];
+            let chosenPrivacy: number[] = [];
             $('input[name="privacyFilter"]:checked').each(function () {
-                choosenPrivacy.push(parseInt($(this).val()! as string));
+                chosenPrivacy.push(parseInt($(this).val()! as string));
             });
 
             const minPrice = ($("#min-input__modify").val() as string).replace(/\./g, "");
-            const maxPrice = ($("#max-input__modify").val() as string).replace(/\./g, "");
+            const maxPrice = ($("#max-input__modify").val() as string).replace(/\./g, "").replace(/,/g, '');
 
             const bedRoomCount = parseInt($("#listings__bed-room-count").text());
             const bedCount = parseInt($("#listings__bed-count").text());
             const bathRoomCount = parseInt($("#listings__bath-room-count").text());
 
-            const selectedAmentities: number[] = [];
-            $('input[class="amentitySelected"]:checked').each(function () {
-                selectedAmentities.push(parseInt($(this).val() as string));
-            });
-
             dispatch(
                 fetchRoomsByCategoryAndConditions({
-                    categoryid: categoryId,
-                    privacies: choosenPrivacy,
+                    categoryId,
+                    privacy: chosenPrivacy,
                     minPrice: parseInt(minPrice),
                     maxPrice: parseInt(maxPrice),
                     bedRoomCount,
                     bedCount,
                     bathRoomCount,
-                    selectedAmentities,
+                    selectedAmenities: amenitiesState,
                     bookingDates: filterObject.bookingDates,
                 })
             );
 
             dispatch(
                 setCurrentFilterObject({
-                    choosenPrivacy,
+                    chosenPrivacy,
                     minPrice: parseInt(minPrice),
                     maxPrice: parseInt(maxPrice),
                     bedCount,
                     bedRoomCount,
                     bathRoomCount,
-                    selectedAmentities,
+                    selectedAmenities: amenitiesState,
                     bookingDates: [],
                 })
             );
@@ -200,20 +201,20 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className='index__filter-block'>
-                                <div>
-                                    <div className='index__box-filter-title'>Đặt ngay</div>
-                                    <div className='flex-space'>
-                                        <div className='fs-16'>
-                                            Nhà/phòng cho thuê bạn có thể đặt mà không cần chờ chủ
-                                            nhà chấp thuận
-                                        </div>
-                                        <div>
-                                            <Switch defaultChecked onChange={onChange} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            {/*<div className='index__filter-block'>*/}
+                            {/*    <div>*/}
+                            {/*        <div className='index__box-filter-title'>Đặt ngay</div>*/}
+                            {/*        <div className='flex-space'>*/}
+                            {/*            <div className='fs-16'>*/}
+                            {/*                Nhà/phòng cho thuê bạn có thể đặt mà không cần chờ chủ*/}
+                            {/*                nhà chấp thuận*/}
+                            {/*            </div>*/}
+                            {/*            <div>*/}
+                            {/*                <Switch defaultChecked onChange={onChange} />*/}
+                            {/*            </div>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
                             <div className='index__filter-block'>
                                 <div>
                                     <div className='index__box-filter-title'>
@@ -221,7 +222,7 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
                                     </div>
 
                                     <div>
-                                        <div className='flex-space' style={{ height: "50px" }}>
+                                        <div className='flex-space' style={{height: "50px"}}>
                                             <div className='fs-18'>Giường</div>
                                             <IncAndDecBtn
                                                 dataEdit='listings__bed-count'

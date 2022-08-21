@@ -1,13 +1,13 @@
 package com.airtnt.entity;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,8 +22,12 @@ public class Booking extends BaseEntity {
 	private User customer;
 
 	@Builder.Default
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "booking")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "booking")
 	private Set<BookingDetail> bookingDetails = new HashSet<>();
+
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private LocalDateTime bookingDate;
 
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@JsonFormat(pattern = "dd-MM-yyyy")
@@ -41,10 +45,18 @@ public class Booking extends BaseEntity {
 		super(bookingId);
 	}
 
+	public void addBookingDetail(BookingDetail bookingDetail) {
+		this.bookingDetails.add(bookingDetail);
+	}
+
+	public void removeBookingDetail(BookingDetail bookingDetail) {
+		this.bookingDetails.remove(bookingDetail);
+	}
+
 	@Transient
 	public float getTotalFee() {
-		return this.bookingDetails.stream().reduce(0f ,(subtotal, bookingDetail) -> {
+		return this.bookingDetails.stream().reduce(0f, (subtotal, bookingDetail) -> {
 			return subtotal + bookingDetail.getTotalFee();
-		},Float::sum);
+		}, Float::sum);
 	}
 }

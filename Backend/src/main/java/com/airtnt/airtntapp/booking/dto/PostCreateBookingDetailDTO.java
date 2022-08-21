@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class PostCreateBookingDetailDTO {
-   private String checkin;
-   private String checkout;
+   private String checkinDate;
+   private String checkoutDate;
    private Integer roomId;
 }

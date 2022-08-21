@@ -16,7 +16,6 @@ import {
     PropertyAmenitiesPage,
     PropertyCategoryPage,
     PropertyDescriptionPage,
-    PropertyGroupPage,
     PropertyLocationPage,
     PropertyPricePage,
     PropertyPrivacyPage,
@@ -31,6 +30,7 @@ import {
 } from "./pages";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import PersonalInfoPage from "./pages/PersonalInfoPage";
+import CartPage from "./pages/CartPage";
 
 function App() {
     return (
@@ -52,7 +52,6 @@ function App() {
                     </Route>
                     <Route path='become-a-host'>
                         <Route path='intro' element={<BecomeAHostIndexPage />}></Route>
-                        <Route path='property-type-group' element={<PropertyGroupPage />} />
                         <Route path='property-category' element={<PropertyCategoryPage />} />
                         <Route path='privacy-type' element={<PropertyPrivacyPage />} />
                         <Route path='location' element={<PropertyLocationPage />} />
@@ -64,17 +63,17 @@ function App() {
                         <Route path='price' element={<PropertyPricePage />} />
                         <Route path='preview' element={<RoomPreviewPage />} />
                         <Route
-                            path='publish-celebration/:roomid'
+                            path='publish-celebration/:roomId'
                             element={<PublishCelebrationPage />}
                         ></Route>
                     </Route>
                     <Route path='/booking'>
-                        <Route path=':roomid' element={<ProgressBookingPage />}></Route>
+                        <Route path=':roomId' element={<ProgressBookingPage />}></Route>
                     </Route>
                     <Route path='/manage-your-space'>
-                        <Route path=':roomid/details' element={<ManageRoomDetailsPage />}></Route>
+                        <Route path=':roomId/details' element={<ManageRoomDetailsPage />}></Route>
                         <Route
-                            path=':roomid/details/photos'
+                            path=':roomId/details/photos'
                             element={<ManageRoomPhotosPage />}
                         ></Route>
                     </Route>
@@ -99,6 +98,7 @@ function App() {
                         <Route path='register' element={<RegisterPage />} />
                         <Route path='login' element={<LoginPage />} />
                     </Route>
+                    <Route path='/bookings' element={<CartPage />} />
                 </Routes>
             </Router>
 

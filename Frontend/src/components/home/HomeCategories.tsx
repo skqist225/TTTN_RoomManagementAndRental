@@ -44,7 +44,7 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
         $('#getMoreCategoryBtn').text(self.text());
 
         setCurrentCategory(self.data('category-id'));
-        dispatch(fetchRoomsByCategoryAndConditions({ categoryid: self.data('category-id') }));
+        dispatch(fetchRoomsByCategoryAndConditions({ categoryId: self.data('category-id') }));
         const addMoreIcon = $('#addMoreIcon');
         addMoreIcon.addClass('active');
         addMoreIcon.attr('src', getImage(self.data('category-icon')));
@@ -158,7 +158,7 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
                             </button>
 
                             <FilterTimeBox
-                                categoryid={currentCategory}
+                                categoryId={currentCategory}
                                 triggerButton={$('#selectFilterTimeBtn')}
                             />
                         </div>

@@ -22,14 +22,14 @@ let isUploaded = false;
 
 const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
     const dispatch = useDispatch();
-    const { roomid } = useParams();
+    const { roomId } = useParams();
     const { room } = useSelector(roomState);
     const { user } = useSelector(userState);
     const { pathname } = useLocation();
     const [firstTime, setFirstTime] = useState(true);
 
     useEffect(() => {
-        dispatch(fetchRoomById({ roomid: roomid! }));
+        dispatch(fetchRoomById({ roomId: roomId! }));
     }, []);
 
     useEffect(() => {

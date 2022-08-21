@@ -71,7 +71,7 @@ const ManageBookingPage: FC<IManageBookingPageProps> = () => {
                         : filterBox.addClass("active");
 
                     if ($(this).data("dropdown") === "clearFilter") {
-                        dispatch(clearAllFetchData({}));
+                        dispatch(clearAllFetchData());
                         dispatch(fetchUserBookings({ page: fetchData.page }));
                     }
                 });

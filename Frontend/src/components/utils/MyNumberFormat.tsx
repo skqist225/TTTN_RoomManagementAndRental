@@ -14,16 +14,14 @@ export interface IMoneyForMat {
 }
 
 export default function MyNumberForMat({
-    price,
-    currency,
-    stayTypeFontSize,
-    priceFontSize,
-    priceFontWeight,
-    isPrefix,
-    isSuffix = false,
-    color,
-    removeStayType = false,
-}: IMoneyForMat) {
+                                           price,
+                                           currency,
+                                           priceFontSize,
+                                           priceFontWeight,
+                                           isPrefix,
+                                           isSuffix = false,
+                                           color,
+                                       }: IMoneyForMat) {
     return (
         <>
             {" "}
@@ -46,16 +44,11 @@ export default function MyNumberForMat({
                                     >
                                         {formattedValue}{" "}
                                     </span>
-                                    {!removeStayType && (
-                                        <span style={{ fontSize: stayTypeFontSize, color }}>
-                                            / đêm
-                                        </span>
-                                    )}
+
                                 </>
                             ) : (
                                 <>
                                     <span className='rdt__price'>{formattedValue}</span>
-                                    {!removeStayType && <span className='fs-16'>đêm</span>}
                                 </>
                             )}
                         </div>
@@ -80,16 +73,11 @@ export default function MyNumberForMat({
                                     >
                                         {formattedValue}{" "}
                                     </span>
-                                    {!removeStayType && (
-                                        <span style={{ fontSize: stayTypeFontSize, color }}>
-                                            / đêm
-                                        </span>
-                                    )}
+
                                 </>
                             ) : (
                                 <>
                                     <span className='rdt__price'>{formattedValue} </span>
-                                    {!removeStayType && <span className='fs-16'>đêm</span>}
                                 </>
                             )}
                         </div>
@@ -113,16 +101,11 @@ export default function MyNumberForMat({
                                     >
                                         {formattedValue}{" "}
                                     </span>
-                                    {!removeStayType && (
-                                        <span style={{ fontSize: stayTypeFontSize, color }}>
-                                            / đêm
-                                        </span>
-                                    )}
+
                                 </>
                             ) : (
                                 <>
                                     <span className='rdt__price'>{formattedValue} </span>
-                                    {!removeStayType && <span className='fs-16'>đêm</span>}
                                 </>
                             )}
                         </div>

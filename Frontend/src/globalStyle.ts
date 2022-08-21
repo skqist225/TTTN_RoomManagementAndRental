@@ -1,35 +1,36 @@
-import styled, { createGlobalStyle } from "styled-components";
+import styled, {createGlobalStyle} from "styled-components";
+import {Link} from 'react-router-dom';
 
 const GlobalStyle = createGlobalStyle`
-    ul {
-        padding-left: 0;
-    }
+  ul {
+    padding-left: 0;
+  }
 
-    a {
-        text-decoration: none;
-        color: #222;
-    }
+  a {
+    text-decoration: none;
+    color: #222;
+  }
 
-    a:hover {
-        color: #222;
-    }
+  a:hover {
+    color: #222;
+  }
 
-    .flex {
-        display: flex;
-    }
+  .flex {
+    display: flex;
+  }
 
-    .normal-flex {
-        display: flex;
-        align-items: center;
-    }
+  .normal-flex {
+    display: flex;
+    align-items: center;
+  }
 
-    .flex-space {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+  .flex-space {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-    .flex-center {
+  .flex-center {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -134,27 +135,28 @@ const GlobalStyle = createGlobalStyle`
     }
 
     .717171 {
-        color: #717171;
-    }
+    color: #717171
+  ;
+  }
 
-    .rounded-border {
-        border-radius: 50%;
-    }
+  .rounded-border {
+    border-radius: 50%;
+  }
 
-    .content__box--name {
-        font-size: 18px;
-        line-height: 24px;
-        font-style: bold;
-    }
+  .content__box--name {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: bold;
+  }
 
-    .grid-3 {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);        
-        gap: 10px;
-    }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
 
-    .grid-2 {
-        display: grid;
+  .grid-2 {
+    display: grid;
         grid-template-columns: repeat(2, 1fr);        
         gap: 10px;
     }
@@ -246,10 +248,99 @@ interface IDivWithBackGroundProps {
 }
 
 export const DivWithBackGround = styled.div`
-    background-image: ${(props: IDivWithBackGroundProps) => "url(" + props.src + ")"};
-    background-position: center;
-    background-size: cover;
-    ${(props: IDivWithBackGroundProps) => props.gradientBg}
+  background-image: ${(props: IDivWithBackGroundProps) => "url(" + props.src + ")"};
+  background-position: center;
+  background-size: cover;
+  ${(props: IDivWithBackGroundProps) => props.gradientBg}
+`;
+
+interface IButtonStyle {
+    width?: string;
+    height?: string;
+    padding?: string;
+    color?: string;
+    backgroundColor?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    textTransform?: string;
+    borderRadius?: string;
+    border?: string;
+}
+
+export const Button = styled.button`
+  width: ${(props: IButtonStyle) => props.width};
+  height: ${(props: IButtonStyle) => props.height};
+  padding: ${(props: IButtonStyle) => props.padding};
+  color: ${(props: IButtonStyle) => props.color};
+  background-color: ${(props: IButtonStyle) => props.backgroundColor};
+  font-size: ${(props: IButtonStyle) => props.fontSize};
+  font-weight: ${(props: IButtonStyle) => props.fontWeight};
+  text-transform: ${(props: IButtonStyle) => props.textTransform || 'none'};
+  border-radius: ${(props: IButtonStyle) => props.borderRadius || '2px'};
+  border: ${(props: IButtonStyle) => props.border || 'none'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  cursor: pointer;
+`;
+
+interface IFlexStyle {
+    flexDirection?: string;
+    alignItems?: string;
+    justifyContent?: string;
+    width?: string;
+    height?: string;
+    padding?: string;
+}
+
+export const Flex = styled.div`
+  display: flex;
+  flex-direction: ${(props: IFlexStyle) => props.flexDirection || 'row'};
+  align-items: ${(props: IFlexStyle) => props.alignItems || 'center'};
+  justify-content: ${(props: IFlexStyle) => props.justifyContent};
+  width: ${(props: IFlexStyle) => props.width};
+  height: ${(props: IFlexStyle) => props.height};
+  padding: ${(props: IFlexStyle) => props.padding};
+`;
+
+interface IAnchorStyle {
+    color?: string;
+    fontWeight?: string;
+    fontSize?: string;
+}
+
+export const Anchor = styled(Link)`
+  color: ${(props: IAnchorStyle) => props.color};
+  font-weight: ${(props: IAnchorStyle) => props.fontWeight};
+  font-size: ${(props: IAnchorStyle) => props.fontSize};
+`;
+
+interface IWhiteBgWrapperStyle {
+    padding?: string;
+    mt?: string;
+}
+
+export const WhiteBgWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  padding: ${(props: IWhiteBgWrapperStyle) => props.padding};
+  margin-top: ${(props: IWhiteBgWrapperStyle) => props.mt};
+`;
+
+interface IContentContainerStyle {
+    maxwidth?: string;
+    padding?: string;
+    height?: string;
+}
+
+export const ContentContainer = styled.div`
+  max-width: ${(props: IContentContainerStyle) => props.maxwidth || '1200px'};
+  width: 100%;
+  margin: 0 auto;
+  padding: ${(props: IContentContainerStyle) => props.padding || '0 0'};
+  height: ${(props: IContentContainerStyle) => props.height || '100%'};
 `;
 
 export default GlobalStyle;

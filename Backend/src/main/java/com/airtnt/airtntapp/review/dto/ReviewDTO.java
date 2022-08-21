@@ -32,14 +32,12 @@ public class ReviewDTO {
     @Transient
     @JsonIgnore
     public static ReviewDTO build(Review review) {
-//        return ReviewDTO.builder()
-//                .comment(review.getComment())
-//                .customerName(review.getBooking().getCustomer().getFullName())
-//                .customerAvatar(review.getBooking().getCustomer().getAvatarPath())
-//                .rating(review.getSubRating())
-//                .createdAt(review.getCreatedDate())
-//                .build();
-
-        return null;
+        return ReviewDTO.builder()
+                .comment(review.getComment())
+                .customerName(review.getBookingDetail().getBooking().getCustomer().getFullName())
+                .customerAvatar(review.getBookingDetail().getBooking().getCustomer().getAvatarPath())
+                .rating(review.getSubRating())
+                .createdAt(review.getCreatedDate())
+                .build();
     }
 }

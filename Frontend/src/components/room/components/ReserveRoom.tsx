@@ -1,35 +1,36 @@
-import { FC } from "react";
-import { useSelector } from "react-redux";
+import {FC} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import styled from "styled-components";
-import { userState } from "../../../features/user/userSlice";
-import { Div, Image } from "../../../globalStyle";
-import { getImage, callToast } from "../../../helpers";
-import { IRoomDetails } from "../../../types/room/type_RoomDetails";
+import {userState} from "../../../features/user/userSlice";
+import {Div, Image} from "../../../globalStyle";
+import {callToast, getImage} from "../../../helpers";
+import {IRoomDetails} from "../../../types/room/type_RoomDetails";
 import Toast from "../../notify/Toast";
 import $ from "jquery";
-import { MyNumberForMat } from "../../utils";
+import {MyNumberForMat} from "../../utils";
+import {upsertBookingDetail} from "../../../features/bookingDetail/bookingDetailSlice";
 
 interface IReserveRoomProps {
     room: IRoomDetails;
 }
 
 const RDTBookingRatingAndReview = styled.div`
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 
-    span {
-        font-size: 14px;
-        font-weight: 500;
-        margin-right: 5px;
-    }
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 5px;
+  }
 
-    &:first-child {
-        display: inline-flex;
-        align-items: center;
-    }
+  &:first-child {
+    display: inline-flex;
+    align-items: center;
+  }
 
-    span:last-child {
-        text-decoration: underline;
-    }
+  span:last-child {
+    text-decoration: underline;
+  }
 `;
 
 const RDTBookingPreviewPriceLine = styled.div.attrs(props => ({
@@ -49,7 +50,9 @@ const RDTBookingPreviewPriceLine = styled.div.attrs(props => ({
 `;
 
 const ReserveRoom: FC<IReserveRoomProps> = ({ room }) => {
-    const { user } = useSelector(userState);
+    const dispatch = useDispatch();
+
+    const {user} = useSelector(userState);
 
     function processBooking() {
         const checkinDate = $("#checkinDate").text().replaceAll("/", "-");
@@ -64,13 +67,21 @@ const ReserveRoom: FC<IReserveRoomProps> = ({ room }) => {
             return;
         }
 
-        const numberOfNights = $("#numberOfNight").text();
-        window.location.href = `${window.location.origin}/booking/${
-            room?.id
-        }?checkin=${checkinDate.replace(/\//g, "-")}&checkout=${checkoutDate.replace(
-            /\//g,
-            "-"
-        )}&numberOfNights=${numberOfNights}`;
+        dispatch(upsertBookingDetail({
+            checkinDate: checkinDate.replace(/\//g, "-"),
+            checkoutDate: checkoutDate.replace(
+                /\//g,
+                "-"
+            ),
+            roomId: room.id
+        }));
+
+        // window.location.href = `${window.location.origin}/booking/${
+        //     room?.id
+        // }?checkin=${checkinDate.replace(/\//g, "-")}&checkout=${checkoutDate.replace(
+        //     /\//g,
+        //     "-"
+        // )}&numberOfNights=${numberOfNights}`;
     }
 
     return (

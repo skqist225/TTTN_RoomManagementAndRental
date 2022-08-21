@@ -1,20 +1,19 @@
-import { Satellite } from "@material-ui/icons";
-import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
 import api from "../../axios";
-import { RootState } from "../../store";
-import { IRoom, IRoomGroup, IRoomPrivacy } from "../../types/room/type_Room";
-import { IRoomDetails } from "../../types/room/type_RoomDetails";
-import { IRoomListings } from "../../types/room/type_RoomListings";
+import {RootState} from "../../store";
+import {IRoom, IRoomGroup, IRoomPrivacy} from "../../types/room/type_Room";
+import {IRoomDetails} from "../../types/room/type_RoomDetails";
+import {IRoomListings} from "../../types/room/type_RoomListings";
 
 interface IFetchRoomsByCategoryAndConditions {
-    categoryid: number;
-    privacies?: number[];
+    categoryId: number;
+    privacy?: number[];
     minPrice?: number;
     maxPrice?: number;
     bedRoomCount?: number;
     bedCount?: number;
     bathRoomCount?: number;
-    selectedAmentities?: number[];
+    selectedAmenities?: number[];
     bookingDates?: string[];
 }
 
@@ -22,37 +21,44 @@ export const fetchRoomsByCategoryAndConditions = createAsyncThunk(
     "room/fetchRoomsByCategoryAndConditions",
     async (
         {
-            categoryid,
-            privacies = [],
+            categoryId,
+            privacy = [],
             minPrice = 0,
             maxPrice = 1000000000,
             bedRoomCount = 0,
             bedCount = 0,
             bathRoomCount = 0,
-            selectedAmentities = [],
+            selectedAmenities = [],
             bookingDates = [],
         }: IFetchRoomsByCategoryAndConditions,
         { dispatch, getState, rejectWithValue }
     ) => {
         try {
-            const { data } = await api.get(
-                `/rooms?categoryId=${categoryid}&privacies=${privacies.join(
-                    " "
-                )}&minPrice=${minPrice}&maxPrice=${maxPrice}&bedRoom=${bedRoomCount}&bed=${bedCount}&bathRoom=${bathRoomCount}&amentities=${selectedAmentities.join(
-                    " "
-                )}&bookingDates=${bookingDates.join(",")}`
+            let requestUri :string[] = [];
+
+            if (privacy?.length > 0) {
+                requestUri.push(`privacy=${privacy.join(" ")}`);
+            }
+
+            if (selectedAmenities?.length > 0) {
+                requestUri.push(`&amenities=${selectedAmenities.join(" ")}`);
+            }
+            //&bookingDates=${bookingDates.join(",")
+
+            const {data} = await api.get(
+                `/rooms?categoryId=${categoryId}&minPrice=${minPrice}&maxPrice=${maxPrice}&bedRoom=${bedRoomCount}&bed=${bedCount}&bathRoom=${bathRoomCount}&${requestUri.join('&')}`
             );
             if (data) dispatch(setMockingRoomLoading(true));
-            return { data };
+            return {data};
         } catch (error) {}
     }
 );
 
 export const fetchRoomById = createAsyncThunk(
     "room/fetchRoomById",
-    async ({ roomid }: { roomid: string }, { dispatch, getState, rejectWithValue }) => {
+    async ({ roomId }: { roomId: string }, { dispatch, getState, rejectWithValue }) => {
         try {
-            const { data } = await api.get(`/room/${roomid}`);
+            const { data } = await api.get(`/room/${roomId}`);
 
             return { data };
         } catch (error) {}
@@ -149,17 +155,6 @@ export const fetchRoomPrivacies = createAsyncThunk(
     }
 );
 
-export const fetchRoomGroups = createAsyncThunk(
-    "room/fetchRoomGroups",
-    async (_, { dispatch, getState, rejectWithValue }) => {
-        try {
-            const { data } = await api.get(`/room-group`);
-
-            return { data };
-        } catch (error) {}
-    }
-);
-
 export const findAverageRoomPriceByType = createAsyncThunk(
     "room/findAverageRoomPriceByType",
     async (_, { dispatch, getState, rejectWithValue }) => {
@@ -188,7 +183,7 @@ export const addRoom = createAsyncThunk(
     }
 );
 interface IPostUpdateRoom {
-    roomid: number;
+    roomId: number;
     fieldName: string;
     postObj: Object;
 }
@@ -196,17 +191,17 @@ interface IPostUpdateRoom {
 export const updateRoom = createAsyncThunk(
     "room/updateRoom",
     async (
-        { roomid, fieldName, postObj }: IPostUpdateRoom,
+        { roomId, fieldName, postObj }: IPostUpdateRoom,
         { dispatch, getState, rejectWithValue }
     ) => {
         try {
             const data = await api.post(
-                `/manage-your-space/update/${roomid}/${fieldName}`,
+                `/manage-your-space/update/${roomId}/${fieldName}`,
                 postObj
             );
 
             if (data) {
-                dispatch(fetchRoomById({ roomid: roomid.toString() }));
+                dispatch(fetchRoomById({ roomId: roomId.toString() }));
                 dispatch(resetUpdateStatus());
             }
 
@@ -344,9 +339,6 @@ const roomSlice = createSlice({
             })
             .addCase(fetchRoomPrivacies.fulfilled, (state, { payload }) => {
                 state.roomPrivacies = payload?.data;
-            })
-            .addCase(fetchRoomGroups.fulfilled, (state, { payload }) => {
-                state.roomGroups = payload?.data;
             })
             .addCase(findAverageRoomPriceByType.fulfilled, (state, { payload }) => {
                 state.averageRoomPriceByType = payload?.data;

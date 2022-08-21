@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 import Header from "../components/Header";
 import { fetchRoomById, roomState } from "../features/room/roomSlice";
 
@@ -27,8 +27,10 @@ const ManageRoomDetailsPage: FC<IManageRoomDetailsPageProps> = () => {
     const { room } = useSelector(roomState);
     const { amenities } = useSelector(amenityState);
 
+    const {roomId} = useParams();
+
     useEffect(() => {
-        dispatch(fetchRoomById({ roomid: pathname.split("/")[2] }));
+        dispatch(fetchRoomById({ roomId: roomId! }));
 
         dispatch(fetchAmenities());
     }, []);

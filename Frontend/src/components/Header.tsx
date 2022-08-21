@@ -9,11 +9,25 @@ import {
 import { userState } from "../features/user/userSlice";
 import { getImage } from "../helpers";
 import "./header.css";
+import Badge, { BadgeProps } from '@mui/material/Badge';
+import { styled } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 interface IHeaderProps {
     includeMiddle: boolean;
     excludeBecomeHostAndNavigationHeader: boolean;
 }
+
+
+const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+    '& .MuiBadge-badge': {
+        right: -3,
+        top: 13,
+        border: `2px solid ${theme.palette.background.paper}`,
+        padding: '0 4px',
+    },
+}));
 
 const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigationHeader }) => {
     const dispatch = useDispatch();
@@ -45,7 +59,7 @@ const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigatio
 
     function refreshPage() {
         dispatch(resetCurretnFilterObject());
-        dispatch(fetchRoomsByCategoryAndConditions({ categoryid: 1 }));
+        dispatch(fetchRoomsByCategoryAndConditions({ categoryId: 1 }));
 
         window.location.href = "/";
     }
@@ -99,11 +113,18 @@ const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigatio
                 )}
                 <div className='header__left'>
                     {!excludeBecomeHostAndNavigationHeader && (
-                        <div style={{ marginRight: "20px" }}>
-                            <Link to={"/become-a-host/intro"} className='header__become-host'>
-                                Trở thành chủ nhà
-                            </Link>
-                        </div>
+                       <>
+                           <IconButton aria-label="cart">
+                               <StyledBadge badgeContent={0} color="secondary">
+                                   <ShoppingCartIcon />
+                               </StyledBadge>
+                           </IconButton>
+                           <div style={{ marginRight: "20px" }}>
+                               <Link to={"/become-a-host/intro"} className='header__become-host'>
+                                   Trở thành chủ nhà
+                               </Link>
+                           </div>
+                       </>
                     )}
 
                     <div className='navMenuHeader'>

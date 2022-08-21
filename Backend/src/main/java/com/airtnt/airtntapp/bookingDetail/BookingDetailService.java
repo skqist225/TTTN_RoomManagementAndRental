@@ -3,8 +3,12 @@ package com.airtnt.airtntapp.bookingDetail;
 import com.airtnt.airtntapp.booking.BookedDateDTO;
 import com.airtnt.airtntapp.booking.UnitExpression;
 import com.airtnt.airtntapp.booking.dto.BookingListDTO;
-import com.airtnt.airtntapp.exception.*;
-import com.airtnt.entity.*;
+import com.airtnt.airtntapp.exception.BookingDetailNotFoundException;
+import com.airtnt.airtntapp.exception.ConstrainstViolationException;
+import com.airtnt.entity.BookingDetail;
+import com.airtnt.entity.Room;
+import com.airtnt.entity.Status;
+import com.airtnt.entity.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,13 +29,16 @@ import java.util.*;
 public class BookingDetailService {
     public final int MAX_BOOKING_PER_FETCH_BY_HOST = 10;
     public final int BOOKINGS_PER_PAGE = 10;
+    private final String DELETE_SUCCESSFULLY = "Delete Booking Detail Successfully";
+    private final String DELETE_FORBIDDEN = "Could not delete this booking detail";
+
 
     @Autowired
     private BookingDetailRepository bookingDetailRepository;
 
     public BookingDetail findById(Integer bookingDetailId) throws BookingDetailNotFoundException {
         Optional<BookingDetail> bookingDetail = bookingDetailRepository.findById(bookingDetailId);
-        if(bookingDetail.isPresent()) {
+        if (bookingDetail.isPresent()) {
             return bookingDetail.get();
         }
 
@@ -48,7 +55,7 @@ public class BookingDetailService {
     }
 
     public boolean isBooked(Date checkinDate, Date checkoutDate, Integer roomId) throws ParseException {
-        List<BookingDetail> bookingDetails = bookingDetailRepository.getBookedDates(roomId);
+        List<BookingDetail> bookingDetails = bookingDetailRepository.getBookedDates(roomId, Status.APPROVED);
 
         boolean isBooked = false;
         for (BookingDetail bookingDetail : bookingDetails) {
@@ -224,6 +231,15 @@ public class BookingDetailService {
 //            bookedRoomDTOs.add(BookedRoomDTO.build(booking));
 //        return bookedRoomDTOs;
 //    }
+
+    public String deleteById(Integer id) throws ConstrainstViolationException {
+        try {
+            bookingDetailRepository.deleteById(id);
+            return DELETE_SUCCESSFULLY;
+        } catch (Exception ex) {
+            throw new ConstrainstViolationException(DELETE_FORBIDDEN);
+        }
+    }
 
     public Page<BookingDetail> listByPage(int pageNum, String sortField, String sortDir, String keyword) {
         Sort sort = Sort.by(sortField);

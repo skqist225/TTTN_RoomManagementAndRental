@@ -8,7 +8,6 @@ export { default as BookedRoomsPage } from "./BookedRoomsPage";
 export { default as ManageBookingsPage } from "./ManageBookingsPage";
 export { default as BecomeAHostIndexPage } from "./become_a_host/BecomeAHostIndexPage";
 export { default as PropertyCategoryPage } from "./become_a_host/PropertyCategoryPage";
-export { default as PropertyGroupPage } from "./become_a_host/PropertyGroupPage";
 export { default as PropertyPrivacyPage } from "./become_a_host/PropertyPrivacyPage";
 export { default as PropertyLocationPage } from "./become_a_host/PropertyLocationPage";
 export { default as PropertyRoomInfoPage } from "./become_a_host/PropertyRoomInfoPage";

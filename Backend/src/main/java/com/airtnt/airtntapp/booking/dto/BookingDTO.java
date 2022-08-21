@@ -1,19 +1,13 @@
 package com.airtnt.airtntapp.booking.dto;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.airtnt.entity.Booking;
 import com.airtnt.entity.BookingDetail;
 import com.airtnt.entity.Status;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -29,12 +23,12 @@ public class BookingDTO {
 	private Set<BookingDetailDTO> bookingDetails;
 	private float totalFee;
 
-	public static BookingDTO build(Booking booking) {
+	public static BookingDTO build(Booking booking) throws ParseException {
 		Set<BookingDetailDTO> bookingDetailDTOS = new HashSet<>();
 		for(BookingDetail bookingDetail : booking.getBookingDetails()) {
 			bookingDetailDTOS.add(BookingDetailDTO.build(bookingDetail));
 		}
-
+		
 		return BookingDTO.builder().bookingId(booking.getId()).state(booking.getState())
 				.customerAvatar(booking.getCustomer().getAvatarPath())
 				.customerFullName(booking.getCustomer().getFullName())
@@ -42,5 +36,13 @@ public class BookingDTO {
 				.bookingDetails(bookingDetailDTOS)
 				.totalFee(booking.getTotalFee())
 				.build();
+
+//		return BookingDTO.builder().bookingId(booking.getId()).state(booking().getState())
+//				.customerAvatar(booking.getBooking().getCustomer().getAvatarPath())
+//				.customerFullName(booking.getBooking().getCustomer().getFullName())
+//				.customerId(booking.getBooking().getCustomer().getId())
+//				.bookingDetails(bookingDetailDTOS)
+//				.totalFee(booking.getTotalFee())
+//				.build();
 	}
 }

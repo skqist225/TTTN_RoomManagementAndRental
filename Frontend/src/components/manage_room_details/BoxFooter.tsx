@@ -59,7 +59,7 @@ const BoxFooter: FC<IBoxFooterProps> = ({
     function sendRequest(data: any) {
         dispatch(
             updateRoom({
-                roomid: room!.id,
+                roomId: room!.id,
                 fieldName: sectionKey,
                 postObj: data,
             })

@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import com.airtnt.airtntapp.FileUploadUtil;
 import com.airtnt.airtntapp.booking.BookingService;
+import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
 import com.airtnt.airtntapp.city.CityService;
 import com.airtnt.airtntapp.common.GetResource;
 import com.airtnt.airtntapp.country.CountryService;
@@ -36,6 +37,7 @@ import com.airtnt.airtntapp.user.dto.UserSexDTO;
 import com.airtnt.airtntapp.user.dto.WishlistsDTO;
 import com.airtnt.airtntapp.userReview.UserReviewService;
 import com.airtnt.entity.Address;
+import com.airtnt.entity.Booking;
 import com.airtnt.entity.Chat;
 import com.airtnt.entity.City;
 import com.airtnt.entity.Country;
@@ -81,6 +83,9 @@ public class UserORestController {
 
 	@Autowired
 	private BookingService bookingService;
+
+	@Autowired
+	private BookingDetailService bookingDetailService;
 
 	@Autowired
 	private CountryService countryService;
@@ -160,95 +165,95 @@ public class UserORestController {
 		Map<String, String> updateData = postUpdateUserDTO.getUpdateData();
 
 		switch (updatedField) {
-			case "firstNameAndLastName": {
-				if (updateData.get("firstName") == null && updateData.get("lastName") == null) {
-					return new BadResponse<User>("First name or last name is required").response();
-				}
+		case "firstNameAndLastName": {
+			if (updateData.get("firstName") == null && updateData.get("lastName") == null) {
+				return new BadResponse<User>("First name or last name is required").response();
+			}
 
-				if (updateData.get("firstName") != null) {
-					currentUser.setFirstName(updateData.get("firstName"));
-				}
-				if (updateData.get("lastName") != null) {
-					currentUser.setLastName(updateData.get("lastName"));
-				}
-				savedUser = userService.saveUser(currentUser);
-				break;
+			if (updateData.get("firstName") != null) {
+				currentUser.setFirstName(updateData.get("firstName"));
 			}
-			case "sex": {
-				String newSex = updateData.get("sex");
-				Sex sex = newSex.equals("MALE") ? Sex.MALE : newSex.equals("FEMALE") ? Sex.FEMALE : Sex.OTHER;
-				currentUser.setSex(sex);
-				savedUser = userService.saveUser(currentUser);
-				break;
+			if (updateData.get("lastName") != null) {
+				currentUser.setLastName(updateData.get("lastName"));
 			}
-			case "gender": {
-				if (updateData.get("gender") == null) {
-					return new BadResponse<User>("Gender is required").response();
-				}
-				String newSex = updateData.get("gender");
-				Sex sex = newSex.equals("MALE") ? Sex.MALE : newSex.equals("FEMALE") ? Sex.FEMALE : Sex.OTHER;
-				currentUser.setSex(sex);
-				savedUser = userService.saveUser(currentUser);
-				break;
+			savedUser = userService.saveUser(currentUser);
+			break;
+		}
+		case "sex": {
+			String newSex = updateData.get("sex");
+			Sex sex = newSex.equals("MALE") ? Sex.MALE : newSex.equals("FEMALE") ? Sex.FEMALE : Sex.OTHER;
+			currentUser.setSex(sex);
+			savedUser = userService.saveUser(currentUser);
+			break;
+		}
+		case "gender": {
+			if (updateData.get("gender") == null) {
+				return new BadResponse<User>("Gender is required").response();
 			}
-			case "birthdayWeb": {
-				Integer yearOfBirth = Integer.parseInt(updateData.get("yearOfBirth"));
-				Integer monthOfBirth = Integer.parseInt(updateData.get("monthOfBirth"));
-				Integer dayOfBirth = Integer.parseInt(updateData.get("dayOfBirth"));
+			String newSex = updateData.get("gender");
+			Sex sex = newSex.equals("MALE") ? Sex.MALE : newSex.equals("FEMALE") ? Sex.FEMALE : Sex.OTHER;
+			currentUser.setSex(sex);
+			savedUser = userService.saveUser(currentUser);
+			break;
+		}
+		case "birthdayWeb": {
+			Integer yearOfBirth = Integer.parseInt(updateData.get("yearOfBirth"));
+			Integer monthOfBirth = Integer.parseInt(updateData.get("monthOfBirth"));
+			Integer dayOfBirth = Integer.parseInt(updateData.get("dayOfBirth"));
 
-				currentUser.setBirthday(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
-				savedUser = userService.saveUser(currentUser);
-				break;
+			currentUser.setBirthday(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
+			savedUser = userService.saveUser(currentUser);
+			break;
+		}
+		case "birthday": {
+			if (updateData.get("birthday") == null) {
+				return new BadResponse<User>("Birthday is required").response();
 			}
-			case "birthday": {
-				if (updateData.get("birthday") == null) {
-					return new BadResponse<User>("Birthday is required").response();
-				}
-				LocalDate birthd = LocalDate.parse(updateData.get("birthday"));
-				currentUser.setBirthday(birthd);
-				savedUser = userService.saveUser(currentUser);
-				break;
-			}
-			case "address": {
-				Integer countryId = Integer.parseInt(updateData.get("country"));
-				Integer stateId = Integer.parseInt(updateData.get("country"));
-				Integer cityId = Integer.parseInt(updateData.get("country"));
-				String aprtNoAndStreet = updateData.get("aprtNoAndStreet");
+			LocalDate birthd = LocalDate.parse(updateData.get("birthday"));
+			currentUser.setBirthday(birthd);
+			savedUser = userService.saveUser(currentUser);
+			break;
+		}
+		case "address": {
+			Integer countryId = Integer.parseInt(updateData.get("country"));
+			Integer stateId = Integer.parseInt(updateData.get("country"));
+			Integer cityId = Integer.parseInt(updateData.get("country"));
+			String aprtNoAndStreet = updateData.get("aprtNoAndStreet");
 
-				Country country = countryService.getCountryById(countryId);
-				State state = stateService.getStateById(stateId);
-				City city = cityService.getCityById(cityId);
+			Country country = countryService.getCountryById(countryId);
+			State state = stateService.getStateById(stateId);
+			City city = cityService.getCityById(cityId);
 
-				Address newAddress = new Address(city, aprtNoAndStreet);
-				currentUser.setAddress(newAddress);
-				savedUser = userService.saveUser(currentUser);
-				break;
-			}
-			case "email": {
-				String newEmail = updateData.get("email");
-				currentUser.setEmail(newEmail);
-				savedUser = userService.saveUser(currentUser);
+			Address newAddress = new Address(city, aprtNoAndStreet);
+			currentUser.setAddress(newAddress);
+			savedUser = userService.saveUser(currentUser);
+			break;
+		}
+		case "email": {
+			String newEmail = updateData.get("email");
+			currentUser.setEmail(newEmail);
+			savedUser = userService.saveUser(currentUser);
 
-				// return ResponseEntity.ok()
-				// .header(HttpHeaders.SET_COOKIE,
-				// cookiePorcess.writeCookie("user", savedUser.getEmail()).toString())
-				// .body(new StandardJSONResponse<User>(true, savedUser, null));
-			}
-			case "password": {
-				String newPassword = updateData.get("newPassword");
+			// return ResponseEntity.ok()
+			// .header(HttpHeaders.SET_COOKIE,
+			// cookiePorcess.writeCookie("user", savedUser.getEmail()).toString())
+			// .body(new StandardJSONResponse<User>(true, savedUser, null));
+		}
+		case "password": {
+			String newPassword = updateData.get("newPassword");
 
-				currentUser.setPassword(newPassword);
-				userService.encodePassword(currentUser);
-				savedUser = userService.saveUser(currentUser);
-				break;
-			}
-			case "phoneNumber": {
-				String newPhoneNumber = updateData.get("phoneNumber");
+			currentUser.setPassword(newPassword);
+			userService.encodePassword(currentUser);
+			savedUser = userService.saveUser(currentUser);
+			break;
+		}
+		case "phoneNumber": {
+			String newPhoneNumber = updateData.get("phoneNumber");
 
-				currentUser.setPhoneNumber(newPhoneNumber);
-				savedUser = userService.saveUser(currentUser);
-				break;
-			}
+			currentUser.setPhoneNumber(newPhoneNumber);
+			savedUser = userService.saveUser(currentUser);
+			break;
+		}
 		}
 
 		return new OkResponse<User>(savedUser).response();
@@ -295,8 +300,7 @@ public class UserORestController {
 			if (environment.equals("development")) {
 				uploadDir = "src/main/resources/static/user_images/" + user.getId() + "/";
 			} else {
-				String filePath = "/opt/tomcat/webapps/ROOT/WEB-INF/classes/static/user_images/" + user.getId()
-						+ "/";
+				String filePath = "/opt/tomcat/webapps/ROOT/WEB-INF/classes/static/user_images/" + user.getId() + "/";
 				Path uploadPath = Paths.get(filePath);
 				if (!Files.exists(uploadPath)) {
 					Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxr--r--");
@@ -415,9 +419,17 @@ public class UserORestController {
 			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
 			@RequestParam(value = "query", required = false, defaultValue = "") String query) {
 		User user = userDetailsImpl.getUser();
-//		List<BookedRoomDTO> bookings = bookingService.getBookedRoomsByUser(user.getId(), query);
 
-		return new OkResponse<List<BookedRoomDTO>>(null).response();
+		List<Booking> bookings = bookingService.getBookingsByUser(user.getId(), query);
+
+		List<BookedRoomDTO> bookedRoomDetails = new ArrayList<>();
+
+		for (Booking booking : bookings) {
+			List<BookedRoomDTO> bookedRoomDetailss = BookedRoomDTO.build(booking);
+			bookedRoomDetails.addAll(bookedRoomDetails);
+		}
+
+		return new OkResponse<List<BookedRoomDTO>>(bookedRoomDetails).response();
 	}
 
 	@GetMapping("inbox")

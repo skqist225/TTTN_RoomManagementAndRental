@@ -39,7 +39,7 @@ export const Category: FC<ICategoryProps> = ({ category, index, setCurrentCatego
         const catContainers = $('.cat__container');
         const self = $(event.currentTarget);
 
-        dispatch(fetchRoomsByCategoryAndConditions({ categoryid: self.data('category-id') }));
+        dispatch(fetchRoomsByCategoryAndConditions({ categoryId: self.data('category-id') }));
         setActiveTab(catContainers, self.parent('.cat__container'));
     }
 

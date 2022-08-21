@@ -28,7 +28,7 @@ const RoomDetails: FC<IRoomDetailsProps> = () => {
     };
 
     useEffect(() => {
-        dispatch(fetchRoomById({ roomid: pathname.split("/").pop()! }));
+        dispatch(fetchRoomById({ roomId: pathname.split("/").pop()! }));
     }, [dispatch, pathname]);
 
     useEffect(() => {

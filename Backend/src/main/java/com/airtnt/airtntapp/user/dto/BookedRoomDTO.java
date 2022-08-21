@@ -1,22 +1,21 @@
 package com.airtnt.airtntapp.user.dto;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.airtnt.entity.Booking;
 import com.airtnt.entity.BookingDetail;
 import com.airtnt.entity.Status;
 import com.airtnt.entity.SubRating;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.auto.value.AutoValue.Builder;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -67,13 +66,14 @@ public class BookedRoomDTO {
                 reviewRating = b.getReview().getSubRating();
             }
 
-          return new BookedRoomDTO(b.getId(), b.getBookingDate(), b.getCheckinDate(), b.getCheckoutDate(),
+            return new BookedRoomDTO(b.getId(), booking.getBookingDate(), b.getCheckinDate(), b.getCheckoutDate(),
                     b.getPricePerDay(), b.getNumberOfDays(),
                     b.getSiteFee(), b.getRoom().getId(), roomThumbnail, b.getRoom().getName(),
                     userFullName,
                     userAvatar, b.getRoom().getCurrency().getSymbol(), b.getRoom().getPrivacyType().getName(),
                     b.getRoom().getCategory().getName(),
                     bookingReview, reviewRating, b.getBooking().getState());
+
         }).collect(Collectors.toList());
     }
 }
