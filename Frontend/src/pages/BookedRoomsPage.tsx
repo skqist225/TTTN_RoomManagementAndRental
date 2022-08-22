@@ -29,8 +29,11 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
     const dispatch = useDispatch();
     const { search } = useLocation();
     const { bookedRooms } = useSelector(userState);
-    const { cancelBookingSuccess, createReviewSuccess, cancelledBookingId } =
-        useSelector(bookingState);
+    const {
+        createReviewSuccess,
+        cancelledBookingId,
+        cancelBookingAction: { successMessage, errorMessage },
+    } = useSelector(bookingState);
 
     const {
         fetchUserBookedOrdersAction: { loading, bookings },
@@ -57,14 +60,21 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
         dispatch(fetchBookedRooms({ query: searchValue }));
     }
 
-    // useEffect(() => {
-    //     if (cancelBookingSuccess) {
-    //         callToast("success", "Hủy đặt phòng thành công");
-    //         $(`.button[data-booking-id="${cancelledBookingId}"]`).css("display", "none");
-    //         $(`.button[data-booking-id="${cancelledBookingId}"]`).remove();
-    //         $(`.button[data-booking-id="${cancelledBookingId}"]`).empty();
-    //     }
-    // }, [cancelBookingSuccess]);
+    useEffect(() => {
+        if (successMessage) {
+            callToast("success", successMessage);
+            $(`.button[data-booking-id="${cancelledBookingId}"]`).css("display", "none");
+            $(`.button[data-booking-id="${cancelledBookingId}"]`).remove();
+            $(`.button[data-booking-id="${cancelledBookingId}"]`).empty();
+            dispatch(fetchUserBookedOrders());
+        }
+    }, [successMessage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            callToast("error", errorMessage);
+        }
+    }, [errorMessage]);
 
     useEffect(() => {
         if (createReviewSuccess) callToast("success", "Đánh giá phòng thành công");
@@ -73,8 +83,6 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
     useEffect(() => {
         dispatch(fetchUserBookedOrders());
     }, []);
-
-    const today = new Date();
 
     function userCancelBooking(event: any) {
         dispatch(cancelUserBooking($(event.currentTarget).data("booking-id")));
@@ -120,16 +128,6 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                         {bookings.map(booking => {
                             const hostAvatar = booking.bookingDetails[0].roomHostAvatar;
                             const hostName = booking.bookingDetails[0].roomHostName;
-
-                            let minCheckinDate = new Date(booking.bookingDetails[0].checkinDate);
-                            booking.bookingDetails.forEach(bookingDetail => {
-                                const checkinDate = new Date(bookingDetail.checkinDate);
-                                if (checkinDate) {
-                                    if (checkinDate.getTime() < minCheckinDate.getTime()) {
-                                        minCheckinDate = checkinDate;
-                                    }
-                                }
-                            });
 
                             return (
                                 <div
@@ -221,10 +219,44 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                                         className='booking-status'
                                                         style={{ color: "#222" }}
                                                     >
-                                                        {" "}
-                                                        {today.getTime() >= minCheckinDate.getTime()
-                                                            ? "Quá thời hạn phê duyệt"
-                                                            : " Đang phê duyệt"}
+                                                        Đang phê duyệt
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {booking.state === "OUTOFDATE" && (
+                                                <div
+                                                    style={{
+                                                        padding: "1px 6px",
+                                                        borderRadius: "4px",
+                                                        backgroundColor: "#ffcc00",
+                                                    }}
+                                                >
+                                                    <span style={{ color: "white" }}>
+                                                        <svg
+                                                            aria-hidden='true'
+                                                            className='
+                                                        SVGInline-svg SVGInline--cleaned-svg
+                                                        SVG-svg
+                                                        Icon-svg Icon--clock-svg Icon-color-svg
+                                                        Icon-color--gray500-svg
+                                                    '
+                                                            height='12'
+                                                            width='12'
+                                                            viewBox='0 0 16 16'
+                                                            xmlns='http://www.w3.org/2000/svg'
+                                                            style={{ fill: "#222" }}
+                                                        >
+                                                            <path
+                                                                d='M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16zm1-8.577V4a1 1 0 1 0-2 0v4a1 1 0 0 0 .517.876l2.581 1.49a1 1 0 0 0 1-1.732z'
+                                                                fillRule='evenodd'
+                                                            ></path>
+                                                        </svg>
+                                                    </span>
+                                                    <span
+                                                        className='booking-status'
+                                                        style={{ color: "#222" }}
+                                                    >
+                                                        Quá thời hạn phê duyệt
                                                     </span>
                                                 </div>
                                             )}
@@ -325,7 +357,6 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                             </div>
                                         </Link>
                                         {booking.state === "PENDING" && (
-                                            // today.getTime() <= checkinDate.getTime() && (
                                             <div className='cancelBookingBtn mr-10'>
                                                 <button
                                                     className='button bg-normal'

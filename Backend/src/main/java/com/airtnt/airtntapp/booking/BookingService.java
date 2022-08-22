@@ -1,8 +1,6 @@
 package com.airtnt.airtntapp.booking;
 
-import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
-import com.airtnt.airtntapp.booking.dto.CreateBookingDTO;
-import com.airtnt.airtntapp.booking.dto.PostCreateBookingDetailDTO;
+import com.airtnt.airtntapp.booking.dto.*;
 import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
 import com.airtnt.airtntapp.exception.*;
 import com.airtnt.airtntapp.room.RoomService;
@@ -12,8 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -224,18 +224,25 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking userCancelBooking(Integer bookingId, User user)
-            throws ForbiddenException, BookingNotFoundException, AlreadyCancelException, BookingDetailNotFoundException, CancelDateGreaterThanCheckinDateException, ParseException {
+    public Booking userCancelBooking(Integer bookingId, User customer)
+            throws ForbiddenException, BookingNotFoundException, AlreadyCancelException, BookingDetailNotFoundException, CancelDateGreaterThanCheckinDateException, ParseException, ReserveDateInThePastException {
         Booking canceledBooking = findById(bookingId);
-
+        Date checkinDate = canceledBooking.getMinCheckinDate();
         // if user sent request is not customer of the room
-        if (!user.getId().equals(canceledBooking.getCustomer().getId())) {
+        if (!customer.getId().equals(canceledBooking.getCustomer().getId())) {
             throw new ForbiddenException("You are not the owner of this booking");
         }
 
         // Can not cancel the same room two time
         if (canceledBooking.getState().equals(Status.CANCELLED)) {
             throw new AlreadyCancelException("You have been canceled this room");
+        }
+
+        Date now = new Date();
+        System.out.println(now);
+
+        if(now.compareTo(checkinDate) > 0) {
+            throw new ReserveDateInThePastException("Can not cancel booking at current time");
         }
 
         LocalDateTime cancelDate = LocalDateTime.now();
@@ -258,6 +265,111 @@ public class BookingService {
         canceledBooking.setState(Status.CANCELLED);
 
         return bookingRepository.save(canceledBooking);
+    }
+
+    public BookingListDTO getBookingListByRooms(List<Integer> roomIds, Map<String, String> filters, int page) {
+        String query = filters.get("query");
+        String bookingDateStr = filters.get("bookingDate");
+        String isCompleteStr = filters.get("isComplete");
+        String bookingDateYear = filters.get("bookingDateYear");
+        String bookingDateMonth = filters.get("bookingDateMonth");
+        String sortField = filters.get("sortField");
+        String sortDir = filters.get("sortDir");
+        Float totalFee = Float.parseFloat(filters.get("totalFee"));
+
+        Sort sort = Sort.by(sortField);
+        if (sortField.equals("room-name")) {
+            sort = Sort.by("room.name");
+        }
+        if (sortField.equals("customer-fullName")) {
+            Sort sortByCustomerFirstName = Sort.by("customer.firstName");
+            Sort sortByCustomerLastName = Sort.by("customer.lastName");
+            sort = sortByCustomerFirstName.and(sortByCustomerLastName);
+        }
+
+        sort = sortDir.equals("ASC") ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(page - 1, MAX_BOOKING_PER_FETCH_BY_HOST, sort);
+
+        Page<Booking> bookingPage = bookingRepository.findAll(new Specification<Booking>() {
+            @Override
+            public Predicate toPredicate(Root<Booking> root, CriteriaQuery<?> criteriaQuery,
+                                         CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+
+                Expression<String> bookingId = root.get("id");
+//                Expression<String> roomName = root.get("room").get("name");
+                Expression<LocalDateTime> bookingDate = root.get("bookingDate");
+//                Expression<User> roomId = root.get("room").get("id");
+//                Expression<Float> cleanFee = root.get("cleanFee");
+//                Expression<Float> siteFee = root.get("siteFee");
+                Expression<Status> state = root.get("state");
+                Join<Booking, BookingDetail> joinOptions = root.join("bookingDetails", JoinType.LEFT);
+
+                predicates.add(criteriaBuilder.and(joinOptions.get("room").get("id").in(roomIds)));
+
+//                predicates.add(criteriaBuilder.and(roomId.in(roomIds)));
+
+//                if (!StringUtils.isEmpty(query)) {
+//                    Expression<String> wantedQueryField = criteriaBuilder.concat(bookingId, roomName);
+//                    predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + query + "%")));
+//                }
+
+//                if (!StringUtils.isEmpty(bookingDateStr)) {
+//                    try {
+//                        LocalDateTime bkDate = new SimpleDateFormat("yyyy-MM-dd").parse(bookingDateStr).toInstant()
+//                                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+//                        LocalDateTime startOfBookingDate = bkDate.withHour(0).withMinute(0).withSecond(0);
+//                        LocalDateTime endOfBookingDate = bkDate.withHour(23).withMinute(0).withSecond(0);
+//
+//                        predicates.add(
+//                                criteriaBuilder.and(criteriaBuilder.lessThanOrEqualTo(bookingdDate, endOfBookingDate)));
+//                        predicates.add(criteriaBuilder
+//                                .and(criteriaBuilder.greaterThanOrEqualTo(bookingdDate, startOfBookingDate)));
+//                    } catch (ParseException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                if (!StringUtils.isEmpty(isCompleteStr)) {
+//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(state, isCompleteStr)));
+//                }
+
+//                if (!StringUtils.isEmpty(bookingDateMonth) && !StringUtils.isEmpty(bookingDateYear)) {
+//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+//                            criteriaBuilder.function("MONTH", Integer.class, root.get("bookingDate")),
+//                            bookingDateMonth)));
+//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+//                            criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
+//                            bookingDateYear)));
+//                } else if (!StringUtils.isEmpty(bookingDateMonth)) {
+//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+//                            criteriaBuilder.function("MONTH", Integer.class, root.get("bookingDate")),
+//                            bookingDateMonth)));
+//                } else if (!StringUtils.isEmpty(bookingDateYear)) {
+//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+//                            criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
+//                            bookingDateYear)));
+//                }
+
+//                Expression<String> second = new UnitExpression(null, String.class, "SECOND");
+//
+//                Expression<Float> numberOfDays = criteriaBuilder.function("timestampdiff", Integer.class, second,
+//                        root.get("checkinDate"), root.get("checkoutDate")).as(Float.class);
+//                Expression<Float> roomFee = criteriaBuilder.prod(numberOfDays, root.get("room").get("price"));
+//                Expression<Float> summ = criteriaBuilder.sum(criteriaBuilder.sum(roomFee, siteFee), cleanFee);
+
+                criteriaQuery.groupBy(bookingId);
+
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        }, pageable);
+
+        List<BookingUserOrderDTO> bookingListDTOs = new ArrayList<>();
+        for (Booking b : bookingPage.toList()) {
+            bookingListDTOs.add(BookingUserOrderDTO.build(b));
+        }
+
+        return new BookingListDTO(bookingListDTOs, bookingPage.getTotalElements(), bookingPage.getTotalPages());
     }
 
     @Transactional

@@ -25,6 +25,8 @@ public class BookingUserOrderDTO {
     private String hostFullName;
     private float totalPrice;
     private Status state;
+    private String customerFullName;
+    private String customerAvatar;
 
     public static BookingUserOrderDTO build(Booking booking) {
         User host = booking.getBookingDetails().iterator().next().getRoom().getHost();
@@ -37,7 +39,9 @@ public class BookingUserOrderDTO {
                 .hostId(host.getId())
                 .hostFullName(host.getFullName())
                 .totalPrice(booking.getTotalFee())
-                .state(booking.getState())
+                .state(booking.determineStatus())
+                .customerFullName(booking.getCustomer().getFullName())
+                .customerAvatar(booking.getCustomer().getAvatarPath())
                 .build();
     }
 }

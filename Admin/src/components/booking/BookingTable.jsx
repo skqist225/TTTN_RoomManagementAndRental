@@ -51,8 +51,8 @@ function BookingTable({ type }) {
     const roomColumns = [
         {
             title: "Id",
-            field: "bookingId",
-            render: rowData => <div style={{ maxWidth: "20px" }}>{rowData.bookingId}</div>,
+            field: "id",
+            render: rowData => <div style={{ maxWidth: "20px" }}>{rowData.id}</div>,
         },
         {
             title: "Customer",

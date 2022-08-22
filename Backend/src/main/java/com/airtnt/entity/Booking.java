@@ -6,7 +6,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -55,5 +57,33 @@ public class Booking extends BaseEntity {
 		return this.bookingDetails.stream().reduce(0f, (subtotal, bookingDetail) -> {
 			return subtotal + bookingDetail.getTotalFee();
 		}, Float::sum);
+	}
+
+	@Transient
+	public Date getMinCheckinDate() {
+		Date min = this.getBookingDetails().iterator().next().getCheckinDate();
+
+		for(BookingDetail bookingDetail : this.getBookingDetails()) {
+			Date date = bookingDetail.getCheckinDate();
+			if(min.compareTo(date) > 0 ) {
+				min = date;
+			}
+		}
+
+		return min;
+	}
+
+	@Transient
+	public Status determineStatus() {
+		Date now = new Date();
+		System.out.println(now);
+
+		if(Objects.equals(this.state, Status.PENDING)) {
+			if(now.compareTo(getMinCheckinDate()) > 0) {
+				return Status.OUTOFDATE;
+			}
+		}
+
+		return this.getState();
 	}
 }

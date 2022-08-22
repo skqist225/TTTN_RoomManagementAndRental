@@ -79,8 +79,6 @@ const PropertyRoomImagesMainContent: FC<IPropertyRoomImagesMainContentProps> = (
             </button>
             <div class="photo-action__div-hidden">
                 <ul data-index="${modifier}">
-                    <li class="moveImageBackward">Di chuyển về phía sau</li>
-                    <li class="moveImageForward">Di chuyển về phía trước</li>
                     <li class="makeMainImage">Chọn làm ảnh chính</li>
                     <li class="deleteImage">Xóa ảnh</li>
                 </ul>

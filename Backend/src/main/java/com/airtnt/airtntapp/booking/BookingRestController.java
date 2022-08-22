@@ -81,9 +81,9 @@ public class BookingRestController {
         filters.put("bookingDateYear", bookingDateYear);
         filters.put("totalFee", totalFee);
 
-//		BookingListResponse bookings = bookingDetailService.getBookingListByRooms(roomIds, filters, page);
+        BookingListDTO bookings = bookingService.getBookingListByRooms(roomIds, filters, page);
 
-        return new OkResponse<BookingListDTO>(null).response();
+        return new OkResponse<BookingListDTO>(bookings).response();
 
     }
 
@@ -93,9 +93,6 @@ public class BookingRestController {
             User host = userDetailsImpl.getUser();
             Booking booking;
             booking = bookingService.hostCancelBooking(bookingId, host);
-
-            // firebaseInitialize.initialize();
-            // firebaseInitialize.updateBookingState(booking.getId(), "Rejected");
 
             return booking != null ? new OkResponse<>("Cancel booking successfully").response() : new BadResponse<String>("Can not cancel booking").response();
         } catch (BookingNotFoundException e) {
@@ -123,6 +120,8 @@ public class BookingRestController {
             } catch (CancelDateGreaterThanCheckinDateException e) {
                 throw new RuntimeException(e);
             } catch (BookingDetailNotFoundException | ParseException e) {
+                return new BadResponse<String>(e.getMessage()).response();
+            } catch (ReserveDateInThePastException e) {
                 return new BadResponse<String>(e.getMessage()).response();
             }
         } catch (ForbiddenException e) {

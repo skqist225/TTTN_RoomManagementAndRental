@@ -1,7 +1,7 @@
 package com.airtnt.airtntapp.booking;
 
-import com.airtnt.airtntapp.booking.dto.BookingDTO;
 import com.airtnt.airtntapp.booking.dto.BookingListDTO;
+import com.airtnt.airtntapp.booking.dto.BookingUserOrderDTO;
 import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
 import com.airtnt.airtntapp.exception.BookingNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
@@ -28,11 +28,11 @@ public class AdminBookingRestController {
             @RequestParam(value = "type", defaultValue = "all", required = false) String type) throws ParseException {
         Page<Booking> bookingsPage = bookingService.getAllBookings(page, type);
 
-        List<BookingDTO> bookingListingsDTOs = new ArrayList<>();
+        List<BookingUserOrderDTO> bookingListingsDTOs = new ArrayList<>();
         BookingListDTO bookingListResponse = new BookingListDTO();
 
         for (Booking booking : bookingsPage.getContent()) {
-            bookingListingsDTOs.add(BookingDTO.build(booking));
+            bookingListingsDTOs.add(BookingUserOrderDTO.build(booking));
         }
 
         bookingListResponse.setBookings(bookingListingsDTOs);

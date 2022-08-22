@@ -34,54 +34,54 @@ export const fetchUserBookings = createAsyncThunk(
         try {
             let fetchUrl = `/booking/listings/${page}?query=${query}`;
             const state = getState() as RootState;
-            const { fetchData } = state.booking;
+            // const { fetchData } = state.booking;
 
-            if (
-                (bookingDateMonth && bookingDateYear) ||
-                (fetchData.bookingDateMonth && fetchData.bookingDateYear)
-            ) {
-                fetchUrl += `&booking_date_month=${
-                    bookingDateMonth || fetchData.bookingDateMonth
-                }&booking_date_year=${bookingDateYear || fetchData.bookingDateYear}`;
-                dispatch(setBookingDateMonth(bookingDateMonth || fetchData.bookingDateMonth));
-                dispatch(setBookingDateYear(bookingDateYear || fetchData.bookingDateYear));
-            } else if (bookingDateMonth || fetchData.bookingDateMonth) {
-                fetchUrl += `&booking_date_month=${bookingDateMonth || fetchData.bookingDateMonth}`;
-                dispatch(setBookingDateMonth(bookingDateMonth || fetchData.bookingDateMonth));
-            } else if (bookingDateYear || fetchData.bookingDateYear) {
-                fetchUrl += `&booking_date_year=${bookingDateYear || fetchData.bookingDateYear}`;
-                dispatch(setBookingDateYear(bookingDateYear || fetchData.bookingDateYear));
-            }
+            // if (
+            //     (bookingDateMonth && bookingDateYear) ||
+            //     (fetchData.bookingDateMonth && fetchData.bookingDateYear)
+            // ) {
+            //     fetchUrl += `&booking_date_month=${
+            //         bookingDateMonth || fetchData.bookingDateMonth
+            //     }&booking_date_year=${bookingDateYear || fetchData.bookingDateYear}`;
+            //     dispatch(setBookingDateMonth(bookingDateMonth || fetchData.bookingDateMonth));
+            //     dispatch(setBookingDateYear(bookingDateYear || fetchData.bookingDateYear));
+            // } else if (bookingDateMonth || fetchData.bookingDateMonth) {
+            //     fetchUrl += `&booking_date_month=${bookingDateMonth || fetchData.bookingDateMonth}`;
+            //     dispatch(setBookingDateMonth(bookingDateMonth || fetchData.bookingDateMonth));
+            // } else if (bookingDateYear || fetchData.bookingDateYear) {
+            //     fetchUrl += `&booking_date_year=${bookingDateYear || fetchData.bookingDateYear}`;
+            //     dispatch(setBookingDateYear(bookingDateYear || fetchData.bookingDateYear));
+            // }
 
-            if (bookingDate || fetchData.bookingDate) {
-                fetchUrl += `&booking_date=${bookingDate || fetchData.bookingDate}`;
-                dispatch(setBookingDate(bookingDate || fetchData.bookingDate));
-            }
+            // if (bookingDate || fetchData.bookingDate) {
+            //     fetchUrl += `&booking_date=${bookingDate || fetchData.bookingDate}`;
+            //     dispatch(setBookingDate(bookingDate || fetchData.bookingDate));
+            // }
 
-            if (isComplete || fetchData.isComplete) {
-                fetchUrl += `&is_complete=${isComplete || fetchData.isComplete}`;
-                dispatch(setIsComplete(isComplete || fetchData.isComplete));
-            }
+            // if (isComplete || fetchData.isComplete) {
+            //     fetchUrl += `&is_complete=${isComplete || fetchData.isComplete}`;
+            //     dispatch(setIsComplete(isComplete || fetchData.isComplete));
+            // }
 
-            if (totalFee || fetchData.bookingDate) {
-                fetchUrl += `&total_fee=${totalFee || fetchData.totalFee}`;
-                dispatch(setTotalFee(totalFee || fetchData.totalFee));
-            }
+            // if (totalFee || fetchData.bookingDate) {
+            //     fetchUrl += `&total_fee=${totalFee || fetchData.totalFee}`;
+            //     dispatch(setTotalFee(totalFee || fetchData.totalFee));
+            // }
 
-            dispatch(setQuery(query || fetchData.query));
-            fetchUrl += `&sort_field=${sortField}&sort_dir=${sortDir}`;
-            dispatch(setSortField(sortField || fetchData.sortField));
-            dispatch(setSortDir(sortDir || fetchData.sortDir));
+            // dispatch(setQuery(query || fetchData.query));
+            // fetchUrl += `&sort_field=${sortField}&sort_dir=${sortDir}`;
+            // dispatch(setSortField(sortField || fetchData.sortField));
+            // dispatch(setSortDir(sortDir || fetchData.sortDir));
 
-            console.info(fetchUrl);
+            // console.info(fetchUrl);
 
             const {
                 data: { bookings, totalElements, totalPages },
             } = await api.get(fetchUrl);
 
             return { bookings, totalElements, totalPages };
-        } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
@@ -206,7 +206,7 @@ export const cancelUserBooking = createAsyncThunk(
 
             return { data };
         } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+            return rejectWithValue(errorMessage);
         }
     }
 );
@@ -261,7 +261,7 @@ export const cancelBooking = createAsyncThunk(
             const { data } = await api.put(`/booking/${bookingId}/host/canceled`);
             const state = getState() as RootState;
             const { fetchData } = state.booking;
-            dispatch(fetchUserBookings({ ...fetchData }));
+            // dispatch(fetchUserBookings({ ...fetchData }));
 
             return { data };
         } catch ({ data: { errorMessage } }) {
@@ -283,7 +283,7 @@ export const approveBooking = createAsyncThunk(
 );
 
 type BookingState = {
-    bookingsOfCurrentUserRooms: IBooking[];
+    bookings: IBookingOrder[];
     totalElements: number;
     loading: boolean;
     clientSecret: string;
@@ -292,7 +292,6 @@ type BookingState = {
     fetchData: IFetchUserBookings;
     totalPages: number;
     createReviewSuccess: boolean;
-    cancelBookingSuccess: boolean;
     cancelledBookingId: number;
     fetchUserOrdersAction: {
         loading: boolean;
@@ -311,10 +310,15 @@ type BookingState = {
         loading: boolean;
         bookings: IBookingOrder[];
     };
+    cancelBookingAction: {
+        loading: boolean;
+        successMessage: string | null;
+        errorMessage: string | null;
+    };
 };
 
 const initialState: BookingState = {
-    bookingsOfCurrentUserRooms: [],
+    bookings: [],
     totalElements: 0,
     loading: true,
     clientSecret: "",
@@ -332,7 +336,11 @@ const initialState: BookingState = {
     },
     totalPages: 0,
     createReviewSuccess: false,
-    cancelBookingSuccess: false,
+    cancelBookingAction: {
+        loading: true,
+        successMessage: null,
+        errorMessage: null,
+    },
     cancelledBookingId: 0,
     fetchUserOrdersAction: {
         loading: true,
@@ -403,7 +411,7 @@ const bookingSlice = createSlice({
         builder
             .addCase(fetchUserBookings.fulfilled, (state, { payload }) => {
                 state.loading = false;
-                state.bookingsOfCurrentUserRooms = payload?.bookings;
+                state.bookings = payload?.bookings;
                 state.totalElements = payload?.totalElements;
                 state.totalPages = payload?.totalPages;
             })
@@ -424,11 +432,23 @@ const bookingSlice = createSlice({
             .addCase(makeReview.fulfilled, state => {
                 state.createReviewSuccess = true;
             })
-            .addCase(cancelUserBooking.fulfilled, state => {
-                state.cancelBookingSuccess = true;
+            .addCase(cancelUserBooking.pending, (state, { payload }) => {
+                state.cancelBookingAction.loading = false;
+                state.cancelBookingAction.errorMessage = null;
+                state.cancelBookingAction.successMessage = null;
+            })
+            .addCase(cancelUserBooking.fulfilled, (state, { payload }) => {
+                state.cancelBookingAction.loading = false;
+                if (payload.data) {
+                    state.cancelBookingAction.successMessage = "Hủy đặt phòng thành công";
+                }
+            })
+            .addCase(cancelUserBooking.rejected, (state, { payload }) => {
+                state.cancelBookingAction.loading = false;
+                state.cancelBookingAction.errorMessage = payload as string;
             })
             .addCase(fetchUserOrders.pending, state => {
-                state.cancelBookingSuccess = true;
+                state.fetchUserOrdersAction.loading = true;
             })
             .addCase(fetchUserOrders.fulfilled, (state, { payload }) => {
                 state.fetchUserOrdersAction.loading = false;
