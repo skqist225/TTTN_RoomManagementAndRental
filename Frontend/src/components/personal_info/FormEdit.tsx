@@ -5,7 +5,7 @@ import {
     FirstNameAndLastNameEdit,
     SexEdit,
     BirthdayEdit,
-    EmailEdit,
+    // EmailEdit,
     PhoneNumberEdit,
     AvatarEdit,
     AddressEdit,
@@ -179,9 +179,9 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
                     {dataEdit === "birthday" && (
                         <BirthdayEdit birthday={user.birthday} register={register} />
                     )}
-                    {dataEdit === "email" && (
+                    {/* {dataEdit === "email" && (
                         <EmailEdit register={register} defaultValue={user.email} />
-                    )}
+                    )} */}
                     {dataEdit === "password" && <PasswordEdit register={register} />}
                     {dataEdit === "phoneNumber" && (
                         <PhoneNumberEdit register={register} defaultValue={user.phoneNumber} />

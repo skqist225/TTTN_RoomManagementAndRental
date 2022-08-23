@@ -27,6 +27,9 @@ public interface BookingDetailRepository extends JpaRepository<BookingDetail, In
 
     public List<BookingDetail> findByRoom(Room room);
 
+    @Query("SELECT b FROM BookingDetail b WHERE b.room = :room AND b.booking.state = com.airtnt.entity.Status.APPROVED")
+    public List<BookingDetail> findByRoomAndStatus(Room room);
+
     @Query("SELECT b FROM BookingDetail b WHERE b.booking.customer.id = :customerId AND CONCAT(b.room.name, ' ', b.booking.customer.firstName, ' ', b.booking.customer.lastName) LIKE %:query% ORDER BY b.booking.bookingDate DESC")
     public List<BookingDetail> getByCustomer(Integer customerId, String query);
 

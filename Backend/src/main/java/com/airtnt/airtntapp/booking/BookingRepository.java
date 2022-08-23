@@ -37,7 +37,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
     @Query("SELECT b FROM Booking b WHERE b.customer = :customer AND b.state = com.airtnt.entity.Status.CART OR b.state = com.airtnt.entity.Status.CARTSELECTED")
     public List<Booking> findByCustomerAndCartStatus(User customer);
 
-    @Query("SELECT b FROM Booking b WHERE b.customer = :customer AND b.state IN (com.airtnt.entity.Status.PENDING, com.airtnt.entity.Status.APPROVED, com.airtnt.entity.Status.CANCELLED, com.airtnt.entity.Status.OUTOFDATE,com.airtnt.entity.Status.REJECTED) ORDER BY b.createdDate DESC")
+    @Query("SELECT b FROM Booking b WHERE b.customer = :customer AND b.state IN (com.airtnt.entity.Status.PENDING, com.airtnt.entity.Status.APPROVED, com.airtnt.entity.Status.CANCELLED, com.airtnt.entity.Status.OUTOFDATE, com.airtnt.entity.Status.REJECTED) ORDER BY b.createdDate DESC")
     public List<Booking> findByCustomerAndBookedStatus(User customer);
 
     @Query("SELECT b FROM Booking b WHERE b.customer.id = :customerId AND CONCAT(b.customer.firstName, ' ', b.customer.lastName) LIKE %:query% ORDER BY b.bookingDate DESC")

@@ -1,10 +1,7 @@
 package com.airtnt.airtntapp.booking.dto;
 
 
-import com.airtnt.entity.BookingDetail;
-import com.airtnt.entity.Room;
-import com.airtnt.entity.Status;
-import com.airtnt.entity.User;
+import com.airtnt.entity.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -52,6 +49,7 @@ public class BookingDetailDTO {
     private String roomHostAvatar;
     private Integer numberOfReviews;
     private Float averageRating;
+    private Review review;
 
     public static BookingDetailDTO build(BookingDetail bookingDetail) {
         Room room = bookingDetail.getRoom();
@@ -65,7 +63,7 @@ public class BookingDetailDTO {
                 .roomThumbnail(room.renderThumbnailImage())
                 .roomCategory(room.getCategory().getName())
                 .roomCurrency(room.getCurrency().getSymbol())
-                .state(  bookingDetail.getBooking().getState())
+                .state(bookingDetail.getBooking().getState())
                 .bookingDate(bookingDetail.getBooking().getBookingDate())
                 .checkinDate(bookingDetail.getCheckinDate())
                 .checkoutDate(bookingDetail.getCheckoutDate())
@@ -83,6 +81,7 @@ public class BookingDetailDTO {
                 .numberOfReviews(room.getNumberOfReviews())
                 .averageRating(room.getAverageRatings())
                 .roomCategory(room.getCategory().getName())
+                .review(bookingDetail.getReview())
                 .build();
     }
 }

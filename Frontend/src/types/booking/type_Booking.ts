@@ -52,4 +52,24 @@ export interface BookingDetail {
     numberOfReviews: number;
     averageRating: number;
     roomCategory: string;
+    review: Review;
+}
+
+export interface Review {
+    id: number;
+    status: boolean;
+    createdDate: number;
+    updatedDate: number;
+    comment: string;
+    subRating: SubRating;
+    finalRating: number;
+}
+
+export interface SubRating {
+    cleanliness: number;
+    contact: number;
+    checkin: number;
+    accuracy: number;
+    location: number;
+    value: number;
 }

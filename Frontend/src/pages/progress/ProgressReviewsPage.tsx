@@ -83,7 +83,7 @@ const ProgressReviewsPage: FC<IProgressReviewsPageProps> = () => {
                                             id='avgFinalRatings'
                                             className='mr-10 fs-20 inline-block'
                                         >
-                                            {finalRatings}
+                                            {Math.round(finalRatings)}
                                         </span>
                                         <span>
                                             <Image

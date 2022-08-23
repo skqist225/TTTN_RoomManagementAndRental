@@ -50,7 +50,8 @@ public class BookingDetail extends BaseEntity implements Serializable {
     @Transient
     long lastUpdated;
 
-    @OneToOne(mappedBy = "bookingDetail")
+    @OneToOne
+    @JoinColumn(name = "review_id", unique = true, referencedColumnName = "id")
     private Review review;
 
     @Transient

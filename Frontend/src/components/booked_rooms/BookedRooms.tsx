@@ -214,8 +214,6 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                 $("#user-bookings__mainContainer").addClass("unactive");
             }
         });
-        // console.log(booking.bookingReview);
-        // console.log(ratingComment);
         if (self.data("rating-comment")) {
         } else {
             handleLike();

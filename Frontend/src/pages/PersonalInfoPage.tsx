@@ -65,11 +65,11 @@ const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
                                     dataEdit='birthdayWeb'
                                     value={formatDate(user.birthday)}
                                 />
-                                <UserInfo
+                                {/* <UserInfo
                                     title='Địa chỉ email'
                                     dataEdit='email'
                                     value={user.email}
-                                />
+                                /> */}
                                 <UserInfo
                                     title='Mật khẩu'
                                     dataEdit='password'

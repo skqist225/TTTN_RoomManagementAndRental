@@ -167,7 +167,10 @@ public class BookingRestController {
             } else {
                 Review review = Review.builder().comment(createReviewDTO.getRatingComment()).subRating(subRating).bookingDetail(bookingDetail).build();
 
-                reviewService.createReview(review);
+                Review savedReview = reviewService.createReview(review);
+
+                bookingDetail.setReview(savedReview);
+                bookingDetailService.save(bookingDetail);
             }
 
             return new OkResponse<>("OK").response();

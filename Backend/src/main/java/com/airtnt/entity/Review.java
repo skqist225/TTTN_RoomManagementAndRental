@@ -1,21 +1,9 @@
 package com.airtnt.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -27,8 +15,7 @@ import lombok.ToString;
 @Table(name = "reviews")
 public class Review extends BaseEntity {
 	@JsonIgnore
-	@OneToOne
-	@JoinColumn(name = "bookingdetail_id", unique = true, referencedColumnName = "id")
+	@OneToOne(mappedBy = "review")
 	private BookingDetail bookingDetail;
 
 	@Column(nullable = false, length = 1024)

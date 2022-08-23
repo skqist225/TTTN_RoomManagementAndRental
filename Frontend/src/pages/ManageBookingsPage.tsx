@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { BookingsTable } from "../components/booking";
 import Header from "../components/Header";
 import { FilterFooter, MyNumberForMat, Pagination } from "../components/utils";
@@ -19,7 +19,7 @@ import {
     setTotalFee,
 } from "../features/booking/bookingSlice";
 import { Div, Image } from "../globalStyle";
-import { getImage, seperateNumber } from "../helpers";
+import { callToast, getImage, seperateNumber } from "../helpers";
 
 // import "./css/manage_booking_page.css";
 // import "../components/hosting/listings/css/filter_by_line.css";
@@ -50,7 +50,14 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
     const params = useParams();
     const [query, setLocalQuery] = useState("");
 
-    const { bookings, totalElements, fetchData, totalPages } = useSelector(bookingState);
+    const {
+        bookings,
+        totalElements,
+        fetchData,
+        totalPages,
+        approveBookingAction: { successMessage, errorMessage },
+        cancelBookingAction: { successMessage: cbaSuccessMessage, errorMessage: cbaErrorMessage },
+    } = useSelector(bookingState);
 
     useEffect(() => {
         dispatch(fetchUserBookings({ ...fetchData, page: parseInt(params.page!) }));
@@ -67,6 +74,32 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
             })
         );
     }
+
+    useEffect(() => {
+        if (successMessage) {
+            callToast("success", "Duyệt đơn đặt phòng thành công");
+            dispatch(fetchUserBookings({ ...fetchData, page: parseInt(params.page!) }));
+        }
+    }, [successMessage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            callToast("error", "Duyệt đơn đặt phòng thất bại");
+        }
+    }, [errorMessage]);
+
+    useEffect(() => {
+        if (cbaSuccessMessage) {
+            callToast("success", "Hủy đơn đặt phòng thành công");
+            dispatch(fetchUserBookings({ ...fetchData, page: parseInt(params.page!) }));
+        }
+    }, [cbaSuccessMessage]);
+
+    useEffect(() => {
+        if (cbaErrorMessage) {
+            callToast("error", "Hủy đơn đặt phòng thất bại");
+        }
+    }, [cbaErrorMessage]);
 
     useEffect(() => {
         $(".listings__filter--option").each(function () {
@@ -173,30 +206,14 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
             render: (rowData: any) => <BookingStatus rowData={rowData} />,
         },
         {
-            title: "Host",
-            field: "",
-            render: (rowData: any) => {
-                if (rowData.bookingDetails && rowData.bookingDetails.length > 0) {
-                    return (
-                        <span>
-                            <Image
-                                src={getImage(rowData.bookingDetails[0].roomHostAvatar)}
-                                size='40px'
-                                className='of-c rounded-full'
-                            />
-                            <span> {rowData.bookingDetails[0].roomHostName} </span>
-                        </span>
-                    );
-                } else {
-                    return null;
-                }
-            },
+            title: "Booking Date",
+            field: "bookingDate",
         },
         {
             title: "Total Fee",
-            field: "totalFee",
+            field: "totalPrice",
             render: (rowData: any) => (
-                <MyNumberForMat currency='đ' price={rowData.totalFee} removeStayType />
+                <MyNumberForMat currency='đ' price={rowData.totalPrice} removeStayType isPrefix />
             ),
         },
         {
@@ -216,7 +233,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                         <Button
                             variant='outlined'
                             onClick={() => {
-                                apprBooking(rowData.id);
+                                dropoutBooking(rowData.id);
                             }}
                         >
                             Từ chối
@@ -235,117 +252,136 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
 
             <>
                 {bookings && bookings.length > 0 && (
-                    <MaterialTable
-                        title={
-                            <>
-                                Total Bookings:
-                                {/* <span className='text-base font-semibold'> {totalElements}</span> */}
-                            </>
-                        }
-                        icons={tableIcons}
-                        columns={roomColumns}
-                        data={copiedBookings}
-                        options={{
-                            headerStyle: {
-                                borderBottomColor: "red",
-                                borderBottomWidth: "3px",
-                                fontFamily: "verdana",
-                            },
-                            actionsColumnIndex: -1,
-                            pageSizeOptions: [10],
-                            pageSize: 10,
-                            exportButton: true,
-                        }}
-                        detailPanel={(rowData: any) => {
-                            if (rowData.bookingDetails && rowData.bookingDetails.length > 0) {
-                                return (
-                                    <div className='px-3.5 py-2.5'>
-                                        <div>
-                                            <div className='w-full p-3'>
-                                                <TableContainer component={Paper}>
-                                                    <Table
-                                                        sx={{ minWidth: 650 }}
-                                                        aria-label='simple table'
-                                                    >
-                                                        <TableHead>
-                                                            <TableRow>
-                                                                <TableCell>Room</TableCell>
-                                                                <TableCell>State</TableCell>
-                                                                <TableCell>Total Fee</TableCell>
-                                                                <TableCell>Checkin Date</TableCell>
-                                                                <TableCell>Checkout Date</TableCell>
-                                                                <TableCell>Action</TableCell>
-                                                            </TableRow>
-                                                        </TableHead>
-                                                        <TableBody>
-                                                            {rowData.bookingDetails.map(
-                                                                (bookingDetail: BookingDetail) => {
-                                                                    return (
-                                                                        <TableRow>
-                                                                            <TableCell>
-                                                                                <div
-                                                                                    className='normal-flex'
-                                                                                    style={{
-                                                                                        width: "300px",
-                                                                                    }}
-                                                                                >
-                                                                                    <Image
-                                                                                        src={getImage(
-                                                                                            bookingDetail.roomThumbnail
-                                                                                        )}
-                                                                                        size='50px'
-                                                                                    />
-                                                                                    <span className='listings__room-name'>
-                                                                                        {
-                                                                                            bookingDetail.roomName
+                    <div style={{ marginTop: "80px" }}>
+                        <MaterialTable
+                            title={
+                                <>
+                                    Total Bookings:
+                                    <span className='text-base font-semibold'>
+                                        {" "}
+                                        {totalElements}
+                                    </span>
+                                </>
+                            }
+                            icons={tableIcons}
+                            columns={roomColumns}
+                            data={copiedBookings}
+                            options={{
+                                headerStyle: {
+                                    borderBottomColor: "red",
+                                    borderBottomWidth: "3px",
+                                    fontFamily: "verdana",
+                                },
+                                actionsColumnIndex: -1,
+                                pageSizeOptions: [10],
+                                pageSize: 10,
+                                exportButton: true,
+                            }}
+                            detailPanel={(rowData: any) => {
+                                if (rowData.bookingDetails && rowData.bookingDetails.length > 0) {
+                                    return (
+                                        <div className='px-3.5 py-2.5'>
+                                            <div>
+                                                <div className='w-full p-3'>
+                                                    <TableContainer component={Paper}>
+                                                        <Table
+                                                            sx={{ minWidth: 650 }}
+                                                            aria-label='simple table'
+                                                        >
+                                                            <TableHead>
+                                                                <TableRow>
+                                                                    <TableCell>Room</TableCell>
+                                                                    <TableCell>State</TableCell>
+                                                                    <TableCell>Total Fee</TableCell>
+                                                                    <TableCell>
+                                                                        Checkin Date
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        Checkout Date
+                                                                    </TableCell>
+                                                                    <TableCell>Action</TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                            <TableBody>
+                                                                {rowData.bookingDetails.map(
+                                                                    (
+                                                                        bookingDetail: BookingDetail
+                                                                    ) => {
+                                                                        return (
+                                                                            <TableRow
+                                                                                key={
+                                                                                    bookingDetail.bookingDetailId
+                                                                                }
+                                                                            >
+                                                                                <TableCell>
+                                                                                    <Link
+                                                                                        to={`/room/${bookingDetail.roomId}`}
+                                                                                    >
+                                                                                        <div
+                                                                                            className='normal-flex'
+                                                                                            style={{
+                                                                                                width: "300px",
+                                                                                            }}
+                                                                                        >
+                                                                                            <Image
+                                                                                                src={getImage(
+                                                                                                    bookingDetail.roomThumbnail
+                                                                                                )}
+                                                                                                size='50px'
+                                                                                            />
+                                                                                            <span className='listings__room-name'>
+                                                                                                {
+                                                                                                    bookingDetail.roomName
+                                                                                                }
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    </Link>
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    <BookingStatus
+                                                                                        rowData={
+                                                                                            rowData
                                                                                         }
-                                                                                    </span>
-                                                                                </div>
-                                                                            </TableCell>
-                                                                            <TableCell>
-                                                                                <BookingStatus
-                                                                                    rowData={
-                                                                                        rowData
+                                                                                    />
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {" "}
+                                                                                    <MyNumberForMat
+                                                                                        price={
+                                                                                            bookingDetail.totalFee
+                                                                                        }
+                                                                                        currency='đ'
+                                                                                        removeStayType
+                                                                                    />
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {
+                                                                                        bookingDetail.checkinDate
                                                                                     }
-                                                                                />
-                                                                            </TableCell>
-                                                                            <TableCell>
-                                                                                {" "}
-                                                                                <MyNumberForMat
-                                                                                    price={
-                                                                                        bookingDetail.totalFee
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    {" "}
+                                                                                    {
+                                                                                        bookingDetail.checkoutDate
                                                                                     }
-                                                                                    currency='đ'
-                                                                                    removeStayType
-                                                                                />
-                                                                            </TableCell>
-                                                                            <TableCell>
-                                                                                {
-                                                                                    bookingDetail.checkinDate
-                                                                                }
-                                                                            </TableCell>
-                                                                            <TableCell>
-                                                                                {" "}
-                                                                                {
-                                                                                    bookingDetail.checkoutDate
-                                                                                }
-                                                                            </TableCell>
-                                                                            <TableCell></TableCell>
-                                                                        </TableRow>
-                                                                    );
-                                                                }
-                                                            )}
-                                                        </TableBody>
-                                                    </Table>
-                                                </TableContainer>
+                                                                                </TableCell>
+                                                                                <TableCell></TableCell>
+                                                                            </TableRow>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                );
-                            }
-                        }}
-                        onRowClick={(event, rowData, togglePanel) => togglePanel()}
-                    />
+                                    );
+                                }
+                            }}
+                            onRowClick={(event, rowData, togglePanel) => togglePanel()}
+                        />
+                    </div>
                 )}
                 <Toast />
             </>

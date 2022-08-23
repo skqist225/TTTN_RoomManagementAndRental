@@ -6,22 +6,20 @@
   <component name="ChangeListManager">
     <list default="true" id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/AdminBookingRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/AdminBookingRestController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRestController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingListDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingListDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingUserOrderDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingUserOrderDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Booking.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Booking.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Status.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Status.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/booking/BookingDataRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/booking/BookingDataRow.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/booking/BookingsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/booking/BookingsTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/booking/bookingSlice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/booking/bookingSlice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/BookedRoomsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/BookedRoomsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/ManageBookingsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/ManageBookingsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingDetailDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingDetailDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/jwt/JwtFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/jwt/JwtFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/security/WebSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/security/WebSecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/BookingDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/BookingDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Review.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Review.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/personal_info/FormEdit.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/personal_info/FormEdit.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/auth/authSlice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/auth/authSlice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/user/userSlice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/user/userSlice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/PersonalInfoPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/PersonalInfoPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/auth/LoginPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/auth/LoginPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,25 +60,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable&quot;: &quot;ALL&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/skqist225/Projects/AirTn_DATN/Backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propCompiler&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;c94958ada0c81bb4e847abe659379e76&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable": "ALL",
+    "last_opened_file_path": "/home/skqist225/Projects/AirTn_DATN/Backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.grazie",
+    "spring.configuration.checksum": "c94958ada0c81bb4e847abe659379e76"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.airtnt.airtntapp.booking.dto" />
@@ -114,7 +112,8 @@
       <workItem from="1660975334568" duration="1042000" />
       <workItem from="1660998574823" duration="42815000" />
       <workItem from="1661171967259" duration="8955000" />
-      <workItem from="1661185746422" duration="2115000" />
+      <workItem from="1661185746422" duration="3732000" />
+      <workItem from="1661263422344" duration="6022000" />
     </task>
     <servers />
   </component>

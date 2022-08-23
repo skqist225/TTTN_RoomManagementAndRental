@@ -40,8 +40,11 @@ const LoginPage: FC<HomeProps> = () => {
     const dispatch = useDispatch();
     const [state, setState] = useState("login");
     const { user, successMessage, errorMessage } = useSelector(userState);
-    const { successMessage: forgotPasswordSuccessMessage, errorMessage: eMessage } =
-        useSelector(authState);
+    const {
+        successMessage: forgotPasswordSuccessMessage,
+        errorMessage: eMessage,
+        loginAction: { success },
+    } = useSelector(authState);
     const {
         register,
         handleSubmit,
@@ -83,78 +86,78 @@ const LoginPage: FC<HomeProps> = () => {
     }, [eMessage]);
 
     const onSubmit = (data: any) => {
-        console.log(state);
-        console.log(data);
         if (state === "login") dispatch(login({ ...data }));
         else if (state === "forgot-password") dispatch(forgotPassword({ ...data }));
     };
 
+    // const apiKey = "AIzaSyB965O06o1d70pCdE7VdsT6Bq3ZhwkqmAc";
+    // const clientId = "919947696132-31e7b23lq3ht2n81ap98kjf2k9t2k1rt.apps.googleusercontent.com";
+    // function handleClientLoad() {
+    //     var authorizeButton = document.getElementById("authorize-button");
+    //     console.log(authorizeButton);
+    //     var signoutButton = document.getElementById("signout-button");
+    //     // Load the API client and auth2 library
+    //     (gapi as any).load("client:auth2", function () {
+    //         (gapi as any).client
+    //             .init({
+    //                 apiKey: apiKey,
+    //                 discoveryDocs: discoveryDocs,
+    //                 clientId: clientId,
+    //                 scope: scopes,
+    //             })
+    //             .then(function () {
+    //                 // Listen for sign-in state changes.
+    //                 function updateSigninStatus(isSignedIn: boolean) {
+    //                     if (isSignedIn) {
+    //                         authorizeButton!.style.display = "none";
+    //                         signoutButton!.style.display = "block";
+    //                         // makeApiCall();
+    //                     } else {
+    //                         authorizeButton!.style.display = "block";
+    //                         signoutButton!.style.display = "none";
+    //                     }
+    //                 }
+    //                 gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+    //                 // Handle the initial sign-in state.
+    //                 updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+    //             });
+    //     });
+    // }
+    // var discoveryDocs = ["https://people.googleapis.com/$discovery/rest?version=v1"];
+    // var scopes = "profile";
+
+    // function makeApiCall() {
+    //     gapi.client.people.people
+    //         .get({
+    //             resourceName: "people/me",
+    //             "requestMask.includeField": "person.names",
+    //         })
+    //         .then(function (resp: any) {
+    //             var p = document.createElement("p");
+    //             var name = resp.result.names[0].givenName;
+    //             p.appendChild(document.createTextNode("Hello, " + name + "!"));
+    //             document.getElementById("content")!.appendChild(p);
+    //         });
+    // }
+
+    // useScript("https://apis.google.com/js/api.js", () => {
+    //     // (window as any).google.accounts.id.initialize({
+    //     //     client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+    //     //     callback: onGoogleSignIn,
+    //     // });
+    //     handleClientLoad();
+    //     // window.google.accounts.id.renderButton(
+    //     //     googleSignInButton.current,
+    //     //     { theme: "outline", size: "large", text, width: "250" } // customization attributes
+    //     // );
+    // });
+
     useEffect(() => {
-        if (user != null) navigate("/");
-    }, [user]);
-
-    const apiKey = "AIzaSyB965O06o1d70pCdE7VdsT6Bq3ZhwkqmAc";
-    const clientId = "919947696132-31e7b23lq3ht2n81ap98kjf2k9t2k1rt.apps.googleusercontent.com";
-    function handleClientLoad() {
-        var authorizeButton = document.getElementById("authorize-button");
-        console.log(authorizeButton);
-        var signoutButton = document.getElementById("signout-button");
-        // Load the API client and auth2 library
-        (gapi as any).load("client:auth2", function () {
-            (gapi as any).client
-                .init({
-                    apiKey: apiKey,
-                    discoveryDocs: discoveryDocs,
-                    clientId: clientId,
-                    scope: scopes,
-                })
-                .then(function () {
-                    // Listen for sign-in state changes.
-                    function updateSigninStatus(isSignedIn: boolean) {
-                        if (isSignedIn) {
-                            authorizeButton!.style.display = "none";
-                            signoutButton!.style.display = "block";
-                            makeApiCall();
-                        } else {
-                            authorizeButton!.style.display = "block";
-                            signoutButton!.style.display = "none";
-                        }
-                    }
-                    gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-
-                    // Handle the initial sign-in state.
-                    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-                });
-        });
-    }
-    var discoveryDocs = ["https://people.googleapis.com/$discovery/rest?version=v1"];
-    var scopes = "profile";
-
-    function makeApiCall() {
-        gapi.client.people.people
-            .get({
-                resourceName: "people/me",
-                "requestMask.includeField": "person.names",
-            })
-            .then(function (resp: any) {
-                var p = document.createElement("p");
-                var name = resp.result.names[0].givenName;
-                p.appendChild(document.createTextNode("Hello, " + name + "!"));
-                document.getElementById("content")!.appendChild(p);
-            });
-    }
-
-    useScript("https://apis.google.com/js/api.js", () => {
-        // (window as any).google.accounts.id.initialize({
-        //     client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-        //     callback: onGoogleSignIn,
-        // });
-        handleClientLoad();
-        // window.google.accounts.id.renderButton(
-        //     googleSignInButton.current,
-        //     { theme: "outline", size: "large", text, width: "250" } // customization attributes
-        // );
-    });
+        if (success) {
+            navigate("/");
+        }
+    }, [success]);
 
     function onGoogleSignIn(googleUser: any) {
         var profile = googleUser.getBasicProfile();
@@ -236,7 +239,7 @@ const LoginPage: FC<HomeProps> = () => {
                     </header>
                     <Divider />
                     <article id='register__body'>
-                        <div>Chào mừng bạn đến với AirJ18</div>
+                        <div>Chào mừng bạn đến với AirTn</div>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <FormGroup
                                 label='Địa chỉ Email'
@@ -267,7 +270,7 @@ const LoginPage: FC<HomeProps> = () => {
                                 >
                                     Quên mật khẩu
                                 </button>
-                                <a href=''>Đăng nhập với SMS</a>
+                                {/* <a href=''>Đăng nhập với SMS</a> */}
                             </div>
                             <MainButton
                                 type='submit'
@@ -331,7 +334,7 @@ const LoginPage: FC<HomeProps> = () => {
                                 /> */}
                             {/* </div> */}
                             <div className='flex-center'>
-                                Bạn mới biết đến AirJ18?&nbsp;
+                                Bạn mới biết đến AirTn?&nbsp;
                                 <Link
                                     to={"/auth/register"}
                                     style={{

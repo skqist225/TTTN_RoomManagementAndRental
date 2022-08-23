@@ -37,7 +37,6 @@ export const resetPassword = createAsyncThunk(
     }
 );
 
-
 export const forgotPassword = createAsyncThunk(
     "auth/forgotPassword",
     async (forgotPassword: IForgotPassword, { rejectWithValue }) => {
@@ -72,6 +71,10 @@ type AuthState = {
     loading: boolean;
     errorMessage: string | null;
     successMessage: string | null;
+    loginAction: {
+        loading: boolean;
+        success: boolean;
+    };
 };
 
 const initialState: AuthState = {
@@ -79,6 +82,10 @@ const initialState: AuthState = {
     loading: true,
     errorMessage: null,
     successMessage: "",
+    loginAction: {
+        loading: true,
+        success: false,
+    },
 };
 
 const authSlice = createSlice({
@@ -101,8 +108,13 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.user = payload.data;
             })
+            .addCase(login.pending, (state, { payload }) => {
+                state.loginAction.loading = true;
+                state.loginAction.success = false;
+            })
             .addCase(login.fulfilled, (state, { payload }) => {
-                state.loading = false;
+                state.loginAction.loading = false;
+                state.loginAction.success = true;
             })
             .addCase(logout.fulfilled, (state, { payload }) => {
                 state.loading = false;
@@ -126,7 +138,6 @@ const authSlice = createSlice({
             })
             .addMatcher(
                 isAnyOf(
-                    login.pending,
                     logout.pending,
                     forgotPassword.pending,
                     resetPassword.pending,
@@ -138,7 +149,6 @@ const authSlice = createSlice({
             )
             .addMatcher(
                 isAnyOf(
-                    login.rejected,
                     logout.rejected,
                     forgotPassword.rejected,
                     resetPassword.rejected,

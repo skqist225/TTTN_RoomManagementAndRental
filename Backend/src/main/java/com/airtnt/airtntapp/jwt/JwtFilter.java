@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -37,7 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String token = getJwt(request);
-		if (token != null) {
+		if (token != null && !Objects.equals(token,"null")) {
 			String username = jwtUtils.getUsernameFromToken(token);
 
 			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

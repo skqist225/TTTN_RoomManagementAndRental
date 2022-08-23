@@ -33,8 +33,6 @@ const RoomDetails: FC<IRoomDetailsProps> = () => {
 
     useEffect(() => {
         if (room !== null) {
-            console.log(room.latitude);
-            console.log(room.longitude);
             getRoomlocation(
                 room.latitude,
                 room.longitude,

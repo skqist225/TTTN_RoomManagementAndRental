@@ -22,6 +22,7 @@ import Toast from "../components/notify/Toast";
 import { MyNumberForMat } from "../components/utils";
 import { PreviewBookingInfo, RoomAndPricePreview } from "../components/progress_booking";
 import { getFormattedCheckinAndCheckoutDate } from "./script/progress_booking";
+import ReviewRoom from "../components/booked_rooms/ReviewRoom";
 
 interface IBookedRoomsPageProps {}
 
@@ -32,7 +33,7 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
     const {
         createReviewSuccess,
         cancelledBookingId,
-        cancelBookingAction: { successMessage, errorMessage },
+        userCancelBookingAction: { successMessage, errorMessage },
     } = useSelector(bookingState);
 
     const {
@@ -323,12 +324,16 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                                     marginTop: "12px",
                                                     borderTop: "1px solid rgb(221, 221, 221)",
                                                     paddingTop: "12px",
+                                                    paddingBottom: "12px",
                                                 }}
                                             >
                                                 <RoomAndPricePreview
                                                     room={room}
                                                     numberOfNights={bookingDetail.numberOfDays}
                                                 />
+                                                {booking.state === "APPROVED" && (
+                                                    <ReviewRoom bookingDetail={bookingDetail} />
+                                                )}
                                             </div>
                                         );
                                     })}

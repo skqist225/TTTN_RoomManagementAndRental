@@ -1,6 +1,7 @@
 package com.airtnt.airtntapp.booking;
 
 import com.airtnt.airtntapp.booking.dto.*;
+import com.airtnt.airtntapp.bookingDetail.BookingDetailRepository;
 import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
 import com.airtnt.airtntapp.exception.*;
 import com.airtnt.airtntapp.room.RoomService;
@@ -33,6 +34,9 @@ public class BookingService {
 
     @Autowired
     private BookingDetailService bookingDetailService;
+
+    @Autowired
+    private BookingDetailRepository bookingDetailRepository;
 
     @Autowired
     private RoomService roomService;
@@ -149,23 +153,23 @@ public class BookingService {
 
     public List<BookedDateDTO> getBookedDates(Room room) throws ParseException {
         List<BookedDateDTO> bookedDates = new ArrayList<>();
-        List<Booking> bookings = new ArrayList<>();
-//		Iterator<Booking> bookingsItr = bookingRepository.findByRoom(room).iterator();
-//		bookingsItr.forEachRemaining(bookings::add);
+        List<BookingDetail> bookingDetailList = new ArrayList<>();
+		Iterator<BookingDetail> bookingsItr = bookingDetailRepository.findByRoomAndStatus(room).iterator();
+		bookingsItr.forEachRemaining(bookingDetailList::add);
 
-//		for (int i = 0; i < bookings.size(); i++) {
-//			Date checkinDate = bookings.get(i).getCheckinDate();
-//			Date checkoutDate = bookings.get(i).getCheckoutDate();
-//			LocalDateTime cancelDate = bookings.get(i).getCancelDate();
-//
-//			if (checkinDate != null & checkoutDate != null && cancelDate == null) {
-//				String[] checkinDate2 = checkinDate.toString().split("T")[0].split(" ")[0].split("-");
-//				String[] checkoutDate2 = checkoutDate.toString().split("T")[0].split(" ")[0].split("-");
-//
-//				bookedDates.add(new BookedDateDTO(checkinDate2[2] + "/" + checkinDate2[1] + "/" + checkinDate2[0],
-//						checkoutDate2[2] + "/" + checkoutDate2[1] + "/" + checkoutDate2[0]));
-//			}
-//		}
+		for (int i = 0; i < bookingDetailList.size(); i++) {
+			Date checkinDate = bookingDetailList.get(i).getCheckinDate();
+			Date checkoutDate = bookingDetailList.get(i).getCheckoutDate();
+			LocalDateTime cancelDate = bookingDetailList.get(i).getBooking().getCancelDate();
+
+			if (checkinDate != null & checkoutDate != null && cancelDate == null) {
+				String[] checkinDate2 = checkinDate.toString().split("T")[0].split(" ")[0].split("-");
+				String[] checkoutDate2 = checkoutDate.toString().split("T")[0].split(" ")[0].split("-");
+
+				bookedDates.add(new BookedDateDTO(checkinDate2[2] + "/" + checkinDate2[1] + "/" + checkinDate2[0],
+						checkoutDate2[2] + "/" + checkoutDate2[1] + "/" + checkoutDate2[0]));
+			}
+		}
         return bookedDates;
     }
 
@@ -377,9 +381,6 @@ public class BookingService {
         Booking approvedBooking;
         try {
             approvedBooking = findById(bookingId);
-            System.out.println(user.getId());
-            System.out.println(approvedBooking.getBookingDetails().iterator().next().getRoom().getHost().getId());
-            System.out.println(user.getRole().getName());
             if (!user.getId().toString().equals(approvedBooking.getBookingDetails().iterator().next().getRoom().getHost().getId().toString()) && !user.getRole().getName().equals("Admin")) {
                 throw new ForbiddenException("You does not have permission to approve this booking"); // if user sent request is not host of the room
             }

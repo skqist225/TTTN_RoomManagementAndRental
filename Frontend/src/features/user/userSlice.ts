@@ -34,7 +34,7 @@ export const updateUserInfo = createAsyncThunk(
     "user/updateUserInfo",
     async (updatedInfo: IUserUpdate, { dispatch, getState, rejectWithValue }) => {
         try {
-            const { data } = await api.post(`/user/update-personal-info`, updatedInfo);
+            const { data } = await api.put(`/user/update-personal-info`, updatedInfo);
             //update local user info
             if (data) setUserToLocalStorage(data as IUser);
 

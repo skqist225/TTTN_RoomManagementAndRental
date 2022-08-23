@@ -190,8 +190,8 @@ export const makeReview = createAsyncThunk(
                 ratingComment,
             });
             return { data };
-        } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
@@ -231,8 +231,8 @@ export const createBooking = createAsyncThunk(
             );
 
             return { data };
-        } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
@@ -248,8 +248,8 @@ export const getStripeClientSecret = createAsyncThunk(
         try {
             const data = await api.post(`/create-payment-intent`, fetchPayload);
             return { data };
-        } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
@@ -264,8 +264,8 @@ export const cancelBooking = createAsyncThunk(
             // dispatch(fetchUserBookings({ ...fetchData }));
 
             return { data };
-        } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
@@ -276,8 +276,8 @@ export const approveBooking = createAsyncThunk(
         try {
             const { data } = await api.put(`/booking/${bookingId}/approved`);
             return { data };
-        } catch ({ data: { errorMessage } }) {
-            rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
@@ -311,6 +311,16 @@ type BookingState = {
         bookings: IBookingOrder[];
     };
     cancelBookingAction: {
+        loading: boolean;
+        successMessage: string | null;
+        errorMessage: string | null;
+    };
+    approveBookingAction: {
+        loading: boolean;
+        successMessage: string | null;
+        errorMessage: string | null;
+    };
+    userCancelBookingAction: {
         loading: boolean;
         successMessage: string | null;
         errorMessage: string | null;
@@ -358,6 +368,16 @@ const initialState: BookingState = {
     fetchUserBookedOrdersAction: {
         loading: true,
         bookings: [],
+    },
+    approveBookingAction: {
+        loading: true,
+        successMessage: null,
+        errorMessage: null,
+    },
+    userCancelBookingAction: {
+        loading: true,
+        successMessage: null,
+        errorMessage: null,
     },
 };
 
@@ -423,29 +443,52 @@ const bookingSlice = createSlice({
                 state.loading = false;
                 state.newlyCreatedBooking = payload;
             })
+            .addCase(cancelBooking.pending, (state, { payload }) => {
+                state.cancelBookingAction.loading = false;
+                state.cancelBookingAction.successMessage = null;
+                state.cancelBookingAction.errorMessage = null;
+            })
             .addCase(cancelBooking.fulfilled, (state, { payload }) => {
-                state.cancelMessage = payload?.data;
+                state.cancelBookingAction.loading = false;
+                state.cancelBookingAction.successMessage = payload?.data;
+            })
+            .addCase(cancelBooking.rejected, (state, { payload }) => {
+                state.cancelBookingAction.loading = false;
+                state.cancelBookingAction.errorMessage = payload as string;
+            })
+            .addCase(approveBooking.pending, (state, { payload }) => {
+                state.approveBookingAction.loading = true;
+                state.approveBookingAction.successMessage = null;
+                state.approveBookingAction.errorMessage = null;
             })
             .addCase(approveBooking.fulfilled, (state, { payload }) => {
-                state.cancelMessage = payload?.data;
+                state.approveBookingAction.loading = false;
+                state.approveBookingAction.successMessage = payload?.data;
+            })
+            .addCase(approveBooking.rejected, (state, { payload }) => {
+                state.approveBookingAction.loading = false;
+                state.approveBookingAction.errorMessage = payload as string;
+            })
+            .addCase(makeReview.pending, state => {
+                state.createReviewSuccess = false;
             })
             .addCase(makeReview.fulfilled, state => {
                 state.createReviewSuccess = true;
             })
             .addCase(cancelUserBooking.pending, (state, { payload }) => {
-                state.cancelBookingAction.loading = false;
-                state.cancelBookingAction.errorMessage = null;
-                state.cancelBookingAction.successMessage = null;
+                state.userCancelBookingAction.loading = false;
+                state.userCancelBookingAction.errorMessage = null;
+                state.userCancelBookingAction.successMessage = null;
             })
             .addCase(cancelUserBooking.fulfilled, (state, { payload }) => {
-                state.cancelBookingAction.loading = false;
+                state.userCancelBookingAction.loading = false;
                 if (payload.data) {
-                    state.cancelBookingAction.successMessage = "Hủy đặt phòng thành công";
+                    state.userCancelBookingAction.successMessage = "Hủy đặt phòng thành công";
                 }
             })
             .addCase(cancelUserBooking.rejected, (state, { payload }) => {
-                state.cancelBookingAction.loading = false;
-                state.cancelBookingAction.errorMessage = payload as string;
+                state.userCancelBookingAction.loading = false;
+                state.userCancelBookingAction.errorMessage = payload as string;
             })
             .addCase(fetchUserOrders.pending, state => {
                 state.fetchUserOrdersAction.loading = true;
