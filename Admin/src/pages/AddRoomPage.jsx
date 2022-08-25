@@ -33,7 +33,7 @@ import { amenityState, fetchAmenities } from "../features/amenity/amenitySlice";
 import { currencyState, fetchCurrencies } from "../features/currency/currencySlice";
 import { addRoom, roomState } from "../features/room/roomSlice";
 import { useNavigate } from "react-router-dom";
-import { fetchRules } from '../features/rule/ruleSlice'
+import { fetchRules, ruleState } from "../features/rule/ruleSlice";
 const steps = [
     "Category + Privacy + Basic info + Amenities",
     "Location",
@@ -64,6 +64,7 @@ const AddRoomPage = () => {
     const [category, setCategory] = useState(0);
     const [privacyType, setPrivacyType] = useState(0);
     const [amenities, setAmenities] = useState([]);
+    const [rules, setRules] = useState([]);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState(0);
@@ -94,6 +95,10 @@ const AddRoomPage = () => {
     const {
         listing: { amenities: amenitiesLst },
     } = useSelector(amenityState);
+
+    const {
+        listing: { rules: rulesLst },
+    } = useSelector(ruleState);
 
     const {
         listing: { privacies },
@@ -153,6 +158,7 @@ const AddRoomPage = () => {
                 description,
                 latitude,
                 longitude,
+                rules,
                 price: parseInt(price),
                 host: user?.id,
                 privacyType,
@@ -191,7 +197,11 @@ const AddRoomPage = () => {
         } else if (name === "amenities") {
             setAmenities(typeof value === "string" ? value.split(",") : value);
             return;
+        } else if (name === "rules") {
+            setRules(typeof value === "string" ? value.split(",") : value);
+            return;
         }
+
         setValues({
             ...values,
             [e.target.name]: e.target.value,
@@ -224,7 +234,7 @@ const AddRoomPage = () => {
                 disableNextButton();
             }
         } else if (activeStep === 1) {
-            if (values.country && values.state && values.city && values.street) {
+            if (values.city && values.street) {
                 setNextButtonDisbaled(false);
             } else {
                 disableNextButton();
@@ -256,6 +266,8 @@ const AddRoomPage = () => {
             navigate("/rooms");
         }
     }, [araSuccessMessage]);
+
+    console.log(rulesLst);
 
     return (
         <>
@@ -413,6 +425,31 @@ const AddRoomPage = () => {
                                                                         )}
                                                                     >
                                                                         {amenity.name}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </div>
+                                                    <div className='mb-5'>
+                                                        <FormControl fullWidth required>
+                                                            <InputLabel>Rules</InputLabel>
+                                                            <Select
+                                                                name='rules'
+                                                                value={rules}
+                                                                multiple
+                                                                onChange={handleChange}
+                                                            >
+                                                                {rulesLst.map(rule => (
+                                                                    <MenuItem
+                                                                        value={rule.id}
+                                                                        key={rule.id}
+                                                                        style={getStyles(
+                                                                            rule.name,
+                                                                            rules,
+                                                                            theme
+                                                                        )}
+                                                                    >
+                                                                        {rule.title}
                                                                     </MenuItem>
                                                                 ))}
                                                             </Select>

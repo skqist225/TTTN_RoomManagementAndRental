@@ -92,12 +92,42 @@ export const fetchBookingsCount = createAsyncThunk(
     async (_, { dispatch, getState, rejectWithValue }) => {
         try {
             const {
-                data: { numberOfApproved, numberOfPending, numberOfCancelled },
+                data: { numberOfAllBookings, numberOfApproved, numberOfPending, numberOfCancelled },
             } = await api.get(`/admin/bookings/count`);
+
+            return { numberOfAllBookings, numberOfApproved, numberOfPending, numberOfCancelled };
+        } catch ({ data: { error } }) {
+            rejectWithValue(error);
+        }
+    }
+);
+
+export const fetchBookingsCountByMonthAndYear = createAsyncThunk(
+    "booking/fetchBookingsCountByMonthAndYear",
+    async (year, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const {
+                data: { numberOfApproved, numberOfPending, numberOfCancelled },
+            } = await api.get(`/admin/bookings/countByMonth?year=${year}`);
 
             return { numberOfApproved, numberOfPending, numberOfCancelled };
         } catch ({ data: { error } }) {
-            rejectWithValue(error);
+            return rejectWithValue(error);
+        }
+    }
+);
+
+export const getBookingsRevenueByYear = createAsyncThunk(
+    "booking/getBookingsRevenueByYear",
+    async (year, { rejectWithValue }) => {
+        try {
+            const {
+                data: { revenue, refund },
+            } = await api.get(`/admin/bookings/getRevenueByYear?year=${year}`);
+
+            return { revenue, refund };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
@@ -263,6 +293,18 @@ const initialState = {
         numberOfApproved: 0,
         numberOfPending: 0,
         numberOfCancelled: 0,
+        numberOfAllBookings: 0,
+    },
+    fetchBookingsCountByMonthAndYearAction: {
+        loading: true,
+        numberOfApproved: [],
+        numberOfPending: [],
+        numberOfCancelled: [],
+    },
+    getBookingsRevenueByYearAction: {
+        loading: true,
+        revenue: [],
+        refund: [],
     },
 };
 
@@ -344,6 +386,7 @@ const bookingSlice = createSlice({
                 state.countBookingAction.numberOfApproved = payload.numberOfApproved;
                 state.countBookingAction.numberOfPending = payload.numberOfPending;
                 state.countBookingAction.numberOfCancelled = payload.numberOfCancelled;
+                state.countBookingAction.numberOfAllBookings = payload.numberOfAllBookings;
             })
             .addCase(fetchUserBookings.fulfilled, (state, { payload }) => {
                 state.loading = false;
@@ -390,6 +433,31 @@ const bookingSlice = createSlice({
             })
             .addCase(cancelUserBooking.fulfilled, (state, { payload }) => {
                 state.cancelBookingSuccess = true;
+            })
+            .addCase(fetchBookingsCountByMonthAndYear.pending, (state, { payload }) => {
+                state.fetchBookingsCountByMonthAndYearAction.loading = true;
+                state.fetchBookingsCountByMonthAndYearAction.numberOfApproved = [];
+                state.fetchBookingsCountByMonthAndYearAction.numberOfPending = [];
+                state.fetchBookingsCountByMonthAndYearAction.numberOfCancelled = [];
+            })
+            .addCase(fetchBookingsCountByMonthAndYear.fulfilled, (state, { payload }) => {
+                state.fetchBookingsCountByMonthAndYearAction.loading = false;
+                state.fetchBookingsCountByMonthAndYearAction.numberOfApproved =
+                    payload.numberOfApproved;
+                state.fetchBookingsCountByMonthAndYearAction.numberOfPending =
+                    payload.numberOfPending;
+                state.fetchBookingsCountByMonthAndYearAction.numberOfCancelled =
+                    payload.numberOfCancelled;
+            })
+            .addCase(getBookingsRevenueByYear.pending, (state, { payload }) => {
+                state.getBookingsRevenueByYearAction.loading = true;
+                state.getBookingsRevenueByYearAction.revenue = [];
+                state.getBookingsRevenueByYearAction.refund = [];
+            })
+            .addCase(getBookingsRevenueByYear.fulfilled, (state, { payload }) => {
+                state.getBookingsRevenueByYearAction.loading = false;
+                state.getBookingsRevenueByYearAction.revenue = payload.revenue;
+                state.getBookingsRevenueByYearAction.refund = payload.refund;
             })
             .addMatcher(isAnyOf(fetchUserBookings.pending), state => {
                 state.loading = true;

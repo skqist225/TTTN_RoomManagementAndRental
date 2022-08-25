@@ -93,8 +93,23 @@ public class BookingService {
         Integer numberOfApproved = bookingRepository.countBookingByState(Status.APPROVED);
         Integer numberOfPending = bookingRepository.countBookingByState(Status.PENDING);
         Integer numberOfCancelled = bookingRepository.countBookingByState(Status.CANCELLED);
+        Integer numberOfAllBookings = bookingRepository.countAllBooking();
 
-        return new CountBookingDTO(numberOfApproved, numberOfPending, numberOfCancelled);
+        return new CountBookingDTO(numberOfApproved, numberOfPending, numberOfCancelled, numberOfAllBookings);
+    }
+
+
+    public CountBookingByMonthInYear countBookingByMonth(Integer year) {
+
+        List<CountBookingByStatusAndMonthDTO> numberOfApproved = bookingRepository.countBookingByStateByMonth(Status.APPROVED, year);
+        List<CountBookingByStatusAndMonthDTO> numberOfPending = bookingRepository.countBookingByStateByMonth(Status.PENDING, year);
+        List<CountBookingByStatusAndMonthDTO> numberOfCancelled = bookingRepository.countBookingByStateByMonth(Status.CANCELLED, year);
+
+        return new CountBookingByMonthInYear(numberOfApproved, numberOfPending, numberOfCancelled);
+    }
+
+    public RevenueByYearAndStatus getRevenueByYear(String year) {
+        return new RevenueByYearAndStatus(bookingRepository.getRevenueByYear("APPROVED", year), bookingRepository.getRevenueByYear("CANCELLED", year));
     }
 
     public Booking createBooking(CreateBookingDTO createBookingDTO, User customerUser
@@ -154,22 +169,22 @@ public class BookingService {
     public List<BookedDateDTO> getBookedDates(Room room) throws ParseException {
         List<BookedDateDTO> bookedDates = new ArrayList<>();
         List<BookingDetail> bookingDetailList = new ArrayList<>();
-		Iterator<BookingDetail> bookingsItr = bookingDetailRepository.findByRoomAndStatus(room).iterator();
-		bookingsItr.forEachRemaining(bookingDetailList::add);
+        Iterator<BookingDetail> bookingsItr = bookingDetailRepository.findByRoomAndStatus(room).iterator();
+        bookingsItr.forEachRemaining(bookingDetailList::add);
 
-		for (int i = 0; i < bookingDetailList.size(); i++) {
-			Date checkinDate = bookingDetailList.get(i).getCheckinDate();
-			Date checkoutDate = bookingDetailList.get(i).getCheckoutDate();
-			LocalDateTime cancelDate = bookingDetailList.get(i).getBooking().getCancelDate();
+        for (int i = 0; i < bookingDetailList.size(); i++) {
+            Date checkinDate = bookingDetailList.get(i).getCheckinDate();
+            Date checkoutDate = bookingDetailList.get(i).getCheckoutDate();
+            LocalDateTime cancelDate = bookingDetailList.get(i).getBooking().getCancelDate();
 
-			if (checkinDate != null & checkoutDate != null && cancelDate == null) {
-				String[] checkinDate2 = checkinDate.toString().split("T")[0].split(" ")[0].split("-");
-				String[] checkoutDate2 = checkoutDate.toString().split("T")[0].split(" ")[0].split("-");
+            if (checkinDate != null & checkoutDate != null && cancelDate == null) {
+                String[] checkinDate2 = checkinDate.toString().split("T")[0].split(" ")[0].split("-");
+                String[] checkoutDate2 = checkoutDate.toString().split("T")[0].split(" ")[0].split("-");
 
-				bookedDates.add(new BookedDateDTO(checkinDate2[2] + "/" + checkinDate2[1] + "/" + checkinDate2[0],
-						checkoutDate2[2] + "/" + checkoutDate2[1] + "/" + checkoutDate2[0]));
-			}
-		}
+                bookedDates.add(new BookedDateDTO(checkinDate2[2] + "/" + checkinDate2[1] + "/" + checkinDate2[0],
+                        checkoutDate2[2] + "/" + checkoutDate2[1] + "/" + checkoutDate2[0]));
+            }
+        }
         return bookedDates;
     }
 
@@ -245,7 +260,7 @@ public class BookingService {
         Date now = new Date();
         System.out.println(now);
 
-        if(now.compareTo(checkinDate) > 0) {
+        if (now.compareTo(checkinDate) > 0) {
             throw new ReserveDateInThePastException("Can not cancel booking at current time");
         }
 

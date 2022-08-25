@@ -76,7 +76,6 @@ public class Booking extends BaseEntity {
 	@Transient
 	public Status determineStatus() {
 		Date now = new Date();
-		System.out.println(now);
 
 		if(Objects.equals(this.state, Status.PENDING)) {
 			if(now.compareTo(getMinCheckinDate()) > 0) {

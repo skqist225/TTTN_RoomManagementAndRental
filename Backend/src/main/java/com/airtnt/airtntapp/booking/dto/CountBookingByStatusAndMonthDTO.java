@@ -1,5 +1,6 @@
 package com.airtnt.airtntapp.booking.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CountBookingDTO {
-    private Integer numberOfApproved;
-    private Integer numberOfPending;
-    private Integer numberOfCancelled;
-    private Integer numberOfAllBookings;
+public class CountBookingByStatusAndMonthDTO {
+     private Long number;
+     private Integer month;
 }

@@ -20,12 +20,14 @@ const PropertyRoomImagesMainContent: FC<IPropertyRoomImagesMainContentProps> = (
 
     useEffect(() => {
         const uploadPhotos: JQuery<HTMLInputElement> = $("#uploadPhotos");
-        $("#triggerUploadPhotosInput").on("click", function (e) {
-            e.preventDefault();
-            uploadPhotos.trigger("click");
-        });
+        $("#triggerUploadPhotosInput")
+            .off("click")
+            .on("click", function (e) {
+                e.preventDefault();
+                uploadPhotos.trigger("click");
+            });
 
-        uploadPhotos.on("change", function () {
+        uploadPhotos.off("change").on("change", function () {
             readURL(this.files as any, uploadPhotos);
         });
 

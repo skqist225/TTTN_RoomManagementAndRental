@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
-import SidebarLinkGroup from './SidebarLinkGroup'
+import SidebarLinkGroup from "./SidebarLinkGroup";
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
     const location = useLocation();
@@ -186,7 +186,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                 </NavLink>
                             </li>
                             {/* Analytics */}
-                            <li
+                            {/* <li
                                 className={`px-3 py-2 rounded-sm mb-0.5 last:mb-0 ${
                                     pathname.includes("analytics") && "bg-slate-900"
                                 }`}
@@ -220,7 +220,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                         </span>
                                     </div>
                                 </NavLink>
-                            </li>
+                            </li> */}
                             <SidebarLinkGroup activecondition={pathname.includes("/rooms")}>
                                 {(handleClick, open) => {
                                     return (
@@ -325,38 +325,35 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                                             </div>
                                                         </NavLink>
                                                     </li>
-                                                  <li className="mb-1 last:mb-0">
-                                                    <NavLink
-                                                      end
-                                                      to="/amenities"
-                                                      className="block text-slate-400 hover:text-slate-200 transition duration-150 truncate"
-                                                    >
-                                                            <span
-                                                              className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                                    <li className='mb-1 last:mb-0'>
+                                                        <NavLink
+                                                            end
+                                                            to='/amenities'
+                                                            className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                                        >
+                                                            <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                                                 Amenities
                                                             </span>
-                                                    </NavLink>
-                                                  </li>
-                                                  <li className="mb-1 last:mb-0">
-                                                    <NavLink
-                                                      end
-                                                      to="/amenities/categories"
-                                                      className="block text-slate-400 hover:text-slate-200 transition duration-150 truncate"
-                                                    >
-                                                            <span
-                                                              className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                                        </NavLink>
+                                                    </li>
+                                                    <li className='mb-1 last:mb-0'>
+                                                        <NavLink
+                                                            end
+                                                            to='/amenities/categories'
+                                                            className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                                        >
+                                                            <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                                                 Amenity Categories
                                                             </span>
-                                                    </NavLink>
-                                                  </li>
-                                                  <li className="mb-1 last:mb-0">
-                                                    <NavLink
-                                                      end
-                                                      to="/categories"
-                                                      className="block text-slate-400 hover:text-slate-200 transition duration-150 truncate"
-                                                    >
-                                                            <span
-                                                              className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                                        </NavLink>
+                                                    </li>
+                                                    <li className='mb-1 last:mb-0'>
+                                                        <NavLink
+                                                            end
+                                                            to='/categories'
+                                                            className='block text-slate-400 hover:text-slate-200 transition duration-150 truncate'
+                                                        >
+                                                            <span className='text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200'>
                                                                 Categories
                                                             </span>
                                                         </NavLink>

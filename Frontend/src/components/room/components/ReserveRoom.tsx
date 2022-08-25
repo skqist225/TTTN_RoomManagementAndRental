@@ -55,8 +55,8 @@ const ReserveRoom: FC<IReserveRoomProps> = ({ room }) => {
     const { user } = useSelector(userState);
 
     function processBooking() {
-        const checkinDate = $("#checkinDate").text().replaceAll("/", "-");
-        const checkoutDate = $("#checkoutDate").text().replaceAll("/", "-");
+        let checkinDate = $("#checkinDate").text().replaceAll("/", "-");
+        let checkoutDate = $("#checkoutDate").text().replaceAll("/", "-");
 
         if (checkinDate === "Thêm ngày" && checkoutDate === "Thêm ngày") {
             callToast("warning", "Vui lòng chọn ngày bắt đầu và kết thúc");
@@ -67,10 +67,33 @@ const ReserveRoom: FC<IReserveRoomProps> = ({ room }) => {
             return;
         }
 
+        checkinDate = checkinDate.replace(/\//g, "-");
+        checkoutDate = checkoutDate.replace(/\//g, "-");
+
+        let [checkinDateDate, checkinDateMonth, checkinDateYear] = checkinDate.split("-");
+        let [checkoutDateDate, checkoutDateMonth, checkoutDateYear] = checkoutDate.split("-");
+
+        if (parseInt(checkinDateDate) < 10) {
+            checkinDateDate = `0${checkinDateDate}`;
+        }
+        if (parseInt(checkinDateMonth)) {
+            checkinDateMonth = `0${checkinDateMonth}`;
+        }
+
+        if (parseInt(checkoutDateDate) < 10) {
+            checkoutDateDate = `0${checkoutDateDate}`;
+        }
+        if (parseInt(checkoutDateMonth)) {
+            checkoutDateMonth = `0${checkoutDateMonth}`;
+        }
+
+        console.log(`${checkinDateDate}-${checkinDateMonth}-${checkinDateYear}`);
+        console.log(`${checkoutDateDate}-${checkoutDateMonth}-${checkoutDateYear}`);
+
         dispatch(
             upsertBookingDetail({
-                checkinDate: checkinDate.replace(/\//g, "-"),
-                checkoutDate: checkoutDate.replace(/\//g, "-"),
+                checkinDate: `${checkinDateDate}-${checkinDateMonth}-${checkinDateYear}`,
+                checkoutDate: `${checkoutDateDate}-${checkoutDateMonth}-${checkoutDateYear}`,
                 roomId: room.id,
             })
         );

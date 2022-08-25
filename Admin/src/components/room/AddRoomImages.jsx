@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
-import { Image } from '../../globalStyle'
-import { callToast, getImage } from '../../helpers'
-import axios from '../../axios'
-import { useSelector } from 'react-redux'
-import { ToastContainer } from 'react-toastify'
-import { addEmptyImage } from './script/manage_photos'
-import { userState } from '../../features/user/userSlice'
-import './css/room_images_main_content.css'
-import $ from 'jquery'
+import { useEffect, useState } from "react";
+import { Image } from "../../globalStyle";
+import { callToast, getImage } from "../../helpers";
+import axios from "../../axios";
+import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import { addEmptyImage } from "./script/manage_photos";
+import { userState } from "../../features/user/userSlice";
+import "./css/room_images_main_content.css";
+import $ from "jquery";
 
 let photos = [];
 let isUploaded = false;
@@ -37,28 +37,33 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
                 isUploaded = true;
             }
 
-            const formData = new FormData();
-            formData.set("username", username);
-            if (folderno) {
-                formData.set("folderno", folderno);
-            }
-            roomImages.forEach(image => formData.append("roomImages", image));
+            if (roomImages) {
+                const formData = new FormData();
+                formData.set("username", username);
+                if (folderno) {
+                    formData.set("folderno", folderno);
+                }
+                roomImages.forEach(image => formData.append("roomImages", image));
 
-            const data = await axios.post(`/become-a-host/get-upload-photos`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-
-            const filesArr = data.roomImages.map(e => {
-                var array = new Uint8Array(e.bytes);
-                const blob = new Blob([array], { type: "image/jpeg" });
-                return new File([blob], e.name, {
-                    type: `image/jpeg`,
+                const data = await axios.post(`/become-a-host/get-upload-photos`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 });
-            });
 
-            readURL(filesArr, uploadPhotos);
+                const filesArr = data.roomImages.map(e => {
+                    var array = new Uint8Array(e.bytes);
+                    const blob = new Blob([array], { type: "image/jpeg" });
+                    return new File([blob], e.name, {
+                        type: `image/jpeg`,
+                    });
+                });
+
+                // photos = [];
+                // filesArr.forEach(file => photos.push(file));
+
+                readURL(filesArr, uploadPhotos, true);
+            }
         }
     }
 
@@ -164,7 +169,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
         return defer.promise();
     }
 
-    function doPreviewImageSecondTime(files, subImagesContainer) {
+    function doPreviewImageSecondTime(files, subImagesContainer, callFromRestoreImage) {
         const defer = $.Deferred();
         let count = 0;
         setLoading(true);
@@ -199,7 +204,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
         return defer.promise();
     }
 
-    function readURL(files, uploadPhotos) {
+    function readURL(files, uploadPhotos, callFromRestoreImage = false) {
         const subImagesContainer = $("#subImages");
 
         if (photos.length === 0) {
@@ -209,7 +214,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
 
                 if (files.length === 5) $("#addAtLeast5Images").text("Done! How do you feel?");
 
-                var promise = doPreviewImage(files, subImagesContainer);
+                var promise = doPreviewImage(files, subImagesContainer, callFromRestoreImage);
                 promise.done(function () {
                     addEmptyImage(files, uploadPhotos, subImagesContainer);
                 });
@@ -220,7 +225,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
 
             if (photos.length === 5) $("#addAtLeast5Images").text("Done! How do you feel?");
 
-            var promise = doPreviewImageSecondTime(files, subImagesContainer);
+            var promise = doPreviewImageSecondTime(files, subImagesContainer, callFromRestoreImage);
             promise.done(function () {
                 addEmptyImage(photos, uploadPhotos, subImagesContainer);
             });
@@ -370,13 +375,14 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
     }
 
     async function uploadImagesToFolder() {
-        if (photos.length < 5) {
+        if ($("img.photo").length < 5) {
             callToast("warning", "Please choose at least 5 images");
             return;
         }
 
         const formData = new FormData();
         formData.set("host", user.email);
+        console.log(photos);
         photos.forEach(photo => formData.append("photos", photo));
 
         const data = await axios.post(`/become-a-host/upload-room-photos`, formData, {
@@ -426,16 +432,16 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
 
     useEffect(() => {
         if (!loading && photos.length) {
-            $('img.photo').each(function (index) {
-                $(this).attr('data-index', index)
+            $("img.photo").each(function (index) {
+                $(this).attr("data-index", index);
                 $(this)
-                  .siblings('div.photoAction')
-                  .children('button.photo-action__btn')
-                  .attr('data-index', index)
+                    .siblings("div.photoAction")
+                    .children("button.photo-action__btn")
+                    .attr("data-index", index);
                 $(this)
-                  .siblings('div.photoAction')
-                  .children('div.photo-action__div-hidden')
-                  .children('ul')
+                    .siblings("div.photoAction")
+                    .children("div.photo-action__div-hidden")
+                    .children("ul")
                     .attr("data-index", index);
             });
 

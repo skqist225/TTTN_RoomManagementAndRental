@@ -1,0 +1,9 @@
+# Delete booking that does not have booking details
+delete from bookings where id in (select temp.bookingId from (select count(bds.booking_id) as numberOfBookingDetails, bs.id as bookingId from bookings as bs left  join booking_details as bds on bs.id = bds.booking_id group by (bs.id)  ) as temp where temp.numberOfBookingDetails = 0)
+
+#
+SELECT sum(rs.price* DATEDIFF(bds.checkout_date, bds.checkin_date) + bds.site_fee + bds.clean_fee) as number, month(bs.created_at) as month from bookings as bs
+	left join booking_details as bds on bds.booking_id = bs.id
+	left join rooms as rs on rs.id = bds.room_id
+where bs.state = "APPROVED" and  YEAR(bs.created_at) = "2022"
+group by month(bs.created_at) ;

@@ -8,36 +8,31 @@ import { tailwindConfig, hexToRGB } from "../../utils/Utils";
 import { bookingState } from "../../features/booking/bookingSlice";
 import { useSelector } from "react-redux";
 
-function SimpleStatNumber({ label, type }) {
-    const {
-        listing: { bookings, totalElements },
-        countBookingAction: { numberOfApproved, numberOfPending, numberOfCancelled },
-    } = useSelector(bookingState);
+function SimpleStatNumber({ label, type, number, backgroundColor }) {
+    // const [number, setNumber] = useState(0);
+    // let backgroundColor = "";
 
-    const [number, setNumber] = useState(0);
-    let backgroundColor = "";
-
-    useEffect(() => {
-        switch (type) {
-            case "All": {
-                setNumber(totalElements);
-                break;
-            }
-            case "Approved": {
-                setNumber(numberOfApproved);
-                break;
-            }
-            case "Pending": {
-                setNumber(numberOfPending);
-                backgroundColor = "bg-stone-300";
-                break;
-            }
-            case "Cancelled": {
-                setNumber(numberOfCancelled);
-                break;
-            }
-        }
-    }, []);
+    // useEffect(() => {
+    //     switch (type) {
+    //         case "All": {
+    //             setNumber(totalElements);
+    //             break;
+    //         }
+    //         case "Approved": {
+    //             setNumber(numberOfApproved);
+    //             break;
+    //         }
+    //         case "Pending": {
+    //             setNumber(numberOfPending);
+    //             backgroundColor = "bg-stone-300";
+    //             break;
+    //         }
+    //         case "Cancelled": {
+    //             setNumber(numberOfCancelled);
+    //             break;
+    //         }
+    //     }
+    // }, []);
 
     const chartData = {
         labels: [
@@ -103,28 +98,26 @@ function SimpleStatNumber({ label, type }) {
     };
 
     return (
-        <div className='flex flex-col col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-slate-200'>
+        <div
+            className={`flex flex-col col-span-full sm:col-span-6 xl:col-span-4 ${backgroundColor} shadow-lg rounded-sm border border-slate-200`}
+            style={{
+                width: "300px",
+                height: "150px",
+                borderRadius: "8px",
+            }}
+        >
             <div className='px-5 pt-5'>
-                <header className='flex justify-between items-start mb-2'>
-                    {/* Icon */}
-                    {/* <img src={Icon} width='32' height='32' alt='Icon 01' /> */}
-                    {/* Menu button */}
-                </header>
-                <h2 className='text-lg font-semibold text-slate-800 mb-2'>{label}</h2>
+                {/* <header className='flex justify-between items-start mb-2'>
+                    <img src={Icon} width='32' height='32' alt='Icon 01' />
+                </header> */}
+                <h2 className='text-lg font-semibold text-gray-200 mb-2'>{label}</h2>
                 <div className='flex items-start'>
-                    <div className='text-3xl font-bold text-slate-800 mr-2 ${backgroundColor}'>
-                        {number}
-                    </div>
+                    <div className={`text-3xl font-bold text-gray-200 mr-2`}>{number}</div>
                     {/* <div className='text-sm font-semibold text-white px-1.5 bg-green-500 rounded-full'>
                         +49%
                     </div> */}
                 </div>
             </div>
-            {/* Chart built with Chart.js 3 */}
-            {/* <div className='grow'> */}
-            {/* Change the height attribute to adjust the chart height */}
-            {/* <LineChart data={chartData} width={389} height={128} /> */}
-            {/* </div> */}
         </div>
     );
 }

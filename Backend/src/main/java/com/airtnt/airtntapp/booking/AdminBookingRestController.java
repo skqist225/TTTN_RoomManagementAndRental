@@ -1,8 +1,6 @@
 package com.airtnt.airtntapp.booking;
 
-import com.airtnt.airtntapp.booking.dto.BookingListDTO;
-import com.airtnt.airtntapp.booking.dto.BookingUserOrderDTO;
-import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
+import com.airtnt.airtntapp.booking.dto.*;
 import com.airtnt.airtntapp.exception.BookingNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.error.BadResponse;
@@ -25,7 +23,7 @@ public class AdminBookingRestController {
 
     @GetMapping("bookings")
     public ResponseEntity<StandardJSONResponse<BookingListDTO>> getAllBookings(@RequestParam("page") int page,
-            @RequestParam(value = "type", defaultValue = "all", required = false) String type) throws ParseException {
+                                                                               @RequestParam(value = "type", defaultValue = "all", required = false) String type) throws ParseException {
         Page<Booking> bookingsPage = bookingService.getAllBookings(page, type);
 
         List<BookingUserOrderDTO> bookingListingsDTOs = new ArrayList<>();
@@ -55,5 +53,15 @@ public class AdminBookingRestController {
     @GetMapping("bookings/count")
     public ResponseEntity<StandardJSONResponse<CountBookingDTO>> getBookingState() throws BookingNotFoundException {
         return new OkResponse<CountBookingDTO>(bookingService.countBookingByState()).response();
+    }
+
+    @GetMapping("bookings/countByMonth")
+    public ResponseEntity<StandardJSONResponse<CountBookingByMonthInYear>> countBookingByMonth(@RequestParam("year") Integer year) throws BookingNotFoundException {
+        return new OkResponse<CountBookingByMonthInYear>(bookingService.countBookingByMonth(year)).response();
+    }
+
+    @GetMapping("bookings/getRevenueByYear")
+    public ResponseEntity<StandardJSONResponse<RevenueByYearAndStatus>> getRevenueByYear(@RequestParam("year") String year) throws BookingNotFoundException {
+        return new OkResponse<RevenueByYearAndStatus>(bookingService.getRevenueByYear(year)).response();
     }
 }

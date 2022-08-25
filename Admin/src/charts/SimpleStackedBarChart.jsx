@@ -16,7 +16,7 @@ import { formatValue } from "../utils/Utils";
 
 Chart.register(BarController, BarElement, LinearScale, TimeScale, Tooltip, Legend);
 
-function BarChart02({ data, width, height }) {
+function SimpleStackedBarChart({ data, width, height }) {
     const canvas = useRef(null);
 
     useEffect(() => {
@@ -43,7 +43,7 @@ function BarChart02({ data, width, height }) {
                         beginAtZero: true,
                         ticks: {
                             maxTicksLimit: 5,
-                            callback: value => formatValue(value),
+                            // callback: value => formatValue(value),
                         },
                     },
                     x: {
@@ -73,7 +73,7 @@ function BarChart02({ data, width, height }) {
                     tooltip: {
                         callbacks: {
                             title: () => false, // Disable tooltip title
-                            label: context => formatValue(context.parsed.y),
+                            // label: (context) => formatValue(context.parsed.y),
                         },
                     },
                 },
@@ -94,4 +94,4 @@ function BarChart02({ data, width, height }) {
     return <canvas ref={canvas} width={width} height={height}></canvas>;
 }
 
-export default BarChart02;
+export default SimpleStackedBarChart;
