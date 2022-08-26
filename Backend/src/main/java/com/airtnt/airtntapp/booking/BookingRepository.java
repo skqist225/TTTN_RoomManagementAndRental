@@ -117,6 +117,11 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
             + " group by month(bs.created_at)", nativeQuery = true)
     public List<RevenueByYear> getRevenueByYear(String status, String year);
 
+    @Query(value = "SELECT SUM(rs.price* DATEDIFF(bds.checkout_date, bds.checkin_date) + bds.site_fee + bds.clean_fee) as number FROM (select * from bookings as bs where bs.state = \"APPROVED\" AND YEAR(bs.created_at) =  YEAR(CURRENT_DATE()) and MONTH(bs.created_at) = MONTH(CURRENT_DATE())) as bk" +
+            " LEFT JOIN booking_details as bds ON bds.booking_id = bk.id" +
+            " LEFT JOIN rooms as rs ON rs.id = bds.room_id", nativeQuery = true)
+    public Long getCurrentMonthSale();
+
     @Query(value = "SELECT b.booking_date as date, SUM(b.total_fee) as revenue FROM bookings b WHERE YEAR(b.booking_date) = :year AND MONTH(b.booking_date) = :month AND b.is_complete=true AND b.is_refund=false group by YEAR(b.booking_date), Month(b.booking_date), Day(b.booking_date) order by b.booking_date", nativeQuery = true)
     public List<BookingStatsPerDayDTO> getBookingStatsPerDay(Integer month, Integer year);
 

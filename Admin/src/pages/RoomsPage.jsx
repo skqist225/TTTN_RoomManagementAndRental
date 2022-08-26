@@ -6,7 +6,7 @@ import Stack from "@mui/material/Stack";
 import TablePagination from "@material-ui/core/TablePagination";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchRooms } from "../features/room/roomSlice";
+import { clearEditState, fetchRooms } from "../features/room/roomSlice";
 import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { Fab } from "@material-ui/core";
@@ -32,6 +32,10 @@ const RoomsPage = () => {
         dispatch(fetchRooms(pn + 1));
         setPage(pn);
     };
+
+    useEffect(() => {
+        dispatch(clearEditState());
+    }, []);
 
     const roomColumns = [
         {

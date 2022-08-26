@@ -53,8 +53,8 @@ export const updateUserAvatar = createAsyncThunk(
                 },
             });
             if (data) {
-                console.log(data);
-                setUserToLocalStorage(data as IUser);
+                localStorage.removeItem("user");
+                localStorage.setItem("user", JSON.stringify(data));
             }
 
             return { data };

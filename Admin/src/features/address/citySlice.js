@@ -11,6 +11,16 @@ export const fetchCitiesByState = createAsyncThunk(
     }
 );
 
+export const fetchCities = createAsyncThunk(
+    "city/fetchCities",
+    async (_, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const { data } = await api.get(`/cities`);
+            return { data };
+        } catch (error) {}
+    }
+);
+
 const initialState = {
     cities: [],
     loading: true,
@@ -23,6 +33,10 @@ const citySlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(fetchCitiesByState.fulfilled, (state, { payload }) => {
+                state.loading = false;
+                state.cities = payload?.data;
+            })
+            .addCase(fetchCities.fulfilled, (state, { payload }) => {
                 state.loading = false;
                 state.cities = payload?.data;
             })

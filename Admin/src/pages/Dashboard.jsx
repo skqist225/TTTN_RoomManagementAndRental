@@ -39,6 +39,20 @@ import { authState } from "../features/auth/authSlice";
 import { fetchBookingDetails } from "../features/bookingDetail/bookingDetailSlice";
 import SimpleStatNumber from "../components/booking/SimpleStatNumber";
 import StackedBarChart from "../partials/dashboard/DashboardCard09";
+import {
+    countUserByRole,
+    dashboardState,
+    getCreatedRoomByMonthAndYear,
+    statsCount,
+} from "../features/dashboard/dashboardSlice";
+import LineChart from "../partials/dashboard/LineChart";
+import LineChartDashboard from "../partials/dashboard/LineChartDashboard";
+import CircleChart from "../partials/dashboard/CircleChart";
+import {
+    bookingState,
+    fetchBookingsCountByMonthAndYear,
+    getBookingsRevenueByYear,
+} from "../features/booking/bookingSlice";
 
 function Dashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,9 +66,73 @@ function Dashboard() {
         loginAction: { loading },
     } = useSelector(authState);
 
+    const {
+        statsCountAction: {
+            loading: statsCountActionLoading,
+            totalSales,
+            totalBookings,
+            totalRooms,
+            totalUsers,
+        },
+        getCreatedRoomByMonthAndYearAction: {
+            loading: getCreatedRoomByMonthAndYearActionLoading,
+            activeList,
+            deactiveList,
+        },
+        countUserByRoleAction: {
+            loading: countUserByRoleActionLoading,
+            numberOfUsers,
+            numberOfAdmin,
+            numberOfHost,
+        },
+    } = useSelector(dashboardState);
+
+    const {
+        countBookingAction: {
+            numberOfApproved,
+            numberOfPending,
+            numberOfCancelled,
+            numberOfAllBookings,
+        },
+        fetchBookingsCountByMonthAndYearAction: {
+            loading: fetchBookingsCountByMonthAndYearActionLoading,
+            numberOfApproved: numberOfApprovedArr,
+            numberOfPending: numberOfPendingArr,
+            numberOfCancelled: numberOfCancelledArr,
+        },
+        getBookingsRevenueByYearAction: { loading: gbrLoading, revenue, refund },
+    } = useSelector(bookingState);
+
+    const lcdataSet1 = Array.from({ length: 24 }).fill(0);
+    const lcdataSet2 = Array.from({ length: 24 }).fill(0);
+
+    activeList.forEach(({ number, month, year }) => {
+        if (year.toString() === "2022") {
+            lcdataSet1[month + 12 - 1] = number;
+        } else {
+            lcdataSet1[month - 1] = number;
+        }
+    });
+    deactiveList.forEach(({ number, month, year }) => {
+        if (year.toString() === "2022") {
+            lcdataSet2[month + 12 - 1] = number;
+        } else {
+            lcdataSet2[month - 1] = number;
+        }
+    });
+
+    console.log(lcdataSet1);
+
     useEffect(() => {
-        console.log(pathname);
         switch (pathname) {
+            case "/": {
+                dispatch(statsCount());
+                dispatch(getCreatedRoomByMonthAndYear());
+                dispatch(countUserByRole());
+                dispatch(fetchBookingsCountByMonthAndYear(new Date().getFullYear()));
+                dispatch(getBookingsRevenueByYear(new Date().getFullYear()));
+                break;
+            }
             case "/rooms": {
                 dispatch(fetchRooms(1));
                 break;
@@ -98,6 +176,29 @@ function Dashboard() {
             }
         }
     }, [loading]);
+
+    const dataSet1 = Array.from({ length: 12 }).fill(0);
+    const dataSet2 = Array.from({ length: 12 }).fill(0);
+    const dataSet3 = Array.from({ length: 12 }).fill(0);
+    numberOfApprovedArr.forEach(({ number, month }) => {
+        dataSet1[month - 1] = number;
+    });
+    numberOfPendingArr.forEach(({ number, month }) => {
+        dataSet2[month - 1] = number;
+    });
+    numberOfCancelledArr.forEach(({ number, month }) => {
+        dataSet3[month - 1] = number;
+    });
+
+    const lcdataSet11 = Array.from({ length: 12 }).fill(0);
+    const lcdataSet22 = Array.from({ length: 12 }).fill(0);
+
+    revenue.forEach(({ number, month }) => {
+        lcdataSet11[month - 1] = number;
+    });
+    refund.forEach(({ number, month }) => {
+        lcdataSet22[month - 1] = number;
+    });
 
     return (
         <div className='flex h-screen overflow-hidden'>
@@ -187,46 +288,77 @@ function Dashboard() {
                                 </div>
 
                                 {/* Cards */}
-                                <div className='grid grid-cols-12 gap-6 w-full'>
+                                <div>
                                     <div className='flex items-center justify-between w-full'>
                                         <SimpleStatNumber
                                             label='Total Sales In Month'
                                             type='All'
                                             backgroundColor={`bg-violet-500`}
-                                            // number={totalElements}
+                                            number={totalSales}
                                         />
                                         <SimpleStatNumber
                                             label='Total Orders'
                                             type='Approved'
                                             backgroundColor={`bg-rose-500`}
-                                            // number={numberOfApproved}
+                                            number={totalBookings}
                                         />
                                         <SimpleStatNumber
                                             label='Total Houses/Rooms'
                                             type='Pending'
                                             backgroundColor={`bg-amber-500`}
-                                            // number={numberOfPending}
+                                            number={totalRooms}
                                         />
                                         <SimpleStatNumber
                                             label='Total Users'
                                             type='Cancelled'
                                             backgroundColor={`bg-green-500`}
-                                            // number={numberOfCancelled}
+                                            number={totalUsers}
                                         />
                                     </div>
-                                    <DashboardCard01 />
-                                    <DashboardCard02 />
-                                    <DashboardCard03 />
-                                    <DashboardCard04 />
-                                    <DashboardCard05 />
-                                    <DashboardCard06 />
-                                    <DashboardCard07 />
-                                    <DashboardCard08 />
-                                    {/* <StackedBarChart /> */}
-                                    <DashboardCard10 />
-                                    <DashboardCard11 />
-                                    <DashboardCard12 />
-                                    <DashboardCard13 />
+                                    {/* <DashboardCard01 /> */}
+                                    {/* <DashboardCard02 /> */}
+                                    {/* <DashboardCard03 /> */}
+
+                                    <div className='my-10'>
+                                        {!getCreatedRoomByMonthAndYearActionLoading && (
+                                            <LineChartDashboard
+                                                data={[lcdataSet1, lcdataSet2]}
+                                                label='Created Room By Month'
+                                            />
+                                        )}
+                                    </div>
+                                    <div>
+                                        {/* <DashboardCard04 /> */}
+                                        {/* <DashboardCard05 /> */}
+                                        {!countUserByRoleActionLoading && (
+                                            <CircleChart
+                                                data={[numberOfUsers, numberOfHost, numberOfAdmin]}
+                                            />
+                                        )}
+                                        {/* <DashboardCard06 /> */}
+                                        {/* <DashboardCard07 />
+                                        <DashboardCard08 /> */}
+                                        {/* <StackedBarChart /> */}
+                                        {/* <DashboardCard10 /> */}
+                                        {/* <DashboardCard11 />
+                                        <DashboardCard12 />
+                                        <DashboardCard13 /> */}
+                                    </div>
+                                    <div className='my-10'>
+                                        {!fetchBookingsCountByMonthAndYearActionLoading && (
+                                            <StackedBarChart
+                                                data={[dataSet1, dataSet2, dataSet3]}
+                                            />
+                                        )}
+                                    </div>
+                                    <div className='my-10'>
+                                        {!gbrLoading && (
+                                            <LineChart
+                                                data={[lcdataSet11, lcdataSet22]}
+                                                label='Sales Over Time (all bookings)'
+                                            />
+                                        )}
+                                    </div>
                                 </div>
                             </>
                         )}

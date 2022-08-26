@@ -248,8 +248,14 @@ const AddUserPage = () => {
             [name]: value,
         });
 
-        if (name === "phoneNumber" && value.length === 10 && user.phoneNumber !== value) {
-            dispatch(checkPhoneNumber(value));
+        if (name === "phoneNumber" && value.length === 10) {
+            dispatch(
+                checkPhoneNumber({
+                    phoneNumber: value,
+                    userId: userid,
+                    edit: true,
+                })
+            );
         } else if (name === "email" && user.email !== value) {
             dispatch(checkEmail(value));
         }

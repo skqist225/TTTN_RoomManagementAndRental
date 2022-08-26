@@ -210,7 +210,7 @@ const PropertyLocationPage: FC<IPropertyLocationPageProps> = () => {
         };
 
         const image: HTMLImageElement = document.createElement("img");
-        image.src = userAvatar;
+        image.src = getImage(userAvatar);
         image.setAttribute("style", "width:40px; height:40px; border-radius:50%;object-fit:cover");
 
         const marker = new mapboxgl.Marker(image)

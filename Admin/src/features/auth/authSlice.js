@@ -74,9 +74,11 @@ export const register = createAsyncThunk("auth/register", async (user, { rejectW
 
 export const checkPhoneNumber = createAsyncThunk(
     "auth/checkPhoneNumber",
-    async (phoneNumber, { rejectWithValue }) => {
+    async ({ phoneNumber, edit, userId }, { rejectWithValue }) => {
         try {
-            const { data } = await api.get(`auth/check-phonenumber/${phoneNumber}`);
+            const { data } = await api.get(
+                `auth/check-phonenumber/${phoneNumber}?edit=${edit}&userId=${userId}`
+            );
 
             return { data };
         } catch ({ data: { error } }) {

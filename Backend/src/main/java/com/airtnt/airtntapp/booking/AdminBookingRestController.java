@@ -56,12 +56,17 @@ public class AdminBookingRestController {
     }
 
     @GetMapping("bookings/countByMonth")
-    public ResponseEntity<StandardJSONResponse<CountBookingByMonthInYear>> countBookingByMonth(@RequestParam("year") Integer year) throws BookingNotFoundException {
+    public ResponseEntity<StandardJSONResponse<CountBookingByMonthInYear>> countBookingByMonth(@RequestParam("year") Integer year)  {
         return new OkResponse<CountBookingByMonthInYear>(bookingService.countBookingByMonth(year)).response();
     }
 
     @GetMapping("bookings/getRevenueByYear")
-    public ResponseEntity<StandardJSONResponse<RevenueByYearAndStatus>> getRevenueByYear(@RequestParam("year") String year) throws BookingNotFoundException {
+    public ResponseEntity<StandardJSONResponse<RevenueByYearAndStatus>> getRevenueByYear(@RequestParam("year") String year)  {
         return new OkResponse<RevenueByYearAndStatus>(bookingService.getRevenueByYear(year)).response();
+    }
+
+    @GetMapping("bookings/getCurrentMonthSale")
+    public ResponseEntity<StandardJSONResponse<Long>> getCurrentMonthSale()  {
+        return new OkResponse<Long>(bookingService.getCurrentMonthSale()).response();
     }
 }

@@ -23,10 +23,8 @@ const AddressEdit = ({
     const [cityOptions, setCityOptions] = useState([]);
 
     useEffect(() => {
-        if (country) {
-            dispatch(fetchCountries());
-        }
-    }, [country]);
+        dispatch(fetchCountries());
+    }, []);
 
     useEffect(() => {
         if (country) {
@@ -80,7 +78,7 @@ const AddressEdit = ({
     return (
         <div>
             <div className='mb-5'>
-                <FormControl fullWidth>
+                {/* <FormControl fullWidth>
                     <InputLabel>Country/Area</InputLabel>
                     <Select
                         id='countrySelect'
@@ -99,7 +97,7 @@ const AddressEdit = ({
                             </MenuItem>
                         ))}
                     </Select>
-                </FormControl>
+                </FormControl> */}
             </div>
             <div className='mb-5'>
                 <FormControl fullWidth>

@@ -1,5 +1,6 @@
 package com.airtnt.airtntapp.room;
 
+import com.airtnt.airtntapp.booking.BookingStatsPerDayDTO;
 import com.airtnt.entity.Room;
 import com.airtnt.entity.User;
 import org.springframework.data.domain.Page;
@@ -99,4 +100,20 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
 
         @Query("SELECT count(*) From Room r")
         public Integer getNumberOfRoom();
+
+
+        @Query(value = "SELECT count(rs.id) as number, month(rs.created_at) as month, year(rs.created_at) as year from rooms as rs" +
+                " where rs.status = :status and  YEAR(rs.created_at) IN (:year,:previousYear)" +
+                " group by  year(rs.created_at), month(rs.created_at)", nativeQuery = true)
+        public List<CreatedRoomByMonthAndYear> getCreatedRoomByMonthAndYear(Integer status, Integer year, Integer previousYear);
+
+        public static interface CreatedRoomByMonthAndYear {
+
+                Long getNumber();
+
+                Integer getMonth();
+
+                Integer getYear();
+
+        }
 }

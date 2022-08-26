@@ -1,23 +1,6 @@
 package com.airtnt.airtntapp.user;
 
-import java.io.IOException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.airtnt.airtntapp.address.AddressService;
 import com.airtnt.airtntapp.exception.UserNotFoundException;
 import com.airtnt.airtntapp.exception.VerifiedUserException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
@@ -26,13 +9,22 @@ import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.airtntapp.user.dto.UpdateUserDTO;
 import com.airtnt.airtntapp.user.dto.UserListDTO;
 import com.airtnt.airtntapp.user.dto.UserListResponse;
+import com.airtnt.entity.Address;
 import com.airtnt.entity.City;
-import com.airtnt.entity.Country;
 import com.airtnt.entity.Sex;
-import com.airtnt.entity.State;
 import com.airtnt.entity.User;
-
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/admin/")
@@ -40,12 +32,15 @@ public class AdminUserRestController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AddressService addressService;
+
     @Value("${env}")
     private String environment;
 
     @GetMapping("users")
     public ResponseEntity<StandardJSONResponse<UserListResponse>> getAllUsers(@RequestParam("page") int pageNumber,
-            @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword) {
+                                                                              @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword) {
         Page<User> userPages = userService.getAllUsers(pageNumber, keyword);
 
         List<UserListDTO> userListDTOs = new ArrayList<>();
@@ -103,7 +98,7 @@ public class AdminUserRestController {
 
     @PutMapping("users/{id}/update")
     public ResponseEntity<StandardJSONResponse<User>> updateUser(@PathVariable(value = "id") Integer userId,
-            @RequestBody UpdateUserDTO updateUserDTO) throws IOException {
+                                                                 @RequestBody UpdateUserDTO updateUserDTO) throws IOException {
         try {
             User user = userService.findById(userId);
 
@@ -135,11 +130,27 @@ public class AdminUserRestController {
 //            if (updateUserDTO.getState() != null) {
 //                user.getAddress().setState(new State(updateUserDTO.getState()));
 //            }
-            if (updateUserDTO.getCity() != null) {
-                user.getAddress().setCity(new City(updateUserDTO.getCity()));
+
+            Address address = null;
+            if (user.getAddress() != null) {
+                address = addressService.findById(user.getAddress().getId());
             }
-            if (updateUserDTO.getStreet() != null) {
-                user.getAddress().setStreet(updateUserDTO.getStreet());
+
+            if (address == null) {
+                if (Objects.nonNull(updateUserDTO.getCity()) && Objects.nonNull(updateUserDTO.getStreet())) {
+                    address = new Address(new City(updateUserDTO.getCity()), updateUserDTO.getStreet());
+                }
+            } else {
+                if (updateUserDTO.getCity() != null) {
+                    address.setCity(new City(updateUserDTO.getCity()));
+                }
+                if (updateUserDTO.getStreet() != null) {
+                    address.setStreet(updateUserDTO.getStreet());
+                }
+            }
+
+            if(address != null) {
+                addressService.save(address);
             }
 
             return new OkResponse<User>(userService.saveUser(user)).response();

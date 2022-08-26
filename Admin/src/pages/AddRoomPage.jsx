@@ -34,12 +34,7 @@ import { currencyState, fetchCurrencies } from "../features/currency/currencySli
 import { addRoom, roomState } from "../features/room/roomSlice";
 import { useNavigate } from "react-router-dom";
 import { fetchRules, ruleState } from "../features/rule/ruleSlice";
-const steps = [
-    "Category + Privacy + Basic info + Amenities",
-    "Location",
-    "Images",
-    "Name + Description + Price",
-];
+const steps = ["Information", "Location", "Images"];
 
 function getStyles(name, personName, theme) {
     return {
@@ -59,8 +54,8 @@ const AddRoomPage = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [nextButtonDisbaled, setNextButtonDisbaled] = useState(true);
     const [isPhotosChanged, setIsPhotosChanged] = useState(false);
-    const [latitude, setUserLat] = useState(0);
-    const [longitude, setUserLng] = useState(0);
+    const [latitude, setLatitude] = useState(0);
+    const [longitude, setLongitude] = useState(0);
     const [category, setCategory] = useState(0);
     const [privacyType, setPrivacyType] = useState(0);
     const [amenities, setAmenities] = useState([]);
@@ -97,7 +92,7 @@ const AddRoomPage = () => {
     } = useSelector(amenityState);
 
     const {
-        listing: { rules: rulesLst },
+        listing: { rules: rulesArray },
     } = useSelector(ruleState);
 
     const {
@@ -135,7 +130,7 @@ const AddRoomPage = () => {
             });
         }
 
-        if (activeStep === 3) {
+        if (activeStep === 2) {
             const formData = new FormData();
 
             const { roomImages } = JSON.parse(localStorage.getItem("room"));
@@ -169,6 +164,7 @@ const AddRoomPage = () => {
             for (let key in roomEntity) {
                 formData.append(key, roomEntity[key]);
             }
+
             dispatch(addRoom(formData));
 
             return;
@@ -214,41 +210,36 @@ const AddRoomPage = () => {
             dispatch(fetchCategories());
             dispatch(fetchAmenities());
             dispatch(fetchRules(1));
-        }
-        if (activeStep === 3) {
             dispatch(fetchCurrencies());
         }
     }, [activeStep]);
 
-    function disableNextButton() {
-        setNextButtonDisbaled(true);
-        $("#nextButton").addClass("bg-blue-200 hover:bg-blue-200");
-    }
-
     useEffect(() => {
         if (activeStep === 0) {
-            if (category !== 0 && privacyType !== 0 && amenities.length > 0) {
+            if (
+                category &&
+                privacyType &&
+                amenities.length > 0 &&
+                rules.length > 0 &&
+                name &&
+                price
+            ) {
                 setNextButtonDisbaled(false);
-                $("#nextButton").removeClass("bg-blue-200 hover:bg-blue-200");
             } else {
-                disableNextButton();
+                setNextButtonDisbaled(true);
             }
-        } else if (activeStep === 1) {
+        }
+    }, [category, privacyType, amenities, name, price, currency, rules]);
+
+    useEffect(() => {
+        if (activeStep === 1) {
             if (values.city && values.street) {
                 setNextButtonDisbaled(false);
             } else {
-                disableNextButton();
+                setNextButtonDisbaled(true);
             }
         }
-    }, [
-        category,
-        privacyType,
-        amenities,
-        values.country,
-        values.state,
-        values.city,
-        values.street,
-    ]);
+    }, [values.country, values.state, values.city, values.street]);
 
     useEffect(() => {
         if (activeStep === 2 && isPhotosChanged) {
@@ -266,8 +257,6 @@ const AddRoomPage = () => {
             navigate("/rooms");
         }
     }, [araSuccessMessage]);
-
-    console.log(rulesLst);
 
     return (
         <>
@@ -303,8 +292,8 @@ const AddRoomPage = () => {
                             <React.Fragment>
                                 <div className='my-10'></div>
                                 {activeStep === 0 && (
-                                    <div className=''>
-                                        <div className='flex-1 w-45 px-20'>
+                                    <div className='flex items-center'>
+                                        <div className='px-20 flex-1'>
                                             <Box
                                                 component='div'
                                                 sx={{
@@ -314,9 +303,9 @@ const AddRoomPage = () => {
                                                     height: "600px",
                                                     borderRadius: "8px",
                                                 }}
-                                                className='w-full col-flex items-center justify-evenly'
+                                                className='w-full flex items-start justify-evenly'
                                             >
-                                                <div className='w-3/6'>
+                                                <div className='flex-1 w-48 p-10'>
                                                     <div className='mb-5'>
                                                         <FormControl fullWidth required>
                                                             <InputLabel>Category</InputLabel>
@@ -430,30 +419,108 @@ const AddRoomPage = () => {
                                                             </Select>
                                                         </FormControl>
                                                     </div>
-                                                    <div className='mb-5'>
-                                                        <FormControl fullWidth required>
-                                                            <InputLabel>Rules</InputLabel>
-                                                            <Select
-                                                                name='rules'
-                                                                value={rules}
-                                                                multiple
-                                                                onChange={handleChange}
-                                                            >
-                                                                {rulesLst.map(rule => (
-                                                                    <MenuItem
-                                                                        value={rule.id}
-                                                                        key={rule.id}
-                                                                        style={getStyles(
-                                                                            rule.name,
-                                                                            rules,
-                                                                            theme
-                                                                        )}
+                                                </div>
+                                                <div className='flex-1 w-48 p-10'>
+                                                    <div className='col-flex items-center justify-center h-full w-full'>
+                                                        <div className='flex-1 w-full mb-10'>
+                                                            <FormControl fullWidth>
+                                                                <TextField
+                                                                    label='Name'
+                                                                    value={name}
+                                                                    onChange={e => {
+                                                                        setName(e.target.value);
+                                                                    }}
+                                                                    required
+                                                                />
+                                                            </FormControl>
+                                                        </div>
+                                                        <div className='flex-1 w-full mb-10'>
+                                                            <Typography>Description</Typography>
+                                                            <FormControl fullWidth>
+                                                                <TextareaAutosize
+                                                                    minRows={3}
+                                                                    value={description}
+                                                                    onChange={e => {
+                                                                        setDescription(
+                                                                            e.target.value
+                                                                        );
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                        </div>
+                                                        <div className='flex-1 w-full mb-10'>
+                                                            <FormControl fullWidth>
+                                                                <TextField
+                                                                    label='Price'
+                                                                    value={price}
+                                                                    onChange={e => {
+                                                                        setPrice(e.target.value);
+                                                                    }}
+                                                                    type='number'
+                                                                    required
+                                                                />
+                                                            </FormControl>
+                                                            <div className='my-5'>
+                                                                <FormControl fullWidth required>
+                                                                    <InputLabel>
+                                                                        Currencies
+                                                                    </InputLabel>
+                                                                    <Select
+                                                                        value={currency}
+                                                                        label='Currencies'
+                                                                        onChange={e => {
+                                                                            setCurrency(
+                                                                                e.target.value
+                                                                            );
+                                                                        }}
                                                                     >
-                                                                        {rule.title}
-                                                                    </MenuItem>
-                                                                ))}
-                                                            </Select>
-                                                        </FormControl>
+                                                                        {currencies.map(
+                                                                            currency => (
+                                                                                <MenuItem
+                                                                                    value={
+                                                                                        currency.id
+                                                                                    }
+                                                                                    id={
+                                                                                        currency.unit
+                                                                                    }
+                                                                                >
+                                                                                    {
+                                                                                        currency.symbol
+                                                                                    }{" "}
+                                                                                    ({currency.unit}
+                                                                                    )
+                                                                                </MenuItem>
+                                                                            )
+                                                                        )}
+                                                                    </Select>
+                                                                </FormControl>
+                                                            </div>
+                                                            <div className='mb-5'>
+                                                                <FormControl fullWidth required>
+                                                                    <InputLabel>Rules</InputLabel>
+                                                                    <Select
+                                                                        name='rules'
+                                                                        value={rules}
+                                                                        multiple
+                                                                        onChange={handleChange}
+                                                                    >
+                                                                        {rulesArray.map(rule => (
+                                                                            <MenuItem
+                                                                                value={rule.id}
+                                                                                key={rule.id}
+                                                                                style={getStyles(
+                                                                                    rule.title,
+                                                                                    rules,
+                                                                                    theme
+                                                                                )}
+                                                                            >
+                                                                                {rule.title}
+                                                                            </MenuItem>
+                                                                        ))}
+                                                                    </Select>
+                                                                </FormControl>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </Box>
@@ -475,8 +542,10 @@ const AddRoomPage = () => {
                                             values={values}
                                             setValues={setValues}
                                             activeStep={activeStep}
-                                            setUserLat={setUserLat}
-                                            setUserLng={setUserLng}
+                                            setLatitude={setLatitude}
+                                            setLongitude={setLongitude}
+                                            latitude={latitude}
+                                            longitude={longitude}
                                         />
                                     </Box>
                                 )}
@@ -485,83 +554,6 @@ const AddRoomPage = () => {
                                     <div className='flex justify-center'>
                                         <AddRoomImages setIsPhotosChanged={setIsPhotosChanged} />
                                     </div>
-                                )}
-                                {activeStep === 3 && (
-                                    <Box
-                                        component='div'
-                                        sx={{
-                                            p: 2,
-                                            border: "1px dashed grey",
-                                            background: "#fff",
-                                            height: "650px",
-                                            borderRadius: "8px",
-                                        }}
-                                        className='w-full'
-                                    >
-                                        <div className='col-flex justify-center items-center'>
-                                            <div className='w-3/6 col-flex items-center justify-center h-full'>
-                                                <div className='flex-1 w-50 mb-10'>
-                                                    <FormControl fullWidth>
-                                                        <TextField
-                                                            label='Name'
-                                                            value={name}
-                                                            onChange={e => {
-                                                                setName(e.target.value);
-                                                            }}
-                                                            required
-                                                        />
-                                                    </FormControl>
-                                                </div>
-                                                <div className='flex-1 w-50'>
-                                                    <Typography>Description</Typography>
-                                                    <FormControl fullWidth>
-                                                        <TextareaAutosize
-                                                            minRows={3}
-                                                            value={description}
-                                                            onChange={e => {
-                                                                setDescription(e.target.value);
-                                                            }}
-                                                        />
-                                                    </FormControl>
-                                                </div>
-                                                <div className='flex-1 w-50 mt-5'>
-                                                    <FormControl fullWidth>
-                                                        <TextField
-                                                            label='Price'
-                                                            value={price}
-                                                            onChange={e => {
-                                                                setPrice(e.target.value);
-                                                            }}
-                                                            type='number'
-                                                            required
-                                                        />
-                                                    </FormControl>
-                                                    <div className='mt-5'>
-                                                        <FormControl fullWidth>
-                                                            <InputLabel>Currencies</InputLabel>
-                                                            <Select
-                                                                value={currency}
-                                                                label='Currencies'
-                                                                onChange={e => {
-                                                                    setCurrency(e.target.value);
-                                                                }}
-                                                            >
-                                                                {currencies.map(currency => (
-                                                                    <MenuItem
-                                                                        value={currency.id}
-                                                                        id={currency.unit}
-                                                                    >
-                                                                        {currency.symbol} (
-                                                                        {currency.unit})
-                                                                    </MenuItem>
-                                                                ))}
-                                                            </Select>
-                                                        </FormControl>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Box>
                                 )}
 
                                 <Box

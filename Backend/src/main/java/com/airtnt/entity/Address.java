@@ -1,20 +1,9 @@
 package com.airtnt.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -35,6 +24,10 @@ public class Address {
 
 	@Column(name = "apartment_no_street")
 	private String street;
+
+	@JsonIgnore
+	@OneToOne(mappedBy = "address")
+	private User user;
 
 	public Address(City city, String street) {
 		this.city = city;

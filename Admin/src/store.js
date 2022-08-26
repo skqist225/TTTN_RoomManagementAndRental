@@ -14,6 +14,7 @@ import {
     roomSlice,
     userSlice,
     stateSlice,
+    dashboardSlice,
     // reviewSlice,
     // earningSlice,
     // inboxSlice,
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
     // review: reviewSlice,
     user: userSlice,
     state: stateSlice,
+    dashboard: dashboardSlice,
 });
 
 const localUser = localStorage.getItem("admin-user")

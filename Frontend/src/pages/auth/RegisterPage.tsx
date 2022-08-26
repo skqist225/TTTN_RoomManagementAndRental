@@ -102,6 +102,7 @@ const RegisterPage: FC<HomeProps> = () => {
         dispatch(
             checkPhoneNumber({
                 phoneNumber: data.phoneNumber,
+                edit: false,
             })
         );
     };

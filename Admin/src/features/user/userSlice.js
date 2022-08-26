@@ -148,6 +148,19 @@ const userSlice = createSlice({
         setUser: (state, { payload }) => {
             state.user = payload;
         },
+        clearUserState: (state, { payload }) => {
+            state.updateUserAction.loading = true;
+            state.addUserAction.successMessage = null;
+            state.addUserAction.errorMessage = null;
+
+            state.deleteUserAction.loading = true;
+            state.deleteUserAction.successMessage = null;
+            state.deleteUserAction.errorMessage = null;
+
+            state.updateUserAction.loading = true;
+            state.updateUserAction.successMessage = null;
+            state.updateUserAction.errorMessage = null;
+        },
     },
     extraReducers: builder => {
         builder
@@ -229,6 +242,6 @@ const userSlice = createSlice({
     },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, clearUserState } = userSlice.actions;
 export const userState = state => state.user;
 export default userSlice.reducer;

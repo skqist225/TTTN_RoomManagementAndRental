@@ -41,23 +41,23 @@ function BookingOverviewPage() {
     const dataSet2 = Array.from({ length: 12 }).fill(0);
     const dataSet3 = Array.from({ length: 12 }).fill(0);
     numberOfApprovedArr.forEach(({ number, month }) => {
-        dataSet1[month] = number;
+        dataSet1[month - 1] = number;
     });
     numberOfPendingArr.forEach(({ number, month }) => {
-        dataSet2[month] = number;
+        dataSet2[month - 1] = number;
     });
     numberOfCancelledArr.forEach(({ number, month }) => {
-        dataSet3[month] = number;
+        dataSet3[month - 1] = number;
     });
 
     const lcdataSet1 = Array.from({ length: 12 }).fill(0);
     const lcdataSet2 = Array.from({ length: 12 }).fill(0);
 
     revenue.forEach(({ number, month }) => {
-        lcdataSet1[month] = number;
+        lcdataSet1[month - 1] = number;
     });
     refund.forEach(({ number, month }) => {
-        lcdataSet2[month] = number;
+        lcdataSet2[month - 1] = number;
     });
 
     return (
@@ -92,7 +92,12 @@ function BookingOverviewPage() {
                 {!loading && <StackedBarChart data={[dataSet1, dataSet2, dataSet3]} />}
             </div>
             <div className='my-10'>
-                {!gbrLoading && <LineChart data={[lcdataSet1, lcdataSet2]} />}
+                {!gbrLoading && (
+                    <LineChart
+                        data={[lcdataSet1, lcdataSet2]}
+                        label='Sales Over Time (all bookings)'
+                    />
+                )}
             </div>
         </div>
     );

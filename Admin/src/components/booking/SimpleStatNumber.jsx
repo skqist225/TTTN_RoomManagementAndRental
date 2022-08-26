@@ -7,6 +7,7 @@ import Icon from "../../images/icon-01.svg";
 import { tailwindConfig, hexToRGB } from "../../utils/Utils";
 import { bookingState } from "../../features/booking/bookingSlice";
 import { useSelector } from "react-redux";
+import MyNumberForMat from "../../utils/MyNumberFormat";
 
 function SimpleStatNumber({ label, type, number, backgroundColor }) {
     // const [number, setNumber] = useState(0);
@@ -112,7 +113,13 @@ function SimpleStatNumber({ label, type, number, backgroundColor }) {
                 </header> */}
                 <h2 className='text-lg font-semibold text-gray-200 mb-2'>{label}</h2>
                 <div className='flex items-start'>
-                    <div className={`text-3xl font-bold text-gray-200 mr-2`}>{number}</div>
+                    <div className={`text-3xl font-bold text-gray-200 mr-2`}>
+                        {label === "Total Sales In Month" ? (
+                            <MyNumberForMat price={number} isPrefix currency='đ' removeStayType />
+                        ) : (
+                            number
+                        )}
+                    </div>
                     {/* <div className='text-sm font-semibold text-white px-1.5 bg-green-500 rounded-full'>
                         +49%
                     </div> */}

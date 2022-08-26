@@ -1,15 +1,9 @@
 package com.airtnt.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +27,9 @@ public class Country {
 
     @Column(columnDefinition = "VARCHAR(10)")
     private String dialCode;
+
+    @Column(columnDefinition = "boolean default true")
+    private boolean status = true;
 
     @JsonIgnore
     @Builder.Default

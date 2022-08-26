@@ -4,6 +4,7 @@ import com.airtnt.airtntapp.country.CountryRepository;
 import com.airtnt.airtntapp.exception.DuplicatedEntryPhoneNumberExeption;
 import com.airtnt.airtntapp.exception.UserNotFoundException;
 import com.airtnt.airtntapp.exception.VerifiedUserException;
+import com.airtnt.airtntapp.user.dto.CountUserByRole;
 import com.airtnt.entity.Country;
 import com.airtnt.entity.Role;
 import com.airtnt.entity.User;
@@ -23,189 +24,223 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserService {
-	private final String DELETE_SUCCESSFULLY = "Delete Rule Successfully";
-	private final String DELETE_FORBIDDEN = "Could not delete this user as constraint exception";
+    public static final int USERS_PER_PAGE = 10;
+    private final String DELETE_SUCCESSFULLY = "Delete Rule Successfully";
+    private final String DELETE_FORBIDDEN = "Could not delete this user as constraint exception";
+    @Autowired
+    private CountryRepository countryRepository;
 
-	public static final int USERS_PER_PAGE = 10;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Autowired
-	private CountryRepository countryRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private UserRepository userRepository;
+    public Page<User> getAllUsers(int pageNumber, String keyword) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, USERS_PER_PAGE);
+        return userRepository.findAll(keyword, pageable);
+    }
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    public void encodePassword(User user) {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+    }
 
-	public Page<User> getAllUsers(int pageNumber, String keyword) {
-		Pageable pageable = PageRequest.of(pageNumber - 1, USERS_PER_PAGE);
-		return userRepository.findAll(keyword, pageable);
-	}
+    public String getEncodedPassword(String rawPassword) {
+        return passwordEncoder.encode(rawPassword);
+    }
 
-	public void encodePassword(User user) {
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
-		user.setPassword(encodedPassword);
-	}
+    public boolean isPasswordMatch(String rawPass, String hashPass) {
+        return passwordEncoder.matches(rawPass, hashPass);
+    }
 
-	public String getEncodedPassword(String rawPassword) {
-		return passwordEncoder.encode(rawPassword);
-	}
+    public void registerUser(User user) {
+        user.setRole(new Role(2));
+        encodePassword(user);
+        userRepository.save(user);
+    }
 
-	public boolean isPasswordMatch(String rawPass, String hashPass) {
-		return passwordEncoder.matches(rawPass, hashPass);
-	}
+    public boolean isEmailUnique(Integer id, String email) {
+        Optional<User> user = userRepository.findByEmail(email);
 
-	public void registerUser(User user) {
-		user.setRole(new Role(2));
-		encodePassword(user);
-		userRepository.save(user);
-	}
+        if (user.isPresent()) {
+            return false;
+        }
 
-	public boolean isEmailUnique(Integer id, String email) {
-		Optional<User> user = userRepository.findByEmail(email);
+        boolean isCreatingNew = (id == null);
 
-		if (user.isPresent()) {
-			return false;
-		}
+        if (isCreatingNew) { // create
+            if (user != null)
+                return false;
+        } else { // edit
+            if (user.get().getId() != id) {
+                return false;
+            }
+        }
 
-		boolean isCreatingNew = (id == null);
+        return true;
+    }
 
-		if (isCreatingNew) { // create
-			if (user != null)
-				return false;
-		} else { // edit
-			if (user.get().getId() != id) {
-				return false;
-			}
-		}
+    public boolean isEmailDuplicated(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
 
-		return true;
-	}
+        if (user.isPresent()) {
+            return true;
+        }
 
-	public boolean isEmailDuplicated(String email) {
-		Optional<User> user = userRepository.findByEmail(email);
+        return false;
+    }
 
-		if (user.isPresent()) {
-			return true;
-		}
+    public User findByEmail(String email) throws UserNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        return user;
+    }
 
-		return false;
-	}
+    public boolean checkPhoneNumber(String phoneNumber, Boolean isEdit, Integer userId) {
+        if (!isEdit) {
+            Optional<User> user = userRepository.findByPhoneNumber(phoneNumber);
+            if(user.isPresent()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (userRepository.findByPhoneNumberAndId(phoneNumber, userId).size() > 0) {
+                return true;
+            }
+        }
 
-	public User findByEmail(String email) throws UserNotFoundException {
-		User user = userRepository.findByEmail(email)
-				.orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
-		return user;
-	}
+        return false;
+    }
 
-	public User findByPhoneNumber(String phoneNumber) throws UserNotFoundException {
-		User user = userRepository.findByPhoneNumber(phoneNumber)
-				.orElseThrow(() -> new UserNotFoundException("User not found with phone number: " + phoneNumber));
-		return user;
-	}
+    public boolean checkEmail(String email, Boolean isEdit, Integer userId) {
+        if (!isEdit) {
+            User user = userRepository.findByEmail(email).get();
+            if (user != null) {
+                return true;
+            }
+        } else {
+            if (userRepository.findByPhoneEmailAndId(email, userId).size() > 0) {
+                return true;
+            }
+        }
 
-	@Transactional
-	public int verifyPhoneNumber(Integer userId) {
-		return userRepository.verifyPhoneNumber(userId);
-	}
+        return false;
+    }
 
-	public List<User> findAllUsers() {
-		return (List<User>) userRepository.findAll();
-	}
+    public User findByPhoneNumber(String phoneNumber) throws UserNotFoundException {
+        User user = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new UserNotFoundException("User not found with phone number: " + phoneNumber));
+        return user;
+    }
 
-	public Page<User> listByPage(int pageNum, String sortField, String sortDir, String keyword) {
-		Sort sort = Sort.by(sortField);
+    public CountUserByRole countUserByRole() {
+        return new CountUserByRole(userRepository.countUserByRole(1), userRepository.countUserByRole(2), userRepository.countUserByRole(3));
+    }
 
-		sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+    @Transactional
+    public int verifyPhoneNumber(Integer userId) {
+        return userRepository.verifyPhoneNumber(userId);
+    }
 
-		Pageable pageable = PageRequest.of(pageNum - 1, USERS_PER_PAGE, sort);
+    public List<User> findAllUsers() {
+        return (List<User>) userRepository.findAll();
+    }
 
-		if (keyword != null) {
-			return userRepository.findAll(keyword, pageable);
-		}
+    public Page<User> listByPage(int pageNum, String sortField, String sortDir, String keyword) {
+        Sort sort = Sort.by(sortField);
 
-		return userRepository.findAll(pageable);
-	}
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
 
-	public User saveUser(User user) {
-		return userRepository.save(user);
-	}
+        Pageable pageable = PageRequest.of(pageNum - 1, USERS_PER_PAGE, sort);
 
-	public User save(User user) throws DuplicatedEntryPhoneNumberExeption {
-		boolean isUpdatingUser = (user.getId() != null);
-		if (isUpdatingUser) {
-			User existingUser = userRepository.findById(user.getId()).get();
+        if (keyword != null) {
+            return userRepository.findAll(keyword, pageable);
+        }
 
-			if (user.getPassword().isEmpty()) {
-				user.setPassword(existingUser.getPassword());
-			} else {
-				encodePassword(user);
-			}
-		} else {
-			Iterator<User> users = userRepository.findAll().iterator();
-			while (users.hasNext()) {
-				User usr = users.next();
-				if (usr.getPhoneNumber().equals(user.getPhoneNumber()))
-					throw new DuplicatedEntryPhoneNumberExeption("Phone number has already been taken");
-			}
+        return userRepository.findAll(pageable);
+    }
 
-			user.setRole(new Role(2));
-			encodePassword(user);
-		}
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
 
-		return userRepository.save(user);
-	}
+    public User save(User user) throws DuplicatedEntryPhoneNumberExeption {
+        boolean isUpdatingUser = (user.getId() != null);
+        if (isUpdatingUser) {
+            User existingUser = userRepository.findById(user.getId()).get();
 
-	public List<Country> listCountries() {
-		return (List<Country>) countryRepository.findAll();
-	}
+            if (user.getPassword().isEmpty()) {
+                user.setPassword(existingUser.getPassword());
+            } else {
+                encodePassword(user);
+            }
+        } else {
+            Iterator<User> users = userRepository.findAll().iterator();
+            while (users.hasNext()) {
+                User usr = users.next();
+                if (usr.getPhoneNumber().equals(user.getPhoneNumber()))
+                    throw new DuplicatedEntryPhoneNumberExeption("Phone number has already been taken");
+            }
 
-	public String delete(Integer id) throws UserNotFoundException {
-		Long countById = userRepository.countById(id);
-		if ((countById == null || countById == 0)) {
-			throw new UserNotFoundException("User not found with id: " + id);
-		}
+            user.setRole(new Role(2));
+            encodePassword(user);
+        }
 
-		try {
-			userRepository.deleteById(id);
-			return DELETE_SUCCESSFULLY;
-		} catch (Exception ex) {
-			return DELETE_FORBIDDEN;
-		}
+        return userRepository.save(user);
+    }
 
-	}
+    public List<Country> listCountries() {
+        return (List<Country>) countryRepository.findAll();
+    }
 
-	public String deleteUser(Integer id)
-			throws UserNotFoundException, VerifiedUserException {
-		User user = this.findById(id);
+    public String delete(Integer id) throws UserNotFoundException {
+        Long countById = userRepository.countById(id);
+        if ((countById == null || countById == 0)) {
+            throw new UserNotFoundException("User not found with id: " + id);
+        }
 
-		if (user.isIdentityVerified()) {
-			throw new VerifiedUserException("Can not delete this verified user");
-		}
+        try {
+            userRepository.deleteById(id);
+            return DELETE_SUCCESSFULLY;
+        } catch (Exception ex) {
+            return DELETE_FORBIDDEN;
+        }
 
-		try {
-			userRepository.deleteById(id);
-			return DELETE_SUCCESSFULLY;
-		} catch (Exception ex) {
-			return DELETE_FORBIDDEN;
-		}
-	}
+    }
 
-	public void updateUserEnabledStatus(Integer id, boolean enabled) {
-		userRepository.updateStatus(id, enabled);
-	}
+    public String deleteUser(Integer id)
+            throws UserNotFoundException, VerifiedUserException {
+        User user = this.findById(id);
 
-	public User findById(Integer id) throws UserNotFoundException {
-		User user = userRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-		return user;
-	}
+        if (user.isIdentityVerified()) {
+            throw new VerifiedUserException("Can not delete this verified user");
+        }
 
-	public boolean checkEmail(String email) {
-		return userRepository.findByEmail(email) != null;
-	}
+        try {
+            userRepository.deleteById(id);
+            return DELETE_SUCCESSFULLY;
+        } catch (Exception ex) {
+            return DELETE_FORBIDDEN;
+        }
+    }
 
-	public Integer getNumberOfUser() {
-		return userRepository.getNumberOfUser();
-	}
+    public void updateUserEnabledStatus(Integer id, boolean enabled) {
+        userRepository.updateStatus(id, enabled);
+    }
+
+    public User findById(Integer id) throws UserNotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+        return user;
+    }
+
+    public boolean checkEmail(String email) {
+        return userRepository.findByEmail(email) != null;
+    }
+
+    public Integer getNumberOfUser() {
+        return userRepository.getNumberOfUser();
+    }
 }

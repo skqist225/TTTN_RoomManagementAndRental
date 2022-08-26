@@ -132,7 +132,7 @@ public class AdminRoomRestController {
             }
         }
 
-        if(!host.getRole().getName().equals("Admin")) {
+        if (!host.getRole().getName().equals("Admin")) {
             host.setRole(new Role(1));
         }
 
@@ -239,7 +239,7 @@ public class AdminRoomRestController {
                 room.setDescription(payload.getDescription());
                 room.setPrice(payload.getPrice());
                 room.setCurrency(new Currency(payload.getCurrency()));
-            } else if(activeStep == 1) {
+            } else if (activeStep == 1) {
                 Address address = null;
                 if (payload.getCity() != null) {
                     City city = cityService.getCityById(payload.getCity());
@@ -266,6 +266,7 @@ public class AdminRoomRestController {
                 Set<Image> images = new HashSet<>();
 
                 if (payload.getImages() != null && payload.getImages().length > 0) {
+                    System.out.println(Arrays.toString(payload.getImages()));
                     for (int i = 0; i < payload.getImages().length; i++) {
                         images.add(new Image(payload.getImages()[i]));
                     }
@@ -285,6 +286,10 @@ public class AdminRoomRestController {
                     for (Image image : images) {
                         room.addImage(image);
                     }
+
+                    if (Objects.nonNull(payload.getThumbnail())) {
+                        room.setThumbnail(payload.getThumbnail());
+                    }
                 }
             }
 
@@ -302,7 +307,7 @@ public class AdminRoomRestController {
                         Path sourcePath = Paths.get(source);
                         Path targetPath = Files.createDirectories(Paths.get(uploadDir));
                         for (String imageName : payload.getImages()) {
-                            if(Files.exists(sourcePath.resolve(imageName)))
+                            if (Files.exists(sourcePath.resolve(imageName)))
                                 Files.move(sourcePath.resolve(imageName), targetPath.resolve(imageName),
                                         StandardCopyOption.REPLACE_EXISTING);
                         }

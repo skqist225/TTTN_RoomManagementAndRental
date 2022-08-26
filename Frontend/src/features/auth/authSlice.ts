@@ -56,11 +56,21 @@ export const logout = makeGetAsyncThunk("auth/logout", {
     isLogout: true,
 });
 
-export const checkPhoneNumber = makeGetAsyncThunk("auth/checkPhoneNumber", {
-    uri: "/auth/check-phonenumber/",
-    fieldName: "phoneNumber",
-    insertIntoURIPosition: -1,
-});
+export const checkPhoneNumber = createAsyncThunk(
+    "auth/checkPhoneNumber",
+    async (
+        { phoneNumber, edit, userId }: { phoneNumber: number; edit: boolean; userId?: number },
+        { rejectWithValue }
+    ) => {
+        try {
+            const { data } = await api.get(`auth/check-phonenumber/${phoneNumber}?edit=${edit}`);
+
+            return { data };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
 
 export const registerUser = makePostAsyncThunk("auth/register", {
     uri: "/auth/register",

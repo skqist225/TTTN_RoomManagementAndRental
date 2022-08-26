@@ -14,6 +14,10 @@ public class AddressService {
         return addressRepository.findByStreetAndCity(street,city);
     }
 
+    public Address findById(int id) {
+        return addressRepository.findById(id);
+    }
+
     public Address save(Address address) {
         return addressRepository.save(address);
     }

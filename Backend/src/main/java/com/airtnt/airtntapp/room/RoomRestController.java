@@ -1,16 +1,14 @@
 package com.airtnt.airtntapp.room;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.airtnt.airtntapp.amenity.dto.AmenityRoomDetailsDTO;
 import com.airtnt.airtntapp.booking.BookedDateDTO;
 import com.airtnt.airtntapp.booking.BookingService;
 import com.airtnt.airtntapp.calendar.CalendarClass;
 import com.airtnt.airtntapp.city.CityService;
-
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
 import com.airtnt.airtntapp.exception.UserNotFoundException;
+import com.airtnt.airtntapp.response.StandardJSONResponse;
+import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.airtntapp.review.ReviewService;
 import com.airtnt.airtntapp.review.dto.ReviewDTO;
 import com.airtnt.airtntapp.room.dto.HostDTO;
@@ -24,10 +22,7 @@ import com.airtnt.airtntapp.rule.RuleService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
 import com.airtnt.airtntapp.state.StateService;
 import com.airtnt.airtntapp.user.UserService;
-import com.airtnt.entity.Room;
-import com.airtnt.airtntapp.response.StandardJSONResponse;
-import com.airtnt.airtntapp.response.success.OkResponse;
-
+import com.airtnt.entity.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -35,23 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.airtnt.entity.Address;
-import com.airtnt.entity.Amentity;
-import com.airtnt.entity.City;
-import com.airtnt.entity.Country;
-import com.airtnt.entity.Currency;
-import com.airtnt.entity.Image;
-import com.airtnt.entity.Review;
-import com.airtnt.entity.Role;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,12 +41,8 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.text.ParseException;
-
-import org.springframework.web.bind.annotation.ModelAttribute;
-
-import com.airtnt.entity.Rule;
-import com.airtnt.entity.State;
-import com.airtnt.entity.User;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class RoomRestController {
@@ -223,7 +198,7 @@ public class RoomRestController {
 
 		Country country = new Country(payload.getCountry());
 
-		// check if state exist
+//		 check if state exist
 //		State state = stateService.getStateById(payload.getState());
 //		if (state == null)
 //			state = new State(payload.getState(), country);

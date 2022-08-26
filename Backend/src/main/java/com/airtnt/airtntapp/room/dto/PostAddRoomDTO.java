@@ -31,4 +31,5 @@ public class PostAddRoomDTO {
     private int host;
     private int privacyType;
     private String street;
+    private String thumbnail;
 }

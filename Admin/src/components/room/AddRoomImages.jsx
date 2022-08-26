@@ -80,7 +80,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
                 </span>
             </button>
             <div class="photo-action__div-hidden">
-                <ul data-index="${modifier}">
+                <ul data-index="${modifier}" data-name="${file.name}">
                     <li class="makeMainImage">Make thumbnail</li>
                     <li class="deleteImage">Delete</li>
                 </ul>
@@ -128,7 +128,10 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
                 $(this)
                     .off("click")
                     .on("click", function () {
-                        deleteImage(parseInt($(this).parent("ul").data("index")));
+                        deleteImage(
+                            parseInt($(this).parent("ul").data("index")),
+                            $(this).parent("ul").data("name")
+                        );
                     });
             });
 
@@ -310,17 +313,25 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
 
     function swapPosition(firstEl, secondEl) {
         const temp = photos[firstEl];
+        console.log(temp);
+
         photos[firstEl] = photos[secondEl];
+
+        console.log(photos[firstEl]);
+
         photos[secondEl] = temp;
     }
 
     function makeMainImage(index) {
+        const test = photos;
+        console.log("Before: ", test);
         swapPosition(0, index);
+        console.log("After: ", photos);
         changePreviewImage(index);
         closeAction(index);
     }
 
-    function deleteImage(index) {
+    function deleteImage(index, imageName) {
         if (photos.length === 1) {
             // if just one image left
             photos = [];
@@ -333,13 +344,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
         if (localStorage.getItem("room")) {
             const room = JSON.parse(localStorage.getItem("room"));
             if (room.roomImages && room.roomImages.length) {
-                $("img.photo").each(function (idx) {
-                    if (idx === index) {
-                        room.roomImages = room.roomImages.filter(
-                            image => image !== $(this).data("name")
-                        );
-                    }
-                });
+                room.roomImages = room.roomImages.filter(image => image !== imageName);
             }
 
             localStorage.setItem("room", JSON.stringify(room));
@@ -349,18 +354,13 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
             changePreviewImage2(i, i + 1);
         }
 
-        $("img.photo").each(function (idx) {
-            if (idx === index) {
-                photos = photos.filter(image => image.name !== $(this).data("name"));
-            }
-        });
+        photos = photos.filter(image => image.name !== imageName);
 
-        if (photos.length < 5) {
-            isUploaded = false;
-        }
+        // if (photos.length < 5) {
+        //     isUploaded = false;
+        // }
 
-        console.log(photos.length);
-        // Remove preview image
+        // // Remove preview image
         const lastElement = $("#subImages").children(".photo-cover").last();
         lastElement.remove();
 
@@ -372,13 +372,15 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
                 ? (b = 1)
                 : addEmptyImage(photos, uploadPhotos, subImagesContainer);
         }
+
+        closeAction();
     }
 
     async function uploadImagesToFolder() {
-        if ($("img.photo").length < 5) {
-            callToast("warning", "Please choose at least 5 images");
-            return;
-        }
+        // if ($("img.photo").length < 5) {
+        //     callToast("warning", "Please choose at least 5 images");
+        //     return;
+        // }
 
         const formData = new FormData();
         formData.set("host", user.email);
@@ -398,6 +400,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
             if (!localStorage.getItem("room")) {
                 room = {
                     roomImages: photos.map(({ name }) => name),
+                    thumbnail: photos[0].name,
                     username: username2,
                 };
             } else {
@@ -405,6 +408,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
                 room = {
                     ...room,
                     roomImages: photos.map(({ name }) => name),
+                    thumbnail: photos[0].name,
                     username: username2,
                 };
             }

@@ -1,26 +1,29 @@
-import {FC, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {Div, Image} from "../../globalStyle";
-import {getImage, seperateNumber} from "../../helpers";
-import {IncAndDecBtn} from "../utils/IncAndDecBtn";
-import {Checkbox, Slider} from "antd";
-import {MyNumberForMat} from "../utils";
-import {fetchRoomsByCategoryAndConditions, roomState, setCurrentFilterObject,} from "../../features/room/roomSlice";
-import {amenityState} from "../../features/amenity/amenitySlice";
+import { FC, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Div, Image } from "../../globalStyle";
+import { getImage, seperateNumber } from "../../helpers";
+import { IncAndDecBtn } from "../utils/IncAndDecBtn";
+import { Checkbox, Slider } from "antd";
+import { MyNumberForMat } from "../utils";
+import {
+    fetchRoomsByCategoryAndConditions,
+    roomState,
+    setCurrentFilterObject,
+} from "../../features/room/roomSlice";
+import { amenityState } from "../../features/amenity/amenitySlice";
 
 import $ from "jquery";
-import {CheckboxChangeEvent} from "antd/es/checkbox";
+import { CheckboxChangeEvent } from "antd/es/checkbox";
 
-interface IFilterRoomBoxProps {
-}
+interface IFilterRoomBoxProps {}
 
 const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
     const dispatch = useDispatch();
 
     const [amenitiesState, setAmenitiesState] = useState<number[]>([]);
 
-    const {roomPrivacies, averageRoomPriceByType, filterObject} = useSelector(roomState);
-    const {amenities} = useSelector(amenityState);
+    const { roomPrivacies, averageRoomPriceByType, filterObject } = useSelector(roomState);
+    const { amenities } = useSelector(amenityState);
 
     function hideEditThumbnailBox() {
         // $('.radioThumbnail').each(function () {
@@ -38,9 +41,11 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
 
     function onChange(event: CheckboxChangeEvent) {
         if (event.target.checked) {
-            setAmenitiesState((prev: number[]) => [...prev, parseInt(event.target.value)])
+            setAmenitiesState((prev: number[]) => [...prev, parseInt(event.target.value)]);
         } else {
-            setAmenitiesState((prev: number[]) => prev.filter(value => value !== parseInt(event.target.value)))
+            setAmenitiesState((prev: number[]) =>
+                prev.filter(value => value !== parseInt(event.target.value))
+            );
         }
     }
 
@@ -61,8 +66,12 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
                 chosenPrivacy.push(parseInt($(this).val()! as string));
             });
 
-            const minPrice = ($("#min-input__modify").val() as string).replace(/\./g, "");
-            const maxPrice = ($("#max-input__modify").val() as string).replace(/\./g, "").replace(/,/g, '');
+            const minPrice = ($("#min-input__modify").val() as string)
+                .replace(/\./g, "")
+                .replace(/,/g, "");
+            const maxPrice = ($("#max-input__modify").val() as string)
+                .replace(/\./g, "")
+                .replace(/,/g, "");
 
             const bedRoomCount = parseInt($("#listings__bed-room-count").text());
             const bedCount = parseInt($("#listings__bed-count").text());
@@ -222,7 +231,7 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
                                     </div>
 
                                     <div>
-                                        <div className='flex-space' style={{height: "50px"}}>
+                                        <div className='flex-space' style={{ height: "50px" }}>
                                             <div className='fs-18'>Giường</div>
                                             <IncAndDecBtn
                                                 dataEdit='listings__bed-count'

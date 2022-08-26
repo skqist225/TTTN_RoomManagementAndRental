@@ -93,9 +93,12 @@ public class BookingService {
         Integer numberOfApproved = bookingRepository.countBookingByState(Status.APPROVED);
         Integer numberOfPending = bookingRepository.countBookingByState(Status.PENDING);
         Integer numberOfCancelled = bookingRepository.countBookingByState(Status.CANCELLED);
-        Integer numberOfAllBookings = bookingRepository.countAllBooking();
 
-        return new CountBookingDTO(numberOfApproved, numberOfPending, numberOfCancelled, numberOfAllBookings);
+        return new CountBookingDTO(numberOfApproved, numberOfPending, numberOfCancelled, countAllBookings());
+    }
+
+    public Integer countAllBookings() {
+        return bookingRepository.countAllBooking();
     }
 
 
@@ -111,6 +114,11 @@ public class BookingService {
     public RevenueByYearAndStatus getRevenueByYear(String year) {
         return new RevenueByYearAndStatus(bookingRepository.getRevenueByYear("APPROVED", year), bookingRepository.getRevenueByYear("CANCELLED", year));
     }
+
+    public Long getCurrentMonthSale() {
+        return bookingRepository.getCurrentMonthSale();
+    }
+
 
     public Booking createBooking(CreateBookingDTO createBookingDTO, User customerUser
     ) throws ParseException, RoomHasBeenBookedException, UserHasBeenBookedThisRoomException, RoomNotFoundException, ReserveDateInThePastException {

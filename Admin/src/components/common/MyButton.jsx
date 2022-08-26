@@ -64,14 +64,13 @@ function MyButton(props) {
             break;
         }
         case "next": {
-            // label = `Add ${label}`;
-            buttonClassName = "bg-blue-500 hover:bg-blue-500";
-            buttonDisableClassName = "bg-blue-200 hover:bg-blue-200";
+            if (disabled) buttonDisableClassName = "bg-blue-200 hover:bg-blue-200";
+            else buttonClassName = "bg-blue-500 hover:bg-blue-500";
             break;
         }
         case "back": {
-            buttonClassName = "bg-blue-500 hover:bg-blue-500";
-            buttonDisableClassName = "bg-blue-200 hover:bg-blue-200";
+            if (disabled) buttonDisableClassName = "bg-blue-200 hover:bg-blue-200";
+            else buttonClassName = "bg-blue-500 hover:bg-blue-500";
             break;
         }
     }

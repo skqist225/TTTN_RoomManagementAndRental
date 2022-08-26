@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import "../css/page/rooms.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { deleteUser, fetchUsers, userState } from "../features/user/userSlice";
+import { clearUserState, deleteUser, fetchUsers, userState } from "../features/user/userSlice";
 import Toast from "../components/notify/Toast";
 import { Image } from "../globalStyle";
 import { MyButton } from "../components/common";
@@ -29,6 +29,10 @@ const UsersPage = () => {
         dispatch(fetchUsers(pn + 1));
         setPage(pn);
     };
+
+    useEffect(() => {
+        dispatch(clearUserState());
+    }, []);
 
     useEffect(() => {
         if (successMessage) {

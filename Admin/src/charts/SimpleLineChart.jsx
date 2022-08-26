@@ -17,7 +17,7 @@ import { tailwindConfig, formatValue } from "../utils/Utils";
 
 Chart.register(LineController, LineElement, Filler, PointElement, LinearScale, TimeScale, Tooltip);
 
-function SimpleLineChart({ data, width, height }) {
+function SimpleLineChart({ data, width, height, format = true }) {
     const canvas = useRef(null);
     const legend = useRef(null);
 
@@ -39,7 +39,13 @@ function SimpleLineChart({ data, width, height }) {
                         },
                         ticks: {
                             maxTicksLimit: 5,
-                            callback: value => formatValue(value),
+                            callback: value => {
+                                if (format) {
+                                    return formatValue(value);
+                                } else {
+                                    return value;
+                                }
+                            },
                         },
                     },
                     x: {
@@ -68,7 +74,13 @@ function SimpleLineChart({ data, width, height }) {
                     tooltip: {
                         callbacks: {
                             title: () => false, // Disable tooltip title
-                            label: context => formatValue(context.parsed.y),
+                            label: context => {
+                                if (format) {
+                                    return formatValue(context.parsed.y);
+                                } else {
+                                    return context.parsed.y;
+                                }
+                            },
                         },
                     },
                 },
