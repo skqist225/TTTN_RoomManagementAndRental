@@ -13,13 +13,31 @@ export const fetchAmenities = createAsyncThunk(
     }
 );
 
+export const fetchAmenitiesCategory = createAsyncThunk(
+    "amenity/fetchAmenitiesCategory",
+    async (_, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const { data } = await api.get(`/amenityCategories`);
+            return { data };
+        } catch (error) {}
+    }
+);
+
 type AmenityState = {
     amenities: IAmenity[];
     loading: boolean;
+    amenityCategory: IAmenityCategory[];
+};
+
+type IAmenityCategory = {
+    id: number;
+    name: string;
+    description: string;
 };
 
 const initialState: AmenityState = {
     amenities: [],
+    amenityCategory: [],
     loading: true,
 };
 
@@ -32,6 +50,9 @@ const amenitySlice = createSlice({
             .addCase(fetchAmenities.fulfilled, (state, { payload }) => {
                 state.loading = false;
                 state.amenities = payload?.data;
+            })
+            .addCase(fetchAmenitiesCategory.fulfilled, (state, { payload }) => {
+                state.amenityCategory = payload?.data;
             })
             .addMatcher(isAnyOf(fetchAmenities.pending), state => {
                 state.loading = true;

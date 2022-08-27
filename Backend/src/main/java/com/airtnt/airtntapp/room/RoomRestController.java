@@ -188,8 +188,8 @@ public class RoomRestController {
 		Iterator<Rule> itr = ruleService.listAllRule();
 		itr.forEachRemaining(rules::add);
 
-		for (int i = 0; i < payload.getAmentities().length; i++) {
-			amenities.add(new Amentity(payload.getAmentities()[i]));
+		for (int i = 0; i < payload.getAmenities().length; i++) {
+			amenities.add(new Amentity(payload.getAmenities()[i]));
 		}
 
 		for (int i = 0; i < payload.getImages().length; i++) {

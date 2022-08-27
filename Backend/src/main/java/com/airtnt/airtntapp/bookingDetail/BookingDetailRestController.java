@@ -64,7 +64,7 @@ public class BookingDetailRestController {
         }
 
         if (bookingDetailService.isBooked(checkinDate, checkoutDate, roomId)) {
-            return new BadResponse<BookingDetail>("Invalid checkin date and checkout date as it before current date").response();
+            return new BadResponse<BookingDetail>("You have booked this room").response();
         }
 
         User customer = userDetails.getUser();

@@ -1,12 +1,12 @@
-import { FC, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { FC, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import {
     LeftPageContent,
     PropertyCategoryMainContent,
     RightPageContent,
-} from '../../components/become_a_host';
-import { fetchCategories } from '../../features/category/categorySlice';
-import { Div } from '../../globalStyle';
+} from "../../components/become_a_host";
+import { fetchCategories } from "../../features/category/categorySlice";
+import { Div } from "../../globalStyle";
 
 interface IPropertyCategoryPageProps {}
 
@@ -25,10 +25,10 @@ const PropertyCategoryPage: FC<IPropertyCategoryPageProps> = () => {
                         title='Điều nào sau đây mô tả chính xác nhất về nơi ở của bạn?'
                     />
                     <RightPageContent
-                        nextPage='privacy-type'
-                        prevPage='property-type-group'
+                        nextPage='privacy'
+                        prevPage='intro'
                         MainContent={<PropertyCategoryMainContent />}
-                        stepNumber={2}
+                        stepNumber={1}
                     />
                 </Div>
             </Div>

@@ -5,73 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../Admin/src/features/dashboard/dashboardSlice.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Admin/src/partials/dashboard/CircleChart.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Admin/src/partials/dashboard/LineChartDashboard.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/dashboard/DashboardRestController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/dashboard/dto/CountCreatedRoomDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/dashboard/dto/DashboardNumberDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/CountUserByRole.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/1742/pexels-pixabay-462235.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/1742/pexels-vecislavas-popa-1643383.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/pexels-pixabay-462235.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/user_images/30/pexels-daria-shevtsova-892618.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/user_images/46/pexels-jean-van-der-meulen-1457842.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/user_images/64/pexels-jean-van-der-meulen-1457842.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/user_images/67/pexels-daria-shevtsova-892618.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/charts/SimpleLineChart.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/charts/SimpleLineChart.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/components/booking/SimpleStatNumber.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/components/booking/SimpleStatNumber.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/components/common/MyButton.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/components/common/MyButton.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/components/room/AddRoomImages.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/components/room/AddRoomImages.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/components/room/components/PropertyLocationMainContent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/components/room/components/PropertyLocationMainContent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/components/user/AddressEdit.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/components/user/AddressEdit.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/features/address/citySlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/features/address/citySlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/features/auth/authSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/features/auth/authSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/features/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/features/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/features/room/roomSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/features/room/roomSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/features/user/userSlice.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/features/user/userSlice.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/AddRoomPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/AddRoomPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/BookingOverviewPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/BookingOverviewPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/Dashboard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/EditRoomContent.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/EditRoomContent.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/EditUserPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/EditUserPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/RoomsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/RoomsPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/UsersPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/UsersPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/pages/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/pages/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/partials/Sidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/partials/Sidebar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/store.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e861432e-5efe-4d08-ac00-9bab2792db9d.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e861432e-5efe-4d08-ac00-9bab2792db9d.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql /sql.txt" beforeDir="false" afterPath="$PROJECT_DIR$/sql /sql.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/address/AddressRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/address/AddressRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/address/AddressService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/address/AddressService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/AdminBookingRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/AdminBookingRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/city/CityRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/city/CityRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/country/CountryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/country/CountryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRestController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/AdminRoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/AdminRoomRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/PostAddRoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/PostAddRoomDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Address.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Country.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Country.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/UserListDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/UserListDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/AmentityCategory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/AmentityCategory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/pexels-daria-shevtsova-892618.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/1742/pexels-daria-shevtsova-892618.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/pexels-jean-van-der-meulen-1457842.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/1742/pexels-jean-van-der-meulen-1457842.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/pexels-pixabay-271816.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/room_images/thuan.leminhthuan.10.2@gmail.com/1742/pexels-pixabay-271816.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/user_images/30/arturo-rodriguez-dHKMgpt0NEo-unsplash.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/home/FilterRoomBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/home/FilterRoomBox.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/auth/authSlice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/auth/authSlice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/user/userSlice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/user/userSlice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/auth/RegisterPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/auth/RegisterPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyLocationPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyLocationPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -175,6 +119,8 @@
       <workItem from="1661342665391" duration="6017000" />
       <workItem from="1661442106066" duration="6748000" />
       <workItem from="1661511107879" duration="17575000" />
+      <workItem from="1661563853469" duration="2592000" />
+      <workItem from="1661574032842" duration="6979000" />
     </task>
     <servers />
   </component>

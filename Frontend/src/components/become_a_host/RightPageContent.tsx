@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Div, MainButton } from "../../globalStyle";
 import $ from "jquery";
@@ -20,8 +20,8 @@ interface IRightPageContentProps {
     stepNumber: number;
     backgroundColor?: string;
     beforeMiddle?: React.ReactNode;
-    userLng?: number;
-    userLat?: number;
+    longitude?: number;
+    latitude?: number;
     placeName?: string;
     descriptions?: string[];
 }
@@ -33,207 +33,123 @@ const RightPageContent: FC<IRightPageContentProps> = ({
     stepNumber,
     backgroundColor,
     beforeMiddle,
-    userLng,
-    userLat,
+    longitude,
+    latitude,
     placeName,
     descriptions,
 }) => {
-    // if (stepNumber !== 1 && !localStorage.getItem("room")) {
-    //     window.location.href = "/";
-    // }
-
     const dispatch = useDispatch();
+    // const [category,setCategory] = useState(0);
+    const [nextButtonDisabled, setNextButtonDisabled] = useState(true);
+
     const { user } = useSelector(userState);
     const { newlyCreatedRoomId } = useSelector(roomState);
+
+    useEffect(() => {
+        if (stepNumber === 1) {
+            if ($("div.category__box").filter(".active")) setNextButtonDisabled(false);
+        }
+    }, [$("div.category__box").filter(".active")]);
+
+    function showErrorNotification(message: string) {
+        callToast("error", message);
+        return;
+    }
+
+    function setRoomAttrToLocalStorage(value: any) {
+        let room: IRoomLocalStorage = {};
+        if (!localStorage.getItem("room")) {
+            room = {
+                ...value,
+            };
+        } else {
+            room = JSON.parse(localStorage.getItem("room")!);
+            room = {
+                ...room,
+                ...value,
+            };
+        }
+
+        localStorage.setItem("room", JSON.stringify(room));
+    }
+
     function moveToNextPage() {
         let room: IRoomLocalStorage = {};
         switch (stepNumber) {
             case 1: {
-                const choosenGroup = $("div.room-group__box").filter(".active");
+                const chosenCategory = $("div.category__box").filter(".active");
 
-                if (!localStorage.getItem("room")) {
-                    room = {
-                        roomGroup: parseInt(choosenGroup.data("group-id")! as string),
-                        roomGroupText: choosenGroup.data("group-name"),
-                    };
-                } else {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    room = {
-                        ...room,
-                        roomGroup: parseInt(choosenGroup.data("group-id")! as string),
-                        roomGroupText: choosenGroup.data("group-name"),
-                    };
+                if (chosenCategory.length === 0) {
+                    showErrorNotification("Vui lòng chọn thể loại cho phòng");
                 }
+
+                setRoomAttrToLocalStorage({
+                    category: parseInt(chosenCategory.data("category-id")),
+                });
+
                 break;
             }
             case 2: {
-                const choosenCategory = $("div.category__box").filter(".active");
+                const chosenPrivacy = $("div.privacy-type__box").filter(".active");
 
-                if (!localStorage.getItem("room")) {
-                    room = {
-                        category: choosenCategory.data("category-id"),
-                    };
-                } else {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    room = {
-                        ...room,
-                        category: choosenCategory.data("category-id"),
-                    };
+                if (chosenPrivacy.length === 0) {
+                    showErrorNotification("Vui lòng chọn quyền riêng tư cho phòng");
                 }
+
+                setRoomAttrToLocalStorage({
+                    privacy: parseInt(chosenPrivacy.data("privacy-id")),
+                });
+
                 break;
             }
             case 3: {
-                const choosenPrivacy = parseInt(
-                    $("div.privacy-type__box").filter(".active").data("privacy-id")
-                );
-
-                if (!localStorage.getItem("room")) {
-                    room = {
-                        privacyType: choosenPrivacy,
-                    };
-                } else {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    room = {
-                        ...room,
-                        privacyType: choosenPrivacy,
-                    };
+                if (!longitude) {
+                    showErrorNotification("Kinh độ không tồn tại");
                 }
+                if (!latitude) {
+                    showErrorNotification("Vĩ độ không tồn tại");
+                }
+
+                setRoomAttrToLocalStorage({
+                    longitude,
+                    latitude,
+                    state: parseInt($("#state").val()!.toString()),
+                    city: parseInt($("#city").val()!.toString()),
+                    street: $("#street").val(),
+                });
+
                 break;
             }
             case 4: {
-                if (!localStorage.getItem("room")) {
-                    room = {
-                        longitude: userLng,
-                        latitude: userLat,
-                        placeName,
-                    };
-                } else {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    room = {
-                        ...room,
-                        longitude: userLng,
-                        latitude: userLat,
-                        placeName,
-                    };
-                }
+                setRoomAttrToLocalStorage({
+                    guestNumber: parseInt($("#guestNumber").text()),
+                    bedNumber: parseInt($("#bedNumber").text()),
+                    bedRoomNumber: parseInt($("#bedRoomNumber").text()),
+                    bathRoomNumber: parseInt($("#bathRoomNumber").text()),
+                });
+
                 break;
             }
             case 5: {
-                const guestNumber = parseInt($("#guestNumber").text());
-                const bedNumber = parseInt($("#bedNumber").text());
-                const bedRoomNumber = parseInt($("#bedRoomNumber").text());
-                const bathRoomNumber = parseInt($("#bathRoomNumber").text());
+                const amenitiesClassName = $(".amentitiesClassName").filter(".chosen");
 
-                if (!localStorage.getItem("room")) {
-                    room = {
-                        guestNumber,
-                        bedNumber,
-                        bedRoomNumber,
-                        bathRoomNumber,
-                    };
-                } else {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    room = {
-                        ...room,
-                        guestNumber,
-                        bedNumber,
-                        bedRoomNumber,
-                        bathRoomNumber,
-                    };
+                if (amenitiesClassName.length === 0) {
+                    showErrorNotification("Vui lòng chọn tiện ích trước khi tiếp tục!");
                 }
+
+                const amenities: any[] = [];
+
+                amenitiesClassName.each(function () {
+                    amenities.push(parseInt($(this).children("input").first().val()!.toString()));
+                });
+
+                setRoomAttrToLocalStorage({
+                    amenities,
+                });
+
                 break;
             }
             case 6: {
-                const prominentAmentity = parseInt(
-                    $(".prominentAmentities")
-                        .filter(".choosen")
-                        .children("input")
-                        .first()
-                        .val() as string
-                );
-                const prominentAmentityName = $(".prominentAmentities")
-                    .filter(".choosen")
-                    .children('input[class="amentityName"]')
-                    .val()! as string;
-
-                const prominentAmentityImageName = $(".prominentAmentities")
-                    .filter(".choosen")
-                    .children("input")
-                    .last()
-                    .val()! as string;
-
-                const favoriteAmentity = parseInt(
-                    $(".favoriteAmentities")
-                        .filter(".choosen")
-                        .children("input")
-                        .first()
-                        .val() as string
-                );
-
-                const favoriteAmentityImageName = $(".favoriteAmentities")
-                    .filter(".choosen")
-                    .children("input")
-                    .last()
-                    .val()! as string;
-
-                const favoriteAmentityName = $(".favoriteAmentities")
-                    .filter(".choosen")
-                    .children('input[class="amentityName"]')
-                    .val()! as string;
-                const safeAmentity = parseInt(
-                    $(".safeAmentities")
-                        .filter(".choosen")
-                        .children("input")
-                        .first()
-                        .val() as string
-                );
-
-                const safeAmentityImageName = $(".safeAmentities")
-                    .filter(".choosen")
-                    .children("input")
-                    .last()
-                    .val()! as string;
-
-                const safeAmentityName = $(".safeAmentities")
-                    .filter(".choosen")
-                    .children('input[class="amentityName"]')
-                    .val()! as string;
-
-                if (isNaN(prominentAmentity) || isNaN(favoriteAmentity) || isNaN(safeAmentity)) {
-                    callToast("error", "Vui lòng chọn tiện ích trước khi tiếp tục!");
-                    return;
-                }
-
-                if (!localStorage.getItem("room")) {
-                    room = {
-                        prominentAmentity,
-                        favoriteAmentity,
-                        safeAmentity,
-                        prominentAmentityImageName,
-                        favoriteAmentityImageName,
-                        safeAmentityImageName,
-                        prominentAmentityName,
-                        favoriteAmentityName,
-                        safeAmentityName,
-                    };
-                } else {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    room = {
-                        ...room,
-                        prominentAmentity,
-                        favoriteAmentity,
-                        safeAmentity,
-                        prominentAmentityImageName,
-                        favoriteAmentityImageName,
-                        safeAmentityImageName,
-                        prominentAmentityName,
-                        favoriteAmentityName,
-                        safeAmentityName,
-                    };
-                }
-                break;
-            }
-            case 7: {
                 if (localStorage.getItem("room")) {
                     room = JSON.parse(localStorage.getItem("room")!);
                     if (room["roomImages"] && room.roomImages.length < 5) {
@@ -243,7 +159,7 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                 }
                 break;
             }
-            case 8: {
+            case 7: {
                 const roomTitle = $("textarea").val()! as string;
 
                 if (!localStorage.getItem("room")) {
@@ -259,7 +175,7 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                 }
                 break;
             }
-            case 9: {
+            case 8: {
                 if (descriptions && descriptions.length == 2) {
                     if (!localStorage.getItem("room")) {
                         room = {
@@ -278,7 +194,7 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                 }
                 break;
             }
-            case 10: {
+            case 9: {
                 const roomPricePerNight = ($("#room-price").val() as string).replace("₫", "");
 
                 if (!localStorage.getItem("room")) {
@@ -302,7 +218,7 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                 }
                 break;
             }
-            case 11: {
+            case 10: {
                 if (localStorage.getItem("room")) {
                     room = JSON.parse(localStorage.getItem("room")!);
                     const placeNameLength = room.placeName!.toString().split(",").length;
@@ -355,7 +271,6 @@ const RightPageContent: FC<IRightPageContentProps> = ({
             }
         }
 
-        localStorage.setItem("room", JSON.stringify(room));
         if (stepNumber !== 11) {
             window.location.href = `${window.location.origin}/become-a-host/${nextPage}`;
         }
@@ -378,26 +293,9 @@ const RightPageContent: FC<IRightPageContentProps> = ({
             height='100%'
             backgroundColor={backgroundColor}
         >
-            <Div className='normal-flex jc-fe' height='88px' padding='0 20px 0 0'>
-                <button
-                    className='become-a-host__right-cancelBtn'
-                    onClick={backToHomePage}
-                    style={
-                        stepNumber === 4
-                            ? {
-                                  position: "absolute",
-                                  zIndex: 101,
-                                  top: "calc(88px / 2 - 32px)",
-                              }
-                            : {}
-                    }
-                >
-                    <span className='fw-500'>Lưu và thoát</span>
-                </button>
-            </Div>
-            {stepNumber === 4 && beforeMiddle}
+            {stepNumber === 3 && beforeMiddle}
 
-            {stepNumber === 6 ? (
+            {stepNumber === 5 ? (
                 <div
                     className='flex-center f1'
                     style={{
@@ -432,14 +330,19 @@ const RightPageContent: FC<IRightPageContentProps> = ({
             >
                 <div>
                     <Link
-                        to={`/become-a-host/${prevPage}`}
+                        to={stepNumber === 0 ? "/" : `/become-a-host/${prevPage}`}
                         id='right--content__prev--step'
                         style={{ color: backgroundColor === "#000000" ? "#fff" : "#222" }}
                     >
                         Quay lại
                     </Link>
                 </div>
-                <MainButton width='120px' height='48px' onClick={moveToNextPage}>
+                <MainButton
+                    width='120px'
+                    height='48px'
+                    onClick={moveToNextPage}
+                    // disabled={nextButtonDisabled}
+                >
                     <span className='fw-500'>Tiếp theo</span>
                 </MainButton>
             </Div>

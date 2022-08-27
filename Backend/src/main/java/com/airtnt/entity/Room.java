@@ -137,13 +137,13 @@ public class Room extends BaseEntity implements Comparable<Room> {
 	@Transient
 	public static Room buildRoom(PostAddRoomDTO payload, Set<Image> images, Set<Amentity> amenities, Address address,
 			Set<Rule> rules, boolean status) {
-		return Room.builder().name(payload.getName()).accomodatesCount(payload.getAccomodatesCount())
+		return Room.builder().name(payload.getName()).accomodatesCount(payload.getGuestCount())
 				.bathroomCount(payload.getBathroomCount()).bedCount(payload.getBedCount())
 				.bedroomCount(payload.getBedroomCount()).description(payload.getDescription()).amentities(amenities)
 				.images(images).latitude(payload.getLatitude()).longitude(payload.getLongitude())
 				.price(payload.getPrice()).rules(rules).host(new User(payload.getHost()))
 				.host(new User(payload.getHost())).category(new Category(payload.getCategory()))
-				.currency(new Currency(payload.getCurrency())).privacyType(new RoomPrivacy(payload.getPrivacyType()))
+				.currency(new Currency(payload.getCurrency())).privacyType(new RoomPrivacy(payload.getPrivacy()))
 				.address(address)
 				.thumbnail(images.iterator().next().getImage()).status(status).build();
 	}

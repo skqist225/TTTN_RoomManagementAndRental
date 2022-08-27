@@ -14,13 +14,12 @@ public class PostAddRoomDTO {
     private String name;
     private String[] images;
     private int[] rules;
-    private int[] amentities;
+    private int[] amenities;
     private Integer country;
-    private Integer state;
     private Integer city;
     private int bedroomCount;
     private int bathroomCount;
-    private int accomodatesCount;
+    private int guestCount;
     private int bedCount;
     private int currency;
     private int category;
@@ -29,7 +28,7 @@ public class PostAddRoomDTO {
     private Float longitude;
     private int price;
     private int host;
-    private int privacyType;
+    private int privacy;
     private String street;
     private String thumbnail;
 }

@@ -1,12 +1,12 @@
-import { FC, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { FC, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import {
     LeftPageContent,
     PropertyPrivacyMainContent,
     RightPageContent,
-} from '../../components/become_a_host';
-import { fetchRoomPrivacies } from '../../features/room/roomSlice';
-import { Div } from '../../globalStyle';
+} from "../../components/become_a_host";
+import { fetchRoomPrivacies } from "../../features/room/roomSlice";
+import { Div } from "../../globalStyle";
 
 interface IPropertyPrivacyPageProps {}
 
@@ -26,9 +26,9 @@ const PropertyPrivacyPage: FC<IPropertyPrivacyPageProps> = () => {
                 />
                 <RightPageContent
                     nextPage='location'
-                    prevPage='property-category'
+                    prevPage='category'
                     MainContent={<PropertyPrivacyMainContent />}
-                    stepNumber={3}
+                    stepNumber={2}
                 />
             </Div>
         </Div>

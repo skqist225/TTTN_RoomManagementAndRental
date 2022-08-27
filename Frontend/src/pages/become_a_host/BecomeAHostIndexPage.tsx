@@ -23,13 +23,17 @@ const BecomeAHostIndexPage: FC<IBecomeAHostIndexPageProps> = () => {
                     ></video>
                     <div className='logoWrapper'>
                         <Link to={"/"}>
-                            <img src={getImage("/images/web_logologow.png")} alt='' id='airTntLogo' />
+                            <img
+                                src={getImage("/images/web_logologow.png")}
+                                alt=''
+                                id='airTntLogo'
+                            />
                         </Link>
                     </div>
                 </Div>
 
                 <RightPageContent
-                    nextPage='property-category'
+                    nextPage='category'
                     prevPage=''
                     MainContent={
                         <Div
@@ -37,7 +41,7 @@ const BecomeAHostIndexPage: FC<IBecomeAHostIndexPageProps> = () => {
                             style={{ justifyContent: "center", alignItems: "center" }}
                         >
                             <h1 className='become-a-host__main--text'>
-                                Trở thành Chủ nhà sau 11 bước dễ dàng
+                                Trở thành Chủ nhà sau 10 bước dễ dàng
                             </h1>
                             <h4 className='become-a-host__sub-text'>
                                 Hãy tham gia cùng chúng tôi. Chúng tôi sẽ trợ giúp bạn qua từng bước

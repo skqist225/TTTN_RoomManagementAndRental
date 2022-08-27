@@ -89,10 +89,6 @@ public class User extends BaseEntity {
 	private boolean phoneVerified = false;
 
 	@Builder.Default
-	@Column(name = "identity_verified", columnDefinition = "boolean default false")
-	private boolean identityVerified = false;
-
-	@Builder.Default
 	@Column(name = "email_verified", columnDefinition = "boolean default false")
 	private boolean emailVerified = false;
 
@@ -207,8 +203,7 @@ public class User extends BaseEntity {
 
 		return User.builder().firstName(registerDTO.getFirstName()).lastName(registerDTO.getLastName())
 				.email(registerDTO.getEmail()).password(registerDTO.getPassword()).sex(sex)
-				.birthday(registerDTO.getBirthday()).phoneNumber(registerDTO.getPhoneNumber()).role(new Role(1))
-				.identityVerified(false).phoneVerified(false)
+				.birthday(registerDTO.getBirthday()).phoneNumber(registerDTO.getPhoneNumber()).role(new Role(1)).phoneVerified(false)
 				.emailVerified(false)
 				.build();
 	}

@@ -3,13 +3,15 @@ import { useSelector } from "react-redux";
 import { LeftPageContent, RightPageContent } from "../../components/become_a_host";
 import PropertyLocationMainContent from "../../components/become_a_host/PropertyLocationMainContent";
 import { Div, Image } from "../../globalStyle";
-import { getImage } from "../../helpers";
+import { callToast, getImage } from "../../helpers";
 import mapboxgl from "mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import $ from "jquery";
 import axios from "axios";
 
 import "./css/location.css";
 import { userState } from "../../features/user/userSlice";
+import { stateState } from "../../features/address/stateSlice";
+import { cityState } from "../../features/address/citySlice";
 
 interface IPropertyLocationPageProps {}
 
@@ -18,131 +20,93 @@ const PropertyLocationPage: FC<IPropertyLocationPageProps> = () => {
         "pk.eyJ1IjoibG9yZGVkc3dpZnQyMjUiLCJhIjoiY2t3MDJvZ2E5MDB0dDJxbndxbjZxM20wOCJ9.hYxzgffyfc93Aiogipp5bA";
 
     mapboxgl.accessToken = accessToken;
-    const [userLat, setUserLat] = useState(0);
-    const [userLng, setUserLng] = useState(0);
-    const [placeName, setPlaceName] = useState("");
-    const [isAprtNoAndStreetFilledUp, setIsAprtNoAndStreetFilledUp] = useState(false);
-    const [isCityFilledUp, setIsCityFilledUp] = useState(false);
+    const [longitude, setLongitude] = useState(0);
+    const [latitude, setLatitude] = useState(0);
+    const [lState, setLState] = useState<number>(120);
+    const [lCity, setLCity] = useState<number>(0);
 
     const { user } = useSelector(userState);
     const userName = user?.firstName + " " + user?.lastName;
     const userAvatar = user!.avatarPath;
 
+    useEffect(() => {
+        const room = localStorage.getItem("room");
+        if (room) {
+            const { longitude, latitude, street, city, state } = JSON.parse(room!);
+
+            if (longitude && latitude) {
+                showPosition(
+                    {
+                        coords: {
+                            latitude,
+                            longitude,
+                        },
+                    },
+                    true
+                );
+            }
+            if (state) {
+                console.log(state);
+                setLState(parseInt(state.toString()));
+            }
+            if (city) {
+                console.log(city);
+                setLCity(parseInt(city.toString()));
+            }
+            if (street) {
+                console.log(street);
+                $("#street").val(street);
+            }
+        }
+    }, []);
+
+    function removeVietnameseTones(str: string) {
+        return str
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D");
+    }
+
     const jQueryCode = () => {
         const locationInputContainer = $(".location__input-container");
 
-        if (localStorage.getItem("room")) {
-            const { longitude, latitude } = JSON.parse(localStorage.getItem("room")!);
-            showPosition(
-                {
-                    coords: {
-                        latitude,
-                        longitude,
-                    },
-                },
-                true
-            );
-        }
-
         locationInputContainer.each(function () {
-            $(this).on("click", function () {
-                locationInputContainer.each(function () {
-                    if ($(this).hasClass("focus")) {
-                        $(this).removeClass("focus");
-                        const input = $(this).children().last().children("input");
-                        if (!input.val()) {
-                            $(this).children().first().removeClass("focus");
+            $(this)
+                .off("click")
+                .on("click", function () {
+                    locationInputContainer.each(function () {
+                        if ($(this).hasClass("focus")) {
+                            $(this).removeClass("focus");
+                            const input = $(this).children().last().children("input");
+                            if (!input.val()) {
+                                $(this).children().first().removeClass("focus");
 
-                            input.removeClass("focus");
+                                input.removeClass("focus");
+                            }
                         }
-                    }
+                    });
+
+                    $(this).children().first().addClass("focus");
+                    $(this).children().last().children("input").addClass("focus");
+                    $(this).addClass("focus");
                 });
-
-                $(this).children().first().addClass("focus");
-                $(this).children().last().children("input").addClass("focus");
-                $(this).addClass("focus");
-            });
-        });
-
-        const addressSearchInput = $("#addressLocation");
-        addressSearchInput.on("focus", function () {
-            $(".location__search-location").first().addClass("input-focus");
-            $(".location__location-option-box").first().addClass("input-focus");
-        });
-
-        $("#location__search-btn").on("click", function () {
-            getPositionFromInput(addressSearchInput.val()! as string, accessToken);
-        });
-
-        $("#location__btn-complete-address-id").on("click", function (event) {
-            event.preventDefault();
-
-            const aprtNoAndStreet = $("#aprtNoAndStreet").val() || "";
-            const city = $("#city").val() || "";
-            const state = $("#state").val() || "";
-            const country = $("#country").val() || "";
-
-            const placeToSearch = aprtNoAndStreet + " " + city + " " + state + " " + country;
-            $("#map").empty();
-            getPositionFromInput(placeToSearch, accessToken);
-
-            $("#location__enter-address-option").removeClass("active");
-            $(".location__search-location").first().addClass("active");
-        });
-
-        const aprtNoAndStreet = $("#aprtNoAndStreet");
-        const city = $("#city");
-
-        let aprtNoAndStreetLength = 0;
-        let cityLength = 0;
-
-        aprtNoAndStreet.on("keydown", function (event) {
-            console.log("on key down");
-
-            if (event.key !== "Backspace") {
-                aprtNoAndStreetLength = ($(this).val() as string).length + 1;
-            } else {
-                aprtNoAndStreetLength--;
-            }
-
-            if (aprtNoAndStreetLength > 0) setIsAprtNoAndStreetFilledUp(true);
-            else setIsAprtNoAndStreetFilledUp(false);
-        });
-
-        city.on("keydown", function (event) {
-            console.log("on key down");
-
-            if (event.key !== "Backspace") {
-                cityLength = ($(this).val() as string).length + 1;
-            } else {
-                cityLength--;
-            }
-
-            if (cityLength > 0) setIsCityFilledUp(true);
-            else setIsCityFilledUp(false);
         });
     };
 
-    function processSearchText(searchText: string) {
-        let input = searchText.toString().replace(/ /g, "%20").replace(/,/g, "");
-        return input;
-    }
-
-    function useCurrentPosition() {
-        console.log("clicked");
-
-        getLocation();
-        $(".location__search-location").first().removeClass("input-focus");
-        $(".location__location-option-box").first().removeClass("input-focus");
-    }
-
-    async function getPositionFromInput(placeToSearch: string, accessToken: string) {
-        console.log(placeToSearch);
+    async function forwardGeocoding(placeToSearch: string) {
         const { data } = await axios.get(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${placeToSearch}.json?access_token=${accessToken}`
         );
 
-        setPlaceName(data.features[0].place_name);
+        return data;
+    }
+
+    async function getPositionFromInput(placeToSearch: string) {
+        console.log("[placeToSearch][VIE]: " + placeToSearch);
+        console.log("[placeToSearch][ENG]: " + removeVietnameseTones(placeToSearch));
+
+        const data = await forwardGeocoding(removeVietnameseTones(placeToSearch));
 
         const position = {
             coords: {
@@ -156,16 +120,6 @@ const PropertyLocationPage: FC<IPropertyLocationPageProps> = () => {
         $(".location__location-option-box").first().removeClass("input-focus");
     }
 
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, showError, {
-                timeout: 10000,
-            });
-        } else {
-            // x.innerHTML = 'Geolocation is not supported by this browser.';
-        }
-    }
-
     async function showPosition(
         position: {
             coords: {
@@ -175,23 +129,16 @@ const PropertyLocationPage: FC<IPropertyLocationPageProps> = () => {
         },
         doReverseSearch = true
     ) {
-        setUserLat(position.coords.latitude);
-        setUserLng(position.coords.longitude);
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
 
-        const userLng2 = position.coords.longitude;
-        const userLat2 = position.coords.latitude;
-
-        if (doReverseSearch) {
-            const { data } = await axios.get(
-                `https://api.mapbox.com/geocoding/v5/mapbox.places/${userLng2},${userLat2}.json?access_token=${accessToken}`
-            );
-            if (data) setPlaceName(data.features[0].place_name);
-        }
+        const lng = position.coords.longitude;
+        const lat = position.coords.latitude;
 
         var map = new mapboxgl.Map({
             container: "location__map",
             style: "mapbox://styles/mapbox/streets-v11",
-            center: [userLng2 * 1, userLat2 * 1], // starting position [lng, lat]
+            center: [lng * 1, lat * 1], // starting position [lng, lat]
             zoom: 13, // starting zoom
         });
 
@@ -222,53 +169,53 @@ const PropertyLocationPage: FC<IPropertyLocationPageProps> = () => {
                     .setHTML(`<p style="font-size: 22px;margin: 0;">${userName}</p>`)
                     .setMaxWidth("300px")
             )
-            .setLngLat([userLng2, userLat2])
+            .setLngLat([lng, lat])
             .addTo(map);
 
         const popup = new mapboxgl.Popup({
             offset: popupOffsets as any,
             className: "my-class",
         })
-            .setLngLat([userLng2, userLat2])
+            .setLngLat([lng, lat])
             .setHTML(`<p style="font-size: 22px;margin: 0;">${userName}</p>`)
             .setMaxWidth("300px")
             .addTo(map);
 
         let currentPopup = null;
 
-        map.on("click", e => {
-            $(".location__search-location").first().removeClass("input-focus");
-            $(".location__location-option-box").first().removeClass("input-focus");
+        // map.on("click", async e => {
+        //     $(".location__search-location").first().removeClass("input-focus");
+        //     $(".location__location-option-box").first().removeClass("input-focus");
 
-            setUserLat(e.lngLat.lat);
-            setUserLng(e.lngLat.lng);
+        //     setLatitude(e.lngLat.lat);
+        //     setLongitude(e.lngLat.lng);
 
-            if (marker) marker.remove();
-            if (popup) popup.remove();
+        //     const data = await reverseGeocoding(e.lngLat.lng, e.lngLat.lat);
 
-            currentPopup = new mapboxgl.Popup({
-                offset: popupOffsets as any,
-                className: "mapboxgl-popup",
-            }) // add popups
-                .setHTML(`<h2>${userName}</h2>`)
-                .setMaxWidth("300px");
+        //     console.log(data);
 
-            let newMarker = new mapboxgl.Marker(image)
-                // .setPopup(currentPopup)
-                .setLngLat([e.lngLat.lng, e.lngLat.lat])
-                .addTo(map);
+        //     if (marker) marker.remove();
+        //     if (popup) popup.remove();
 
-            showPosition({
-                coords: {
-                    longitude: e.lngLat.lng,
-                    latitude: e.lngLat.lat,
-                },
-            });
-        });
+        //     currentPopup = new mapboxgl.Popup({
+        //         offset: popupOffsets as any,
+        //         className: "mapboxgl-popup",
+        //     }) // add popups
+        //         .setHTML(`<h2>${userName}</h2>`)
+        //         .setMaxWidth("300px");
 
-        map.on("drag", () => {
-            console.log("A drag event occurred.");
-        });
+        //     let newMarker = new mapboxgl.Marker(image)
+        //         // .setPopup(currentPopup)
+        //         .setLngLat([e.lngLat.lng, e.lngLat.lat])
+        //         .addTo(map);
+
+        //     showPosition({
+        //         coords: {
+        //             longitude: e.lngLat.lng,
+        //             latitude: e.lngLat.lat,
+        //         },
+        //     });
+        // });
 
         map.on("data", () => {
             $("#map_loading").css("display", "none");
@@ -301,59 +248,40 @@ const PropertyLocationPage: FC<IPropertyLocationPageProps> = () => {
                 />
                 <RightPageContent
                     nextPage='room-info'
-                    prevPage='privacy-type'
+                    prevPage='privacy'
                     beforeMiddle={
                         <>
                             <div className='location__search-location'>
-                                <Div className='normal-flex'>
-                                    <Div className='flex-center' width='10%'>
-                                        <Image src={getImage("/svg/pin_drop.svg")} size='24px' />
-                                    </Div>
-                                    <input
-                                        type='text'
-                                        placeholder='Nhập địa chỉ của bạn'
-                                        name='addressLocation'
-                                        id='addressLocation'
-                                        className='w-100'
-                                    />
-                                    <div style={{ marginRight: "10px", width: "14%" }}>
-                                        <button id='location__search-btn'>Tìm kiếm</button>
-                                    </div>
-                                </Div>
                                 <div className='location__location-option-box'>
-                                    <div
-                                        className='location__location-option-box-first'
-                                        onClick={useCurrentPosition}
-                                    >
+                                    <div className='location__location-option-box-first'>
                                         <Image
                                             src={getImage("/svg/location.svg")}
                                             size='32px'
                                             style={{ margin: "12px" }}
                                         />
-                                        <div>Sử dụng vị trí hiện tại của tôi</div>
-                                    </div>
-                                    <Div height='60px' padding='16px 16px 24px'>
                                         <button
                                             className='location__enter-address-btn'
                                             onClick={displayEnterLocation}
                                         >
                                             Tự nhập địa chỉ
                                         </button>
-                                    </Div>
+                                    </div>
                                 </div>
                             </div>
                         </>
                     }
                     MainContent={
                         <PropertyLocationMainContent
-                            isAprtNoAndStreetFilledUp={isAprtNoAndStreetFilledUp}
-                            isCityFilledUp={isCityFilledUp}
+                            getPositionFromInput={getPositionFromInput}
+                            setLState={setLState}
+                            setLCity={setLCity}
+                            lCity={lCity}
+                            lState={lState}
                         />
                     }
-                    stepNumber={4}
-                    userLng={userLng}
-                    userLat={userLat}
-                    placeName={placeName}
+                    stepNumber={3}
+                    longitude={longitude}
+                    latitude={latitude}
                 />
             </Div>
         </Div>

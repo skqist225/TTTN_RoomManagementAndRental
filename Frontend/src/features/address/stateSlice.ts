@@ -1,8 +1,9 @@
-import { createSlice, createAsyncThunk, isAnyOf } from '@reduxjs/toolkit';
-import api from '../../axios';
+import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
+import api from "../../axios";
+import { RootState } from "../../store";
 
 export const fetchStatesByCountry = createAsyncThunk(
-    'state/fetchStatesByCountry',
+    "state/fetchStatesByCountry",
     async ({ countryId }: { countryId: number }, { dispatch, getState, rejectWithValue }) => {
         try {
             const { data } = await api.get(`/states/country/${countryId}`);
@@ -28,7 +29,7 @@ const initialState: StateState = {
 };
 
 const stateSlice = createSlice({
-    name: 'state',
+    name: "state",
     initialState,
     reducers: {},
     extraReducers: builder => {
@@ -46,4 +47,5 @@ const stateSlice = createSlice({
     },
 });
 
+export const stateState = (state: RootState) => state.state;
 export default stateSlice.reducer;

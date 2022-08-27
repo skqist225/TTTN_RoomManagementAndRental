@@ -1,10 +1,10 @@
-import { FC } from 'react';
+import { FC } from "react";
 import {
     LeftPageContent,
     PropertyPriceMainContent,
     RightPageContent,
-} from '../../components/become_a_host';
-import { Div } from '../../globalStyle';
+} from "../../components/become_a_host";
+import { Div } from "../../globalStyle";
 
 interface IPropertyPricePageProps {}
 
@@ -20,7 +20,7 @@ const PropertyPricePage: FC<IPropertyPricePageProps> = () => {
                     nextPage='preview'
                     prevPage='description'
                     MainContent={<PropertyPriceMainContent />}
-                    stepNumber={10}
+                    stepNumber={9}
                 />
             </Div>
         </Div>

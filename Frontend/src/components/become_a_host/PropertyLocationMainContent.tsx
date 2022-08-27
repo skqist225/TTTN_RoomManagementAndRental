@@ -1,20 +1,29 @@
-import { FC, useEffect } from "react";
+import React, { FC, SetStateAction, useEffect, useState } from "react";
 import { Div, Image } from "../../globalStyle";
-import { getImage } from "../../helpers";
-import $ from "jquery";
+import { callToast, getImage } from "../../helpers";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store";
-import { fetchCountries } from "../../features/country/countrySlice";
+import { countryState, fetchCountries } from "../../features/country/countrySlice";
 import { FloatingLabel, Form } from "react-bootstrap";
+import { fetchStatesByCountry, stateState } from "../../features/address/stateSlice";
+import { cityState, fetchCities, fetchCitiesByState } from "../../features/address/citySlice";
+import $ from "jquery";
+import Toast from "../notify/Toast";
+import { Dispatch } from "react";
 
 interface IPropertyLocationMainContentProps {
-    isAprtNoAndStreetFilledUp: boolean;
-    isCityFilledUp: boolean;
+    getPositionFromInput: Function;
+    setLCity: Dispatch<SetStateAction<number>>;
+    setLState: Dispatch<SetStateAction<number>>;
+    lCity: number;
+    lState: number;
 }
 
 const PropertyLocationMainContent: FC<IPropertyLocationMainContentProps> = ({
-    isAprtNoAndStreetFilledUp,
-    isCityFilledUp,
+    getPositionFromInput,
+    setLState,
+    setLCity,
+    lCity,
+    lState,
 }) => {
     function backToSearchLocation() {
         $("#location__enter-address-option").removeClass("active");
@@ -24,9 +33,69 @@ const PropertyLocationMainContent: FC<IPropertyLocationMainContentProps> = ({
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchCountries());
+        dispatch(fetchStatesByCountry({ countryId: 216 }));
+        dispatch(fetchCitiesByState({ stateId: 120 }));
     }, []);
 
-    const { countries } = useSelector((state: RootState) => state.country);
+    useEffect(() => {
+        if (lState !== 0) {
+            dispatch(fetchCitiesByState({ stateId: lState }));
+        }
+    }, [lState]);
+
+    const { countries } = useSelector(countryState);
+    const { states } = useSelector(stateState);
+    const { cities } = useSelector(cityState);
+
+    const handleChange = (event: any) => {
+        const { name, value } = event.target;
+        console.log(name, value);
+        if (name === "state") {
+            setLState(parseInt(value));
+        } else {
+            setLCity(parseInt(value));
+        }
+    };
+
+    const handleSelectedAddress = (event: any) => {
+        event.preventDefault();
+
+        const street = $("#street").val();
+        const city = $("#city").val();
+        const state = $("#state").val();
+
+        // TODO: Null street value
+
+        if (!street) {
+            callToast("error", "Vui lòng chọn số nhà & tên đường");
+            return;
+        } else if (city === 0) {
+            callToast("error", "Vui lòng chọn một thành phố");
+            return;
+        } else if (state === 0) {
+            callToast("error", "Vui lòng chọn một tỉnh/thành phố TW");
+            return;
+        }
+
+        const selectedState = states.filter(({ id }) => id.toString() === state!.toString())[0];
+        const selectedCity = cities.filter(({ id }) => id.toString() === city!.toString())[0];
+
+        const placeToSearch =
+            street.toString() +
+            " " +
+            selectedCity.name.replaceAll("Thành phố", "").trim() +
+            " " +
+            selectedState.name.replaceAll("Thành phố", "").trim() +
+            " " +
+            "(Vietnam)";
+
+        $("#map").empty();
+        getPositionFromInput(placeToSearch);
+
+        $("#location__enter-address-option").removeClass("active");
+        $(".location__search-location").first().addClass("active");
+    };
+
     return (
         <>
             <div id='location__map'></div>
@@ -40,55 +109,67 @@ const PropertyLocationMainContent: FC<IPropertyLocationMainContentProps> = ({
                     </div>
                     <div id='location__enter-address-option__body'>
                         <FloatingLabel label='Đường/Phố' className='mb-3'>
-                            <Form.Control
-                                type='text'
-                                id='aprtNoAndStreet'
-                                placeholder='placeholder'
-                            />
+                            <Form.Control type='text' id='street' placeholder='placeholder' />
                         </FloatingLabel>
 
-                        <FloatingLabel
-                            label='Căn hộ, phòng, v.v. (Không bắt buộc)'
-                            className='mb-3'
-                        >
-                            <Form.Control type='text' id='' placeholder='placeholder' />
-                        </FloatingLabel>
-
-                        <FloatingLabel label='Thành phố' className='mb-3'>
-                            <Form.Control type='text' id='city' placeholder='placeholder' />
-                        </FloatingLabel>
-
-                        <FloatingLabel label='Tỉnh(Không bắt buộc)' className='mb-3'>
-                            <Form.Control type='text' id='' placeholder='placeholder' />
-                        </FloatingLabel>
-
-                        <FloatingLabel label='Mã bưu chính(Không bắt buộc)' className='mb-3'>
-                            <Form.Control type='text' id='' placeholder='placeholder' />
-                        </FloatingLabel>
-
-                        <div className='form-floating'>
-                            <select className='form-select' id='country' value={"Việt Nam"}>
-                                {countries.map(c => (
-                                    <option value={c.name} key={c.id}>
-                                        {c.name} {c.code}
+                        <div className='form-floating' style={{ margin: "16px 0" }}>
+                            <select
+                                className='form-select'
+                                id='city'
+                                name='city'
+                                value={lCity}
+                                onChange={handleChange}
+                            >
+                                {cities.map(city => (
+                                    <option value={city.id} key={city.id}>
+                                        {city.name}
                                     </option>
                                 ))}
                             </select>
-                            <label>Quốc gia/Khu vực</label>
+                            <label>Thành phố/Quận/Huyện</label>
+                        </div>
+
+                        <div className='form-floating' style={{ margin: "16px 0" }}>
+                            <select
+                                className='form-select'
+                                name='state'
+                                id='state'
+                                value={lState}
+                                onChange={handleChange}
+                            >
+                                {states.map(state => (
+                                    <option value={state.id} key={state.id}>
+                                        {state.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <label>Tỉnh/Thành phố TW</label>
+                        </div>
+
+                        <div className='form-floating' style={{ margin: "16px 0" }}>
+                            <select className='form-select' id='country' value={216}>
+                                {countries.map(country => (
+                                    <option value={country.id} key={country.id}>
+                                        {country.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <label>Quốc gia</label>
                         </div>
                     </div>
 
                     <div style={{ paddingTop: "40px" }}>
                         <button
                             className='location__btn-complete-address'
-                            disabled={isAprtNoAndStreetFilledUp && isCityFilledUp ? false : true}
                             id='location__btn-complete-address-id'
+                            onClick={handleSelectedAddress}
                         >
                             Trông ổn rồi
                         </button>
                     </div>
                 </Div>
             </div>
+            <Toast />
         </>
     );
 };

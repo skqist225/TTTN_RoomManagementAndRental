@@ -52,8 +52,8 @@ function App() {
                     </Route>
                     <Route path='become-a-host'>
                         <Route path='intro' element={<BecomeAHostIndexPage />}></Route>
-                        <Route path='property-category' element={<PropertyCategoryPage />} />
-                        <Route path='privacy-type' element={<PropertyPrivacyPage />} />
+                        <Route path='category' element={<PropertyCategoryPage />} />
+                        <Route path='privacy' element={<PropertyPrivacyPage />} />
                         <Route path='location' element={<PropertyLocationPage />} />
                         <Route path='room-info' element={<PropertyRoomInfoPage />} />
                         <Route path='amenities' element={<PropertyAmenitiesPage />} />

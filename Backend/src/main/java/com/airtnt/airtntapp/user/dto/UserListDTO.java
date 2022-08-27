@@ -1,15 +1,10 @@
 package com.airtnt.airtntapp.user.dto;
 
-import java.time.LocalDate;
-
 import com.airtnt.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -39,7 +34,7 @@ public class UserListDTO {
                 .birthday(user.getBirthday())
                 .emailVerified(user.isEmailVerified())
                 .phoneVerified(user.isPhoneVerified())
-                .identityVerified(user.isIdentityVerified())
+                .identityVerified(false)
                 .numberOfReviews(user.getReviews().size())
                 .build();
     }

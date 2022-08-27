@@ -1,10 +1,10 @@
-import { FC } from 'react';
+import { FC } from "react";
 import {
     LeftPageContent,
     PropertyRoomInfoMainContent,
     RightPageContent,
-} from '../../components/become_a_host';
-import { Div } from '../../globalStyle';
+} from "../../components/become_a_host";
+import { Div } from "../../globalStyle";
 
 interface IPropertyRoomInfoPageProps {}
 
@@ -32,7 +32,7 @@ const PropertyRoomInfoPage: FC<IPropertyRoomInfoPageProps> = () => {
                     nextPage='amenities'
                     prevPage='location'
                     MainContent={<PropertyRoomInfoMainContent />}
-                    stepNumber={5}
+                    stepNumber={4}
                 />
             </Div>
         </Div>

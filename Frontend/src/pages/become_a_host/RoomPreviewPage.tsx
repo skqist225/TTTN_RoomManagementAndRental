@@ -1,10 +1,10 @@
-import { FC } from 'react';
+import { FC } from "react";
 import {
     LeftPageContent,
     RightPageContent,
     RoomPreviewMainContent,
-} from '../../components/become_a_host';
-import { Div } from '../../globalStyle';
+} from "../../components/become_a_host";
+import { Div } from "../../globalStyle";
 
 interface IRoomPreviewPageProps {}
 
@@ -20,7 +20,7 @@ const RoomPreviewPage: FC<IRoomPreviewPageProps> = () => {
                     nextPage='publish-celebration'
                     prevPage='price'
                     MainContent={<RoomPreviewMainContent />}
-                    stepNumber={11}
+                    stepNumber={10}
                 />
             </Div>
         </Div>

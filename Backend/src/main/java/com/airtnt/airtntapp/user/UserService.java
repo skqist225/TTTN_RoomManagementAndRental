@@ -214,10 +214,6 @@ public class UserService {
             throws UserNotFoundException, VerifiedUserException {
         User user = this.findById(id);
 
-        if (user.isIdentityVerified()) {
-            throw new VerifiedUserException("Can not delete this verified user");
-        }
-
         try {
             userRepository.deleteById(id);
             return DELETE_SUCCESSFULLY;

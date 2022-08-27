@@ -113,8 +113,8 @@ public class AdminRoomRestController {
             rules.add(new Rule(payload.getRules()[i]));
         }
 
-        for (int i = 0; i < payload.getAmentities().length; i++) {
-            amenities.add(new Amentity(payload.getAmentities()[i]));
+        for (int i = 0; i < payload.getAmenities().length; i++) {
+            amenities.add(new Amentity(payload.getAmenities()[i]));
         }
 
         for (int i = 0; i < payload.getImages().length; i++) {
@@ -205,15 +205,15 @@ public class AdminRoomRestController {
                     }
                 }
 
-                if (payload.getAmentities().length > 0) {
-                    for (int i = 0; i < payload.getAmentities().length; i++) {
-                        amenities.add(new Amentity(payload.getAmentities()[i]));
+                if (payload.getAmenities().length > 0) {
+                    for (int i = 0; i < payload.getAmenities().length; i++) {
+                        amenities.add(new Amentity(payload.getAmenities()[i]));
                     }
 
                     Set<Amentity> removedSet = new HashSet<>();
-                    for (Amentity amentity : room.getAmentities()) {
-                        if (!Arrays.stream(payload.getAmentities()).anyMatch(amentity.getId()::equals)) {
-                            removedSet.add(amentity);
+                    for (Amentity amenity : room.getAmentities()) {
+                        if (!Arrays.stream(payload.getAmenities()).anyMatch(amenity.getId()::equals)) {
+                            removedSet.add(amenity);
                         }
                     }
 
@@ -228,9 +228,9 @@ public class AdminRoomRestController {
                 }
 
                 room.setCategory(new Category(payload.getCategory()));
-                room.setPrivacyType(new RoomPrivacy(payload.getPrivacyType()));
+                room.setPrivacyType(new RoomPrivacy(payload.getPrivacy()));
 
-                room.setAccomodatesCount(payload.getAccomodatesCount());
+                room.setAccomodatesCount(payload.getGuestCount());
                 room.setBedCount(payload.getBedCount());
                 room.setBedroomCount(payload.getBedroomCount());
                 room.setBathroomCount(payload.getBathroomCount());

@@ -1,5 +1,5 @@
-import styled, {createGlobalStyle} from "styled-components";
-import {Link} from 'react-router-dom';
+import styled, { createGlobalStyle } from "styled-components";
+import { Link } from "react-router-dom";
 
 const GlobalStyle = createGlobalStyle`
   ul {
@@ -178,6 +178,7 @@ const GlobalStyle = createGlobalStyle`
 interface IMainButton {
     width?: string;
     height?: string;
+    disabled?: boolean;
 }
 
 export const MainButton = styled.button`
@@ -198,15 +199,14 @@ export const MainButton = styled.button`
         transform 0.1s ease 0s;
     -webkit-tap-highlight-color: transparent;
     border: none;
-    background: linear-gradient(
-        to right,
-        rgb(230, 30, 77) 0%,
-        rgb(227, 28, 95) 50%,
-        rgb(215, 4, 102) 100%
-    );
+    background: ${(props: IMainButton) =>
+        props.disabled
+            ? "rgb(251 113 133);"
+            : "linear-gradient(to right, rgb(230, 30, 77) 0%, rgb(227, 28, 95) 50%, rgb(215, 4, 102) 100%);"}
     color: rgb(255, 255, 255);
     width: ${(props: IMainButton) => props.width || "auto"};
     height: ${(props: IMainButton) => props.height || "auto"};
+
 `;
 
 export const Divider = styled.div`
@@ -248,10 +248,10 @@ interface IDivWithBackGroundProps {
 }
 
 export const DivWithBackGround = styled.div`
-  background-image: ${(props: IDivWithBackGroundProps) => "url(" + props.src + ")"};
-  background-position: center;
-  background-size: cover;
-  ${(props: IDivWithBackGroundProps) => props.gradientBg}
+    background-image: ${(props: IDivWithBackGroundProps) => "url(" + props.src + ")"};
+    background-position: center;
+    background-size: cover;
+    ${(props: IDivWithBackGroundProps) => props.gradientBg}
 `;
 
 interface IButtonStyle {
@@ -268,21 +268,21 @@ interface IButtonStyle {
 }
 
 export const Button = styled.button`
-  width: ${(props: IButtonStyle) => props.width};
-  height: ${(props: IButtonStyle) => props.height};
-  padding: ${(props: IButtonStyle) => props.padding};
-  color: ${(props: IButtonStyle) => props.color};
-  background-color: ${(props: IButtonStyle) => props.backgroundColor};
-  font-size: ${(props: IButtonStyle) => props.fontSize};
-  font-weight: ${(props: IButtonStyle) => props.fontWeight};
-  text-transform: ${(props: IButtonStyle) => props.textTransform || 'none'};
-  border-radius: ${(props: IButtonStyle) => props.borderRadius || '2px'};
-  border: ${(props: IButtonStyle) => props.border || 'none'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  outline: none;
-  cursor: pointer;
+    width: ${(props: IButtonStyle) => props.width};
+    height: ${(props: IButtonStyle) => props.height};
+    padding: ${(props: IButtonStyle) => props.padding};
+    color: ${(props: IButtonStyle) => props.color};
+    background-color: ${(props: IButtonStyle) => props.backgroundColor};
+    font-size: ${(props: IButtonStyle) => props.fontSize};
+    font-weight: ${(props: IButtonStyle) => props.fontWeight};
+    text-transform: ${(props: IButtonStyle) => props.textTransform || "none"};
+    border-radius: ${(props: IButtonStyle) => props.borderRadius || "2px"};
+    border: ${(props: IButtonStyle) => props.border || "none"};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    cursor: pointer;
 `;
 
 interface IFlexStyle {
@@ -295,13 +295,13 @@ interface IFlexStyle {
 }
 
 export const Flex = styled.div`
-  display: flex;
-  flex-direction: ${(props: IFlexStyle) => props.flexDirection || 'row'};
-  align-items: ${(props: IFlexStyle) => props.alignItems || 'center'};
-  justify-content: ${(props: IFlexStyle) => props.justifyContent};
-  width: ${(props: IFlexStyle) => props.width};
-  height: ${(props: IFlexStyle) => props.height};
-  padding: ${(props: IFlexStyle) => props.padding};
+    display: flex;
+    flex-direction: ${(props: IFlexStyle) => props.flexDirection || "row"};
+    align-items: ${(props: IFlexStyle) => props.alignItems || "center"};
+    justify-content: ${(props: IFlexStyle) => props.justifyContent};
+    width: ${(props: IFlexStyle) => props.width};
+    height: ${(props: IFlexStyle) => props.height};
+    padding: ${(props: IFlexStyle) => props.padding};
 `;
 
 interface IAnchorStyle {
@@ -311,9 +311,9 @@ interface IAnchorStyle {
 }
 
 export const Anchor = styled(Link)`
-  color: ${(props: IAnchorStyle) => props.color};
-  font-weight: ${(props: IAnchorStyle) => props.fontWeight};
-  font-size: ${(props: IAnchorStyle) => props.fontSize};
+    color: ${(props: IAnchorStyle) => props.color};
+    font-weight: ${(props: IAnchorStyle) => props.fontWeight};
+    font-size: ${(props: IAnchorStyle) => props.fontSize};
 `;
 
 interface IWhiteBgWrapperStyle {
@@ -322,11 +322,11 @@ interface IWhiteBgWrapperStyle {
 }
 
 export const WhiteBgWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  background-color: #fff;
-  padding: ${(props: IWhiteBgWrapperStyle) => props.padding};
-  margin-top: ${(props: IWhiteBgWrapperStyle) => props.mt};
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    padding: ${(props: IWhiteBgWrapperStyle) => props.padding};
+    margin-top: ${(props: IWhiteBgWrapperStyle) => props.mt};
 `;
 
 interface IContentContainerStyle {
@@ -336,11 +336,11 @@ interface IContentContainerStyle {
 }
 
 export const ContentContainer = styled.div`
-  max-width: ${(props: IContentContainerStyle) => props.maxwidth || '1200px'};
-  width: 100%;
-  margin: 0 auto;
-  padding: ${(props: IContentContainerStyle) => props.padding || '0 0'};
-  height: ${(props: IContentContainerStyle) => props.height || '100%'};
+    max-width: ${(props: IContentContainerStyle) => props.maxwidth || "1200px"};
+    width: 100%;
+    margin: 0 auto;
+    padding: ${(props: IContentContainerStyle) => props.padding || "0 0"};
+    height: ${(props: IContentContainerStyle) => props.height || "100%"};
 `;
 
 export default GlobalStyle;

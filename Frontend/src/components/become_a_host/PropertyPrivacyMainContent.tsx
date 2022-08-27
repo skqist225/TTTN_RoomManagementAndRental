@@ -1,9 +1,9 @@
-import { FC, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Div } from '../../globalStyle';
-import { RootState } from '../../store';
-import $ from 'jquery';
-import './css/privacy_main_content.css';
+import { FC, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Div } from "../../globalStyle";
+import { RootState } from "../../store";
+import $ from "jquery";
+import "./css/privacy_main_content.css";
 
 interface IPropertyPrivacyMainContentProps {}
 
@@ -11,27 +11,32 @@ const PropertyPrivacyMainContent: FC<IPropertyPrivacyMainContentProps> = () => {
     const { roomPrivacies } = useSelector((state: RootState) => state.room);
 
     useEffect(() => {
-        const privacyTypeBox = $('.privacy-type__box');
+        const privacyTypeBox = $(".privacy-type__box");
+        const room = localStorage.getItem("room");
 
-        if (localStorage.getItem('room')) {
-            const { privacyType } = JSON.parse(localStorage.getItem('room')!);
+        if (room) {
+            const { privacy } = JSON.parse(room!);
 
-            privacyTypeBox.each(function () {
-                if ($(this).data('privacy-id') === privacyType) {
-                    $(this).addClass('active');
-                    return false;
-                }
-            });
+            if (privacy) {
+                privacyTypeBox.each(function () {
+                    if ($(this).data("privacy-id") === privacy) {
+                        $(this).addClass("active");
+                        return false;
+                    }
+                });
+            }
         }
 
         privacyTypeBox.each(function () {
-            $(this).on('click', function () {
-                privacyTypeBox.each(function () {
-                    $(this).removeClass('active');
-                });
+            $(this)
+                .off("click")
+                .on("click", function () {
+                    privacyTypeBox.each(function () {
+                        $(this).removeClass("active");
+                    });
 
-                $(this).addClass('active');
-            });
+                    $(this).addClass("active");
+                });
         });
     }, [roomPrivacies]);
 
