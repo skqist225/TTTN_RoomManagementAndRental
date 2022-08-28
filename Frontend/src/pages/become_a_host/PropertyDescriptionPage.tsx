@@ -13,8 +13,8 @@ const PropertyTitlePage: FC<IPropertyTitlePageProps> = () => {
     const [dscrpts, setDescriptions] = useState<string[]>([]);
     useEffect(() => {
         if (localStorage.getItem("room")) {
-            const { descriptions } = JSON.parse(localStorage.getItem("room")!);
-            if (descriptions) setDescriptions(descriptions);
+            const { description } = JSON.parse(localStorage.getItem("room")!);
+            if (description) setDescriptions(description.split(","));
         }
     }, []);
 

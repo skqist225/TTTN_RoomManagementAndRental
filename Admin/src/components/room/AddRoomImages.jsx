@@ -59,9 +59,6 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
                     });
                 });
 
-                // photos = [];
-                // filesArr.forEach(file => photos.push(file));
-
                 readURL(filesArr, uploadPhotos, true);
             }
         }
@@ -323,10 +320,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
     }
 
     function makeMainImage(index) {
-        const test = photos;
-        console.log("Before: ", test);
         swapPosition(0, index);
-        console.log("After: ", photos);
         changePreviewImage(index);
         closeAction(index);
     }
@@ -373,7 +367,7 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
                 : addEmptyImage(photos, uploadPhotos, subImagesContainer);
         }
 
-        closeAction();
+        closeAction(index);
     }
 
     async function uploadImagesToFolder() {

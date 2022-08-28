@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
     LeftPageContent,
     PropertyPriceMainContent,
@@ -17,7 +17,7 @@ const PropertyPricePage: FC<IPropertyPricePageProps> = () => {
                     title='Bây giờ đến phần thú vị rồi – đặt giá cho thuê'
                 />
                 <RightPageContent
-                    nextPage='preview'
+                    nextPage='rule'
                     prevPage='description'
                     MainContent={<PropertyPriceMainContent />}
                     stepNumber={9}

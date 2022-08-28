@@ -5,17 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e861432e-5efe-4d08-ac00-9bab2792db9d.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e861432e-5efe-4d08-ac00-9bab2792db9d.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/rule/AdminRuleRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Admin/src/components/room/AddRoomImages.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/components/room/AddRoomImages.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/AdminRoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/AdminRoomRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/PostAddRoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/PostAddRoomDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/UserListDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/UserListDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/AmentityCategory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/AmentityCategory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/rule/RuleRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/rule/RuleRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/buitansang@gmail.com/pexels-laura-meinhardt-13248572.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/buitansang@gmail.com/pexels-pixabay-462235.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPriceMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPriceMainContent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPrivacyMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPrivacyMainContent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyRoomImagesMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyRoomImagesMainContent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RightPageContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RightPageContent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RoomPreviewMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RoomPreviewMainContent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyLocationPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyLocationPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyPricePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyPricePage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/RoomPreviewPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/RoomPreviewPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/script/manage_photos.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/store.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/types/room/type_Room.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/types/room/type_Room.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +134,8 @@
       <workItem from="1661442106066" duration="6748000" />
       <workItem from="1661511107879" duration="17575000" />
       <workItem from="1661563853469" duration="2592000" />
-      <workItem from="1661574032842" duration="6979000" />
+      <workItem from="1661574032842" duration="7445000" />
+      <workItem from="1661656043046" duration="8789000" />
     </task>
     <servers />
   </component>

@@ -14,13 +14,13 @@ const RoomPreviewPage: FC<IRoomPreviewPageProps> = () => {
             <Div className='flex'>
                 <LeftPageContent
                     background='/images/preview.jpg'
-                    title='Hãy đặt tên cho chỗ ở của bạn'
+                    title='Bước cuối trước khi bạn trở thành chủ nhà'
                 />
                 <RightPageContent
                     nextPage='publish-celebration'
-                    prevPage='price'
+                    prevPage='rule'
                     MainContent={<RoomPreviewMainContent />}
-                    stepNumber={10}
+                    stepNumber={11}
                 />
             </Div>
         </Div>

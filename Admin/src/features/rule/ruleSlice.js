@@ -5,7 +5,7 @@ export const fetchRules = createAsyncThunk(
     "rule/fetchRules",
     async (page, { dispatch, getState, rejectWithValue }) => {
         try {
-            const { data } = await api.get(`/admin/rules`);
+            const { data } = await api.get(`/rules`);
 
             return { data };
         } catch (error) {}

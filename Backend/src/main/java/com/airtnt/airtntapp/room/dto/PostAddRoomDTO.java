@@ -11,24 +11,33 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PostAddRoomDTO {
     private Integer activeStep;
-    private String name;
-    private String[] images;
-    private int[] rules;
-    private int[] amenities;
-    private Integer country;
+    private Integer category;
+
+    private Integer privacy;
+
+    private String street;
     private Integer city;
+    private Float latitude;
+    private Float longitude;
+
     private int bedroomCount;
     private int bathroomCount;
     private int guestCount;
     private int bedCount;
-    private int currency;
-    private int category;
+
+    private Integer[] amenities;
+
+    private String[] images;
+
+    private String name;
+
     private String description;
-    private Float latitude;
-    private Float longitude;
-    private int price;
-    private int host;
-    private int privacy;
-    private String street;
+
+    private Integer[] rules;
+
+    private Long price;
+    private Integer currency;
+
+    private Integer host;
     private String thumbnail;
 }

@@ -1,12 +1,12 @@
-import React, { FC, useState } from 'react';
-import { getImage } from '../../helpers';
-import { Category } from './Category';
-import { Image } from '../../globalStyle';
-import { categoryState, ICategory } from '../../features/category/categorySlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchRoomsByCategoryAndConditions } from '../../features/room/roomSlice';
-import $ from 'jquery';
-import FilterTimeBox from './FilterTimeBox';
+import React, { FC, useState } from "react";
+import { getImage } from "../../helpers";
+import { Category } from "./Category";
+import { Image } from "../../globalStyle";
+import { categoryState, ICategory } from "../../features/category/categorySlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRoomsByCategoryAndConditions } from "../../features/room/roomSlice";
+import $ from "jquery";
+import FilterTimeBox from "./FilterTimeBox";
 
 interface IHomeCategoriesProps {}
 
@@ -18,38 +18,38 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
     const { categories, loading: categoryLoading } = useSelector(categoryState);
 
     function displayEditThumbnailBox() {
-        $('#chooseRoomThumbnail').css('display', 'block');
-        $('#home__mainContainer').addClass('remove-scroll');
+        $("#chooseRoomThumbnail").css("display", "block");
+        $("#home__mainContainer").addClass("remove-scroll");
     }
 
     function closeMoreCategoryBox() {
-        $('#home__moreCategory').css('display', 'none');
+        $("#home__moreCategory").css("display", "none");
         setIsMoreCategoryClicked(false);
     }
 
     function setActiveTab(catContainers: JQuery<HTMLElement>, tabNeedActive: JQuery<HTMLElement>) {
         catContainers.each(function () {
-            $(this).removeClass('active');
+            $(this).removeClass("active");
 
-            const insideLoopimage = $('.cat__image', this);
-            insideLoopimage.removeClass('active');
+            const insideLoopimage = $(".cat__image", this);
+            insideLoopimage.removeClass("active");
         });
 
-        tabNeedActive.addClass('active');
-        $('.cat__image', tabNeedActive).addClass('active');
+        tabNeedActive.addClass("active");
+        $(".cat__image", tabNeedActive).addClass("active");
     }
 
     function setLastItem(event: React.MouseEvent<HTMLLIElement, MouseEvent>) {
         const self = $(event.currentTarget!);
-        $('#getMoreCategoryBtn').text(self.text());
+        $("#getMoreCategoryBtn").text(self.text());
 
-        setCurrentCategory(self.data('category-id'));
-        dispatch(fetchRoomsByCategoryAndConditions({ categoryId: self.data('category-id') }));
-        const addMoreIcon = $('#addMoreIcon');
-        addMoreIcon.addClass('active');
-        addMoreIcon.attr('src', getImage(self.data('category-icon')));
+        setCurrentCategory(self.data("category-id"));
+        dispatch(fetchRoomsByCategoryAndConditions({ categoryId: self.data("category-id") }));
+        const addMoreIcon = $("#addMoreIcon");
+        addMoreIcon.addClass("active");
+        addMoreIcon.attr("src", getImage(self.data("category-icon")));
 
-        const catContainers = $('.cat__container');
+        const catContainers = $(".cat__container");
         setActiveTab(catContainers, self.parent().parent().parent());
 
         closeMoreCategoryBox();
@@ -58,17 +58,17 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
     function displayTimeSelect(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         const self = $(event.currentTarget);
         if (!isTimeFilterClicked) {
-            $('#filterTime__box').css('display', 'block');
+            $("#filterTime__box").css("display", "block");
             setIsTimeFilterClicked(true);
         } else {
-            $('#filterTime__box').css('display', 'none');
+            $("#filterTime__box").css("display", "none");
             setIsTimeFilterClicked(false);
         }
     }
 
     function displayMoreCategory() {
         if (!isMoreCategoryClicked) {
-            $('#home__moreCategory').css('display', 'block');
+            $("#home__moreCategory").css("display", "block");
             setIsMoreCategoryClicked(true);
         } else {
             closeMoreCategoryBox();
@@ -78,8 +78,8 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
     return (
         <>
             {!categoryLoading && (
-                <div className='flex' style={{ marginBottom: '25px', marginTop: '10px' }}>
-                    <div className='normal-flex f1' style={{ maxWidth: '60%' }}>
+                <div className='flex' style={{ marginBottom: "25px", marginTop: "10px" }}>
+                    <div className='normal-flex f1' style={{ maxWidth: "60%" }}>
                         {categories.length > 0 &&
                             categories.map((category: ICategory, index: number) => {
                                 if (index > 7) {
@@ -90,7 +90,7 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
                                     <Category
                                         category={category}
                                         index={index}
-                                        key={category.name + '-' + category.id}
+                                        key={category.name + "-" + category.id}
                                         setCurrentCategory={setCurrentCategory}
                                     />
                                 );
@@ -103,17 +103,17 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
                                 <button
                                     className='button__container normal-flex'
                                     id='getMoreCategoryBtn'
-                                    style={{ justifyContent: 'center' }}
+                                    style={{ justifyContent: "center" }}
                                     onClick={displayMoreCategory}
                                 >
                                     <div
                                         className='cat__name normal-flex'
-                                        style={{ marginRight: '5px' }}
+                                        style={{ marginRight: "5px" }}
                                     >
                                         Thêm
                                     </div>
                                     <div>
-                                        <Image src={getImage('/svg/dropdown.svg')} size='10px' />
+                                        <Image src={getImage("/svg/dropdown.svg")} size='10px' />
                                     </div>
                                 </button>
                             </div>
@@ -130,7 +130,7 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
                                                 <li
                                                     data-category-id={category.id}
                                                     data-category-icon={category.icon}
-                                                    key={category.name + '-' + category.id}
+                                                    key={category.name + "-" + category.id}
                                                     onClick={setLastItem}
                                                 >
                                                     {category.name}
@@ -143,29 +143,29 @@ export const HomeCategories: FC<IHomeCategoriesProps> = ({}) => {
                     </div>
                     <div
                         className='f1 normal-flex'
-                        style={{ maxWidth: '20%', justifyContent: 'flex-end' }}
+                        style={{ maxWidth: "20%", justifyContent: "flex-end" }}
                     >
                         <div className='p-relative mr-10'>
-                            <button
+                            {/* <button
                                 className='filterButton'
                                 onClick={displayTimeSelect}
                                 id='selectFilterTimeBtn'
                             >
-                                <span className='inline-block fs-14'>Bất cứ lúc nào</span>{' '}
-                                <span style={{ display: 'inline-flex', justifyContent: 'center' }}>
-                                    <Image src={getImage('/svg/dropdown.svg')} size='12px' />
+                                <span className='inline-block fs-14'>Bất cứ lúc nào</span>{" "}
+                                <span style={{ display: "inline-flex", justifyContent: "center" }}>
+                                    <Image src={getImage("/svg/dropdown.svg")} size='12px' />
                                 </span>
-                            </button>
+                            </button> */}
 
-                            <FilterTimeBox
+                            {/* <FilterTimeBox
                                 categoryId={currentCategory}
                                 triggerButton={$('#selectFilterTimeBtn')}
-                            />
+                            /> */}
                         </div>
                         <div>
                             <button className='filterButton' onClick={displayEditThumbnailBox}>
                                 <span>
-                                    <Image src={getImage('/svg/filter.svg')} size='16px' />
+                                    <Image src={getImage("/svg/filter.svg")} size='16px' />
                                 </span>
                                 <span className='inline-block fs-14'>Bộ lọc</span>
                             </button>

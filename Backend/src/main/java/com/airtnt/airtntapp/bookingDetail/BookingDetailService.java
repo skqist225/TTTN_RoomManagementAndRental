@@ -46,7 +46,7 @@ public class BookingDetailService {
         return bookingDetailRepository.save(bookingDetail);
     }
 
-    public boolean isBooked(Date checkinDate, Date checkoutDate, Integer roomId) throws ParseException {
+    public boolean  isBooked(Date checkinDate, Date checkoutDate, Integer roomId) throws ParseException {
         List<BookingDetail> bookingDetails = bookingDetailRepository.getBookedDates(roomId, Status.APPROVED);
 
         boolean isBooked = false;
@@ -54,17 +54,20 @@ public class BookingDetailService {
             Date cid = bookingDetail.getCheckinDate();
             Date cod = bookingDetail.getCheckoutDate();
 
-            if ((checkinDate.compareTo(cid) >= 0 && checkinDate.compareTo(cod) <= 0)
-                    || (checkoutDate.compareTo(cid) >= 0 && checkoutDate.compareTo(cod) <= 0)) {
-                isBooked = true;
-                break;
-            }
+            System.out.println(cid);
+            System.out.println(cod);
 
-            if ((cid.compareTo(checkinDate) >= 0 && cid.compareTo(checkoutDate) <= 0)
-                    || (cod.compareTo(checkinDate) >= 0 && cod.compareTo(checkoutDate) <= 0)) {
-                isBooked = true;
-                break;
-            }
+//            if ((checkinDate.compareTo(cid) >= 0 && checkinDate.compareTo(cod) <= 0)
+//                    || (checkoutDate.compareTo(cid) >= 0 && checkoutDate.compareTo(cod) <= 0)) {
+//                isBooked = true;
+//                break;
+//            }
+//
+//            if ((cid.compareTo(checkinDate) >= 0 && cid.compareTo(checkoutDate) <= 0)
+//                    || (cod.compareTo(checkinDate) >= 0 && cod.compareTo(checkoutDate) <= 0)) {
+//                isBooked = true;
+//                break;
+//            }
         }
 
         return isBooked;

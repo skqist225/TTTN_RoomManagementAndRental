@@ -31,6 +31,7 @@ import {
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import PersonalInfoPage from "./pages/PersonalInfoPage";
 import CartPage from "./pages/CartPage";
+import PropertyRulesPage from "./pages/become_a_host/PropertyRulesPage";
 
 function App() {
     return (
@@ -61,6 +62,7 @@ function App() {
                         <Route path='title' element={<PropertyTitlePage />} />
                         <Route path='description' element={<PropertyDescriptionPage />} />
                         <Route path='price' element={<PropertyPricePage />} />
+                        <Route path='rule' element={<PropertyRulesPage />} />
                         <Route path='preview' element={<RoomPreviewPage />} />
                         <Route
                             path='publish-celebration/:roomId'

@@ -8,10 +8,9 @@ import mapboxgl from "mapbox-gl"; // eslint-disable-line import/no-webpack-loade
 import $ from "jquery";
 import axios from "axios";
 
-import "./css/location.css";
 import { userState } from "../../features/user/userSlice";
-import { stateState } from "../../features/address/stateSlice";
-import { cityState } from "../../features/address/citySlice";
+
+import "./css/location.css";
 
 interface IPropertyLocationPageProps {}
 

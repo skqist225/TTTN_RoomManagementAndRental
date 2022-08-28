@@ -1,9 +1,9 @@
-import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, isAnyOf } from "@reduxjs/toolkit";
 import api from "../../axios";
-import {RootState} from "../../store";
-import {IRoom, IRoomGroup, IRoomPrivacy} from "../../types/room/type_Room";
-import {IRoomDetails} from "../../types/room/type_RoomDetails";
-import {IRoomListings} from "../../types/room/type_RoomListings";
+import { RootState } from "../../store";
+import { IRoom, IRoomGroup, IRoomPrivacy } from "../../types/room/type_Room";
+import { IRoomDetails } from "../../types/room/type_RoomDetails";
+import { IRoomListings } from "../../types/room/type_RoomListings";
 
 interface IFetchRoomsByCategoryAndConditions {
     categoryId: number;
@@ -34,7 +34,7 @@ export const fetchRoomsByCategoryAndConditions = createAsyncThunk(
         { dispatch, getState, rejectWithValue }
     ) => {
         try {
-            let requestUri :string[] = [];
+            let requestUri: string[] = [];
 
             if (privacy?.length > 0) {
                 requestUri.push(`privacy=${privacy.join(" ")}`);
@@ -45,11 +45,13 @@ export const fetchRoomsByCategoryAndConditions = createAsyncThunk(
             }
             //&bookingDates=${bookingDates.join(",")
 
-            const {data} = await api.get(
-                `/rooms?categoryId=${categoryId}&minPrice=${minPrice}&maxPrice=${maxPrice}&bedRoom=${bedRoomCount}&bed=${bedCount}&bathRoom=${bathRoomCount}&${requestUri.join('&')}`
+            const { data } = await api.get(
+                `/rooms?categoryId=${categoryId}&minPrice=${minPrice}&maxPrice=${maxPrice}&bedRoom=${bedRoomCount}&bed=${bedCount}&bathRoom=${bathRoomCount}&${requestUri.join(
+                    "&"
+                )}`
             );
             if (data) dispatch(setMockingRoomLoading(true));
-            return {data};
+            return { data };
         } catch (error) {}
     }
 );
@@ -342,6 +344,10 @@ const roomSlice = createSlice({
             })
             .addCase(findAverageRoomPriceByType.fulfilled, (state, { payload }) => {
                 state.averageRoomPriceByType = payload?.data;
+            })
+            .addCase(addRoom.pending, (state, { payload }) => {
+                console.log(payload);
+                state.newlyCreatedRoomId = 0;
             })
             .addCase(addRoom.fulfilled, (state, { payload }) => {
                 console.log(payload);

@@ -1,69 +1,105 @@
-import { FC, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { userState } from '../../features/user/userSlice';
-import { Image } from '../../globalStyle';
-import { getImage, seperateNumber } from '../../helpers';
-
-import $ from 'jquery';
-import './css/room_preview_main_content.css';
+import { FC, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { userState } from "../../features/user/userSlice";
+import { Image } from "../../globalStyle";
+import { callToast, getImage, seperateNumber } from "../../helpers";
+import { amenityState, fetchAmenities } from "../../features/amenity/amenitySlice";
+import IAmenity from "../../types/type_Amenity";
+import $ from "jquery";
+import "./css/room_preview_main_content.css";
+import { fetchRules, ruleState } from "../../features/rule/ruleSlice";
+import { roomState } from "../../features/room/roomSlice";
 
 interface IRoomPreviewMainContentProps {}
 
 const RoomPreviewMainContent: FC<IRoomPreviewMainContentProps> = () => {
+    const dispatch = useDispatch();
     const { user } = useSelector(userState);
+    const [lAmenities, setLAmenities] = useState<IAmenity[]>([]);
+    const [lRules, setLRules] = useState<[]>([]);
+    const { loading: aLoading, amenities } = useSelector(amenityState);
+    const {
+        listing: { loading: rLoading, rules },
+    } = useSelector(ruleState);
+
+    const { newlyCreatedRoomId } = useSelector(roomState);
 
     useEffect(() => {
-        if (localStorage.getItem('room')) {
-            const room = JSON.parse(localStorage.getItem('room')!);
-            const privacyType = room.privacyType + '';
+        dispatch(fetchAmenities());
+        dispatch(fetchRules());
+    }, []);
 
-            $('#roomThumbnail').attr(
-                'src',
-                getImage(`/room_images/${user?.email}/${room.roomImages[0]}`)
-            );
-            $('#room-preview__room-title').text(room.roomTitle);
+    useEffect(() => {
+        if (!rLoading) {
+            const lsRoom = localStorage.getItem("room");
+            if (lsRoom) {
+                const { rules: lsRules } = JSON.parse(lsRoom);
 
-            $('#room-preview__room-type').text(
-                `${privacyType.substring(0, privacyType.lastIndexOf(' '))} ${
-                    room.roomGroupText
-                } cho thuê. Chủ nhà ${room.username}`
-            );
-            $('#room-preview__room-info').text(
-                `${room.guestNumber} khách · ${room.bedRoomNumber} phòng ngủ  · ${room.bedNumber} giường · ${room.bathRoomNumber} phòng tắm`
-            );
-            $('#room-preview__room-description').text(
-                `Thư giãn tại địa điểm nghỉ dưỡng ${room.descriptions[0]
-                    .toString()
-                    .toLowerCase()} và ${room.descriptions[1].toString().toLowerCase()} này.`
-            );
+                const selectedRules = rules.filter(({ id }) => lsRules.includes(id));
+                setLRules(selectedRules as any);
+            }
+        }
+    }, [rLoading]);
 
-            $('#room-preview__room-price').text(seperateNumber(room.roomPricePerNight) + 'đ / đêm');
+    useEffect(() => {
+        if (!aLoading) {
+            const lsRoom = localStorage.getItem("room");
+            if (lsRoom) {
+                const { amenities: lsAmenities } = JSON.parse(lsRoom);
 
-            /*-------------------------------AMENTITIES-----------------------------------------*/
-            $('#prominentAmentity').attr(
-                'src',
-                getImage(`/amentity_images/${room.prominentAmentityImageName}`)
-            );
-            $('#favoriteAmentity').attr(
-                'src',
-                getImage(`/amentity_images/${room.favoriteAmentityImageName}`)
-            );
-            $('#safeAmentity').attr(
-                'src',
-                getImage(`/amentity_images/${room.safeAmentityImageName}`)
-            );
-            $('#prominentAmentityName').text(room.prominentAmentityName);
-            $('#favoriteAmentityName').text(room.favoriteAmentityName);
-            $('#safeAmentityName').text(room.safeAmentityName);
-            /*-------------------------------AMENTITIES-----------------------------------------*/
+                const selectedAmenities = amenities.filter(({ id }) => lsAmenities.includes(id));
+                setLAmenities(selectedAmenities);
+            }
+        }
+    }, [aLoading]);
 
-            /*-------------------------------LOCATION-----------------------------------------*/
-            $('#room-preview__room-location-txt').text(room.placeName);
-            /*-------------------------------LOCATION-----------------------------------------*/
-        } else {
+    useEffect(() => {
+        const lsRoom = localStorage.getItem("room");
+
+        if (!lsRoom) {
             window.location.href = window.location.origin;
+            return;
+        }
+
+        if (lsRoom) {
+            const {
+                name,
+                images,
+                guestNumber,
+                bedRoomNumber,
+                bedNumber,
+                bathRoomNumber,
+                description,
+                price,
+                privacyName,
+                currencySymbol,
+                placeName,
+            } = JSON.parse(lsRoom);
+
+            $("#roomThumbnail").attr("src", getImage(`/room_images/${user?.email}/${images[0]}`));
+            $("#room-preview__room-title").text(name);
+
+            $("#room-preview__room-type").text(
+                `${privacyName} cho thuê. Chủ nhà ${user?.firstName} ${user?.lastName}`
+            );
+            $("#room-preview__room-info").text(
+                `${guestNumber} khách · ${bedRoomNumber} phòng ngủ  · ${bedNumber} giường · ${bathRoomNumber} phòng tắm`
+            );
+            $("#room-preview__room-description").text(
+                `Thư giãn tại địa điểm nghỉ dưỡng ${description} này.`
+            );
+
+            $("#room-preview__room-price").text(seperateNumber(price) + currencySymbol + "/ đêm");
+
+            $("#room-preview__room-location-txt").text(placeName);
         }
     }, []);
+
+    useEffect(() => {
+        if (newlyCreatedRoomId) {
+            window.location.href = `${window.location.origin}/hosting/listings/1`;
+        }
+    }, [newlyCreatedRoomId]);
 
     return (
         <div className='room-preview__container'>
@@ -85,7 +121,7 @@ const RoomPreviewMainContent: FC<IRoomPreviewMainContentProps> = () => {
                         src={getImage(user!.avatarPath)}
                         size='40px'
                         className='of-c rounded-border inline-block '
-                        style={{ justifySelf: 'flex-end' }}
+                        style={{ justifySelf: "flex-end" }}
                     />
                 </div>
                 <div id='room-preview__room-info' className='room-preview__line'></div>
@@ -93,50 +129,41 @@ const RoomPreviewMainContent: FC<IRoomPreviewMainContentProps> = () => {
                 <div id='room-preview__room-price' className='room-preview__line'></div>
                 <div id='room-preview__room-amentities' className='room-preview__line'>
                     <div className='room-preview__amentity-title'>Tiện nghi</div>
-                    <div>
-                        <div className='flex room-preview__amentity-container'>
-                            <div id='prominentAmentityName'></div>
+                    {lAmenities.map(amenity => (
+                        <div className='flex room-preview__amentity-container' key={amenity.id}>
+                            <div id='prominentAmentityName'>{amenity.name}</div>
                             <div>
                                 <img
-                                    src=''
+                                    src={getImage(amenity.iconImagePath)}
                                     alt=''
                                     id='prominentAmentity'
-                                    width='52px'
-                                    height='52px'
+                                    width='26px'
+                                    height='26px'
                                 />
                             </div>
                         </div>
-                        <div className='flex room-preview__amentity-container'>
-                            <div id='favoriteAmentityName'></div>
+                    ))}
+                </div>
+                <div id='room-preview__room-amentities' className='room-preview__line'>
+                    <div className='room-preview__amentity-title'>Quy tắc</div>
+                    {lRules.map((rule: any) => (
+                        <div className='flex room-preview__amentity-container' key={rule.id}>
+                            <div id='prominentAmentityName'>{rule.title}</div>
                             <div>
                                 <img
-                                    src=''
+                                    src={getImage(rule.iconPath)}
                                     alt=''
-                                    id='favoriteAmentity'
-                                    width='24px'
-                                    height='24px'
-                                    style={{ marginRight: '10px' }}
+                                    id='prominentAmentity'
+                                    width='26px'
+                                    height='26px'
                                 />
                             </div>
                         </div>
-                        <div className='flex room-preview__amentity-container'>
-                            <div id='safeAmentityName'></div>
-                            <div>
-                                <img
-                                    src=''
-                                    alt=''
-                                    id='safeAmentity'
-                                    width='24px'
-                                    height='24px'
-                                    style={{ marginRight: '10px' }}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
                 <div
                     id='room-preview__room-location'
-                    style={{ margin: '0 24px', paddingBottom: '24px' }}
+                    style={{ margin: "0 24px", paddingBottom: "24px" }}
                 >
                     <h2>Vị trí</h2>
                     <div id='room-preview__room-location-txt'></div>

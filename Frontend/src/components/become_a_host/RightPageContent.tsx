@@ -12,6 +12,10 @@ import { IPostAddRoom, IRoomLocalStorage } from "../../types/room/type_Room";
 import { userState } from "../../features/user/userSlice";
 
 import "./css/right_content.css";
+import Toast from "../notify/Toast";
+import { currencyState } from "../../features/currency/currencySlice";
+import { stateState } from "../../features/address/stateSlice";
+import { cityState } from "../../features/address/citySlice";
 
 interface IRightPageContentProps {
     nextPage: string;
@@ -39,22 +43,18 @@ const RightPageContent: FC<IRightPageContentProps> = ({
     descriptions,
 }) => {
     const dispatch = useDispatch();
-    // const [category,setCategory] = useState(0);
-    const [nextButtonDisabled, setNextButtonDisabled] = useState(true);
 
     const { user } = useSelector(userState);
-    const { newlyCreatedRoomId } = useSelector(roomState);
-
-    useEffect(() => {
-        if (stepNumber === 1) {
-            if ($("div.category__box").filter(".active")) setNextButtonDisabled(false);
-        }
-    }, [$("div.category__box").filter(".active")]);
+    const { states } = useSelector(stateState);
+    const { cities } = useSelector(cityState);
 
     function showErrorNotification(message: string) {
         callToast("error", message);
-        return;
     }
+
+    const {
+        listing: { currencies },
+    } = useSelector(currencyState);
 
     function setRoomAttrToLocalStorage(value: any) {
         let room: IRoomLocalStorage = {};
@@ -81,6 +81,7 @@ const RightPageContent: FC<IRightPageContentProps> = ({
 
                 if (chosenCategory.length === 0) {
                     showErrorNotification("Vui lòng chọn thể loại cho phòng");
+                    return;
                 }
 
                 setRoomAttrToLocalStorage({
@@ -94,10 +95,12 @@ const RightPageContent: FC<IRightPageContentProps> = ({
 
                 if (chosenPrivacy.length === 0) {
                     showErrorNotification("Vui lòng chọn quyền riêng tư cho phòng");
+                    return;
                 }
 
                 setRoomAttrToLocalStorage({
                     privacy: parseInt(chosenPrivacy.data("privacy-id")),
+                    privacyName: chosenPrivacy.data("privacy-name"),
                 });
 
                 break;
@@ -105,10 +108,20 @@ const RightPageContent: FC<IRightPageContentProps> = ({
             case 3: {
                 if (!longitude) {
                     showErrorNotification("Kinh độ không tồn tại");
+                    return;
                 }
                 if (!latitude) {
                     showErrorNotification("Vĩ độ không tồn tại");
+                    return;
                 }
+
+                const selectedCity = cities.filter(
+                    ({ id }: { id: number }) => id === parseInt($("#city").val()!.toString())
+                )[0];
+
+                const selectedState = states.filter(
+                    ({ id }: { id: number }) => id === parseInt($("#state").val()!.toString())
+                )[0];
 
                 setRoomAttrToLocalStorage({
                     longitude,
@@ -116,6 +129,9 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                     state: parseInt($("#state").val()!.toString()),
                     city: parseInt($("#city").val()!.toString()),
                     street: $("#street").val(),
+                    placeName: `${$("#street").val()}, ${selectedCity.name}, ${
+                        selectedState.name
+                    }, Việt Nam`,
                 });
 
                 break;
@@ -135,6 +151,7 @@ const RightPageContent: FC<IRightPageContentProps> = ({
 
                 if (amenitiesClassName.length === 0) {
                     showErrorNotification("Vui lòng chọn tiện ích trước khi tiếp tục!");
+                    return;
                 }
 
                 const amenities: any[] = [];
@@ -150,122 +167,149 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                 break;
             }
             case 6: {
-                if (localStorage.getItem("room")) {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    if (room["roomImages"] && room.roomImages.length < 5) {
-                        callToast("warning", "Vui lòng tải lên 5 ảnh");
+                const room = localStorage.getItem("room")!;
+
+                if (room) {
+                    const { images } = JSON.parse(room);
+                    if (!images || (images && images.length === 0)) {
+                        showErrorNotification("Vui lòng tải lên ít nhất 1 ảnh");
                         return;
                     }
                 }
                 break;
             }
             case 7: {
-                const roomTitle = $("textarea").val()! as string;
-
-                if (!localStorage.getItem("room")) {
-                    room = {
-                        roomTitle,
-                    };
-                } else {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    room = {
-                        ...room,
-                        roomTitle,
-                    };
+                if (!$("#room-name").val()) {
+                    showErrorNotification("Vui lòng điền tên phòng");
+                    return;
                 }
+                setRoomAttrToLocalStorage({
+                    name: $("#room-name").val()!.toString(),
+                });
+
                 break;
             }
             case 8: {
                 if (descriptions && descriptions.length == 2) {
-                    if (!localStorage.getItem("room")) {
-                        room = {
-                            descriptions,
-                        };
-                    } else {
-                        room = JSON.parse(localStorage.getItem("room")!);
-                        room = {
-                            ...room,
-                            descriptions,
-                        };
-                    }
+                    setRoomAttrToLocalStorage({
+                        description: descriptions.join(","),
+                    });
                 } else {
-                    callToast("error", "Vui lòng chọn 2 mô tả cho nhà/phòng của bạn");
+                    showErrorNotification("Vui lòng chọn 2 mô tả cho nhà/phòng của bạn");
                     return;
                 }
                 break;
             }
             case 9: {
-                const roomPricePerNight = ($("#room-price").val() as string).replace("₫", "");
+                const price = $("#room-price").val();
 
-                if (!localStorage.getItem("room")) {
-                    room = {
-                        roomPricePerNight,
-                    };
-                } else {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    room = {
-                        ...room,
-                        roomPricePerNight,
-                    };
-                }
-                if (parseInt(($("#room-price").val() as string).replace("₫", "")) > 1000000000) {
-                    callToast("warning", "Vui lòng nhập dưới 1.000.000.000đ");
+                console.log(price);
+
+                if (!price) {
+                    callToast("error", "Vui lòng điền số tiền");
                     return;
                 }
-                if (isNaN(parseInt(($("#room-price").val() as string).replace("₫", "")))) {
+
+                if (isNaN(parseInt(price.toString()))) {
                     callToast("error", "Số tiền không hợp lệ");
                     return;
                 }
+
+                if (price > 1000000000) {
+                    callToast("error", "Vui lòng nhập dưới 1.000.000.000đ");
+                    return;
+                }
+
+                const selectedCurrency = currencies.filter(
+                    ({ id }: { id: any }) => id === parseInt($("#room-currency").val()!.toString())
+                )[0];
+
+                setRoomAttrToLocalStorage({
+                    price,
+                    currency: parseInt($("#room-currency").val()!.toString()),
+                    currencySymbol: (selectedCurrency as any).symbol,
+                });
+
                 break;
             }
             case 10: {
+                const amenitiesClassName = $(".amentitiesClassName").filter(".chosen");
+
+                if (amenitiesClassName.length === 0) {
+                    showErrorNotification("Vui lòng chọn quy tắc trước khi tiếp tục!");
+                    return;
+                }
+
+                const rules: any[] = [];
+
+                amenitiesClassName.each(function () {
+                    rules.push(parseInt($(this).children("input").first().val()!.toString()));
+                });
+
+                setRoomAttrToLocalStorage({
+                    rules,
+                });
+
+                break;
+            }
+            case 11: {
                 if (localStorage.getItem("room")) {
-                    room = JSON.parse(localStorage.getItem("room")!);
-                    const placeNameLength = room.placeName!.toString().split(",").length;
-                    let country =
-                        room.placeName!.toString().split(",")[placeNameLength - 1] || "no-country";
-                    const state =
-                        room.placeName!.toString().split(",")[placeNameLength - 2] || "no-state";
-                    const city =
-                        room.placeName!.toString().split(",")[placeNameLength - 3] || "no-city";
-                    const street =
-                        room.placeName!.toString().split(",")[placeNameLength - 4] || "no-street";
+                    const {
+                        amenities: lsAmenities,
+                        bathRoomNumber,
+                        bedNumber,
+                        bedRoomNumber,
+                        category,
+                        city: lsCity,
+                        currency,
+                        description,
+                        guestNumber,
+                        images,
+                        latitude,
+                        longitude,
+                        name,
+                        price,
+                        privacy,
+                        rules,
+                        street: lsStreet,
+                    } = JSON.parse(localStorage.getItem("room")!);
 
-                    const fd = new FormData();
-
-                    let amenities: number[] = [];
-                    amenities.push(room.prominentAmentity!);
-                    amenities.push(room.favoriteAmentity!);
-                    amenities.push(room.safeAmentity!);
+                    const formData = new FormData();
 
                     const roomEntity: IPostAddRoom = {
-                        name: room.roomTitle!,
-                        amentities: amenities!,
-                        images: room.roomImages!,
-                        country: 216,
-                        state,
-                        city,
-                        street,
-                        bedroomCount: room.bedRoomNumber!,
-                        bathroomCount: room.bathRoomNumber!,
-                        accomodatesCount: room.guestNumber!,
-                        bedCount: room.bedNumber!,
-                        currency: 2, // chose currency
-                        category: room.category!,
-                        roomGroup: room.roomGroup!,
-                        description: room.descriptions?.join(",")!,
-                        latitude: room.latitude!,
-                        longitude: room.longitude!,
-                        price: parseInt(room.roomPricePerNight!),
-                        priceType: "PER_NIGHT",
+                        category: category!,
+                        privacy,
+
+                        street: lsStreet,
+                        city: lsCity,
+                        latitude,
+                        longitude,
+
+                        bedroomCount: bedRoomNumber!,
+                        bathroomCount: bathRoomNumber!,
+                        guestCount: guestNumber!,
+                        bedCount: bedNumber!,
+
+                        amenities: lsAmenities,
+                        images: images!,
+
+                        name,
+                        rules,
+
+                        description,
+
+                        price: parseInt(price!),
+                        currency,
+
                         host: user?.id!,
-                        privacyType: room.privacyType!,
                     };
 
+                    console.log("[Room Entity] : ", roomEntity);
+
                     for (let key in roomEntity) {
-                        fd.append(key, (roomEntity as any)[key]);
+                        formData.append(key, (roomEntity as any)[key]);
                     }
-                    dispatch(addRoom(fd));
+                    dispatch(addRoom(formData));
                 }
                 break;
             }
@@ -274,16 +318,6 @@ const RightPageContent: FC<IRightPageContentProps> = ({
         if (stepNumber !== 11) {
             window.location.href = `${window.location.origin}/become-a-host/${nextPage}`;
         }
-    }
-
-    useEffect(() => {
-        if (newlyCreatedRoomId) {
-            window.location.href = `${window.location.origin}/become-a-host/${nextPage}/${newlyCreatedRoomId}`;
-        }
-    }, [newlyCreatedRoomId]);
-
-    function backToHomePage() {
-        window.location.href = window.location.origin;
     }
 
     return (
@@ -337,26 +371,11 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                         Quay lại
                     </Link>
                 </div>
-                <MainButton
-                    width='120px'
-                    height='48px'
-                    onClick={moveToNextPage}
-                    // disabled={nextButtonDisabled}
-                >
-                    <span className='fw-500'>Tiếp theo</span>
+                <MainButton width='120px' height='48px' onClick={moveToNextPage}>
+                    <span className='fw-500'>{stepNumber === 11 ? "Hoàn tất" : "Tiếp theo"}</span>
                 </MainButton>
             </Div>
-            <ToastContainer
-                position='top-center'
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
+            <Toast />
         </Div>
     );
 };

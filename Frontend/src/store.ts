@@ -1,8 +1,9 @@
-import {configureStore} from "@reduxjs/toolkit";
-import {combineReducers} from "redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers } from "redux";
 import {
     amenitySlice,
-    authSlice, bookingDetailSlice,
+    authSlice,
+    bookingDetailSlice,
     bookingSlice,
     cartSlice,
     categorySlice,
@@ -14,6 +15,8 @@ import {
     roomSlice,
     stateSlice,
     userSlice,
+    currencySlice,
+    ruleSlice,
 } from "./features";
 
 const rootReducer = combineReducers({
@@ -30,7 +33,9 @@ const rootReducer = combineReducers({
     inbox: inboxSlice,
     auth: authSlice,
     cart: cartSlice,
-    bookingDetail: bookingDetailSlice
+    bookingDetail: bookingDetailSlice,
+    currency: currencySlice,
+    rule: ruleSlice,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

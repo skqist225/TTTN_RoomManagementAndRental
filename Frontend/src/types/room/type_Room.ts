@@ -49,25 +49,22 @@ export interface IRoomLocalStorage {
 }
 
 export interface IPostAddRoom {
-    name: string;
-    amentities: number[];
-    images: string[];
-    country: number;
-    state: string;
-    city: string;
-    street: string;
-    bedroomCount: number;
-    bathroomCount: number;
-    accomodatesCount: number;
-    bedCount: number;
-    currency: number;
     category: number;
-    roomGroup: number;
-    description: string;
+    privacy: number;
+    street: string;
+    city: string;
     latitude: number;
     longitude: number;
+    bedroomCount: number;
+    bathroomCount: number;
+    guestCount: number;
+    bedCount: number;
+    amenities: number[];
+    rules: number[];
+    images: string[];
+    name: string;
+    description: string;
     price: number;
-    priceType: string;
+    currency: number;
     host: number;
-    privacyType: number;
 }

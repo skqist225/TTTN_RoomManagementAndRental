@@ -12,3 +12,5 @@ export { default as inboxSlice } from "./inbox/inboxSlice";
 export { default as authSlice } from "./auth/authSlice";
 export { default as cartSlice } from "./cart/cartSlice";
 export { default as bookingDetailSlice } from "./bookingDetail/bookingDetailSlice";
+export { default as currencySlice } from "./currency/currencySlice";
+export { default as ruleSlice } from "./rule/ruleSlice";

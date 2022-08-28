@@ -43,7 +43,12 @@ const PropertyPrivacyMainContent: FC<IPropertyPrivacyMainContentProps> = () => {
     return (
         <Div className='col-flex-center'>
             {roomPrivacies.map(privacy => (
-                <div className='privacy-type__box' key={privacy.id} data-privacy-id={privacy.id}>
+                <div
+                    className='privacy-type__box'
+                    key={privacy.id}
+                    data-privacy-id={privacy.id}
+                    data-privacy-name={privacy.name}
+                >
                     <div className='content__box--name'>{privacy.name}</div>
                 </div>
             ))}
