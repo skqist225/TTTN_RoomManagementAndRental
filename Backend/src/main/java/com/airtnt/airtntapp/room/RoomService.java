@@ -260,7 +260,6 @@ public class RoomService {
                 break;
             }
             case "groupAndTypeAndPrivacy": {
-                // room.setRoomGroup(new RoomGroup(Integer.parseInt(values.get("roomGroup"))));
                 room.setCategory(new Category(Integer.parseInt(values.get("category"))));
                 room.setPrivacyType(new RoomPrivacy(Integer.parseInt(values.get("roomPrivacy"))));
                 break;

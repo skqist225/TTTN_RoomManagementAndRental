@@ -1,8 +1,8 @@
-import { FC } from 'react';
-import { Link } from 'react-router-dom';
-import { Div } from '../../globalStyle';
-import { getImage } from '../../helpers';
-import { IRoomDetails } from '../../types/room/type_RoomDetails';
+import { FC } from "react";
+import { Link } from "react-router-dom";
+import { Div } from "../../globalStyle";
+import { getImage } from "../../helpers";
+import { IRoomDetails } from "../../types/room/type_RoomDetails";
 
 interface IRoomImagesProps {
     room: IRoomDetails;
@@ -19,7 +19,7 @@ const RoomImages: FC<IRoomImagesProps> = ({ room }) => {
                 />
             </Div>
             <div className='p-relative'>
-                <Div className='rdt_images__left' height={'470px'}>
+                <Div className='rdt_images__left' height={"470px"}>
                     {room!.images.map((image: string, index: number) => {
                         if (index > 3) return null;
 
@@ -29,8 +29,8 @@ const RoomImages: FC<IRoomImagesProps> = ({ room }) => {
                                     src={getImage(image)}
                                     className={
                                         index % 2 === 0
-                                            ? 'roundedBorder image w100-h100'
-                                            : 'image w100-h100'
+                                            ? "roundedBorder image w100-h100"
+                                            : "image w100-h100"
                                     }
                                     alt={image}
                                 />
@@ -38,7 +38,7 @@ const RoomImages: FC<IRoomImagesProps> = ({ room }) => {
                         );
                     })}
                 </Div>
-                <Link to={`${room!.id}/images`}>
+                {/* <Link to={`${room!.id}/images`}>
                     <div className='rdt_showMoreImage'>
                         <svg
                             xmlns='http://www.w3.org/2000/svg'
@@ -47,9 +47,9 @@ const RoomImages: FC<IRoomImagesProps> = ({ room }) => {
                             aria-hidden='true'
                             focusable='false'
                             style={{
-                                height: '12px',
-                                width: '12px',
-                                display: 'block',
+                                height: "12px",
+                                width: "12px",
+                                display: "block",
                             }}
                         >
                             <circle cx='1.5' cy='1.5' r='1.5'></circle>
@@ -62,9 +62,9 @@ const RoomImages: FC<IRoomImagesProps> = ({ room }) => {
                             <circle cx='8.5' cy='15.5' r='1.5'></circle>
                             <circle cx='15.5' cy='15.5' r='1.5'></circle>
                         </svg>
-                        <div style={{ paddingLeft: '12px' }}>Hiển thị tất cả ảnh</div>
+                   <div style={{ paddingLeft: '12px' }}>Hiển thị tất cả ảnh</div> 
                     </div>
-                </Link>
+                </Link> */}
             </div>
         </section>
     );

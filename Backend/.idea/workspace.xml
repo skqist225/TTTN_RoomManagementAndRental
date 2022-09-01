@@ -5,16 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/mavenProjectSettings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/manage_room/ManageRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/manage_room/ManageRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomDetailsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomDetailsDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserORestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserORestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/user_images/68/pexels-laura-meinhardt-13248509.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/personal_info/FormEdit.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/personal_info/FormEdit.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/personal_info/UserInfo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/personal_info/UserInfo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/personal_info/components/PhoneNumberEdit.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/personal_info/components/PhoneNumberEdit.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/personal_info/script/turn_off_edit_mode.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/personal_info/script/turn_off_edit_mode.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/user/userSlice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/user/userSlice.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +128,7 @@
       <workItem from="1661958699896" duration="292000" />
       <workItem from="1661960391942" duration="376000" />
       <workItem from="1661960841282" duration="996000" />
-      <workItem from="1661998754725" duration="11547000" />
+      <workItem from="1661998754725" duration="21602000" />
     </task>
     <servers />
   </component>

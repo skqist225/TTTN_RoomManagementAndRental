@@ -1,7 +1,6 @@
 import axios from "../../../axios";
 import $ from "jquery";
 import { IUser } from "../../../types/user/type_User";
-import { toast } from "react-toastify";
 import { callToast } from "../../../helpers";
 
 export function addClickEventForLoveButton(wishlistsArr: number[], user: IUser | null) {
@@ -32,7 +31,9 @@ export function addClickEventForLoveButton(wishlistsArr: number[], user: IUser |
                                 $(this).children(".heartSvg").removeClass("like");
                         });
                         callToast("success", successMessage);
-                    } else callToast("error", errorMessage);
+                    } else {
+                        callToast("error", errorMessage);
+                    }
                 } else {
                     successMessage = "Thêm vào danh sách yêu thích thành công";
                     errorMessage = "Thêm vào danh sách yêu thích thất bại";
@@ -44,7 +45,9 @@ export function addClickEventForLoveButton(wishlistsArr: number[], user: IUser |
                                 $(this).children(".heartSvg").addClass("like");
                         });
                         callToast("success", successMessage);
-                    } else callToast("error", errorMessage);
+                    } else {
+                        callToast("error", errorMessage);
+                    }
                 }
             });
     });

@@ -59,6 +59,11 @@ const store = configureStore({
                 successMessage: null,
                 errorMessage: null,
             },
+            updatePassword: {
+                loading: true,
+                successMessage: null,
+                errorMessage: null,
+            },
             wishlistsIDsFetching: true,
         },
     },

@@ -18,6 +18,14 @@ export interface IBookedDate {
 }
 
 export type IRoomDetails = {
+    address: {
+        id: number;
+        street: string;
+        city: {
+            id: number;
+            name: string;
+        };
+    };
     bed: number;
     name: string;
     description: string;
@@ -54,4 +62,5 @@ export type IRoomDetails = {
     stateName: string;
     countryName: string;
     streetName: string;
+    state: number;
 };

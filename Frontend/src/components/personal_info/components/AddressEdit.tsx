@@ -13,26 +13,22 @@ import $ from "jquery";
 interface IAddressEditProps {
     register: UseFormRegister<FieldValues>;
     address: IAddress;
-    countryDefaultValue: number;
-    stateDefaultValue: number;
-    cityDefaultValue: number;
 }
 
-const AddressEdit: FC<IAddressEditProps> = ({
-    register,
-    address,
-    stateDefaultValue,
-    cityDefaultValue,
-}) => {
+const AddressEdit: FC<IAddressEditProps> = ({ register, address }) => {
     const dispatch = useDispatch();
+
+    const { street, state, city } = address;
 
     useEffect(() => {
         dispatch(fetchStatesByCountry({ countryId: 216 }));
     }, []);
 
     useEffect(() => {
-        dispatch(fetchCitiesByState({ stateId: 120 }));
-    }, [stateDefaultValue]);
+        if (state.id) {
+            dispatch(fetchCitiesByState({ stateId: state.id }));
+        }
+    }, []);
 
     const { states, loading: stateLoading } = useSelector((state: RootState) => state.state);
     const { cities } = useSelector((state: RootState) => state.city);
@@ -61,11 +57,6 @@ const AddressEdit: FC<IAddressEditProps> = ({
 
     return (
         <div>
-            {address.country && (
-                <input type='hidden' value={address.country.name} id='userCountryName' />
-            )}
-            {address.state && <input type='hidden' value={address.state.name} id='userStateName' />}
-
             <div>
                 <DropDown
                     register={register}
@@ -73,9 +64,8 @@ const AddressEdit: FC<IAddressEditProps> = ({
                     fieldName='state'
                     label='Tỉnh/thành phố'
                     options={stateOptions}
-                    defaultValue={stateDefaultValue.toString()}
+                    defaultValue={state.id.toString() || "0"}
                 />
-                <div id='stateNameDivCode'></div>
             </div>
             <div>
                 <DropDown
@@ -84,16 +74,15 @@ const AddressEdit: FC<IAddressEditProps> = ({
                     fieldName='city'
                     label='Quận/huyện'
                     options={cityOptions}
-                    defaultValue={cityDefaultValue.toString()}
+                    defaultValue={city.id.toString() || "0"}
                 />
-                <div id='cityNameDivCode'></div>
             </div>
             <FormGroup
                 fieldName='aprtNoAndStreet'
                 register={register}
                 label='Địa chỉ đường/phố'
                 type='text'
-                value={address.aprtNoAndStreet}
+                value={street || ""}
             />
         </div>
     );

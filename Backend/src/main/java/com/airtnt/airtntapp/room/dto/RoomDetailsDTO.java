@@ -1,20 +1,24 @@
 package com.airtnt.airtntapp.room.dto;
 
-import java.beans.Transient;
-import java.util.List;
-import java.util.Set;
-
 import com.airtnt.airtntapp.amenity.dto.AmenityRoomDetailsDTO;
 import com.airtnt.airtntapp.booking.BookedDateDTO;
 import com.airtnt.airtntapp.review.dto.ReviewDTO;
-import com.airtnt.entity.*;
+import com.airtnt.entity.Address;
+import com.airtnt.entity.City;
+import com.airtnt.entity.Country;
+import com.airtnt.entity.Room;
+import com.airtnt.entity.Rule;
+import com.airtnt.entity.State;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.beans.Transient;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -70,10 +74,10 @@ public class RoomDetailsDTO {
         City city = address.getCity();
         State state = ((City) city).getState();
         Country country = state.getCountry();
-        String location = state.getCountry().getName();
-        location += " " + city.getState().getName();
-        location += " " + address.getCity().getName();
-        location += " " + address.getStreet();
+        String location = address.getStreet();
+        location += ", " + address.getCity().getName();
+        location += ", " + city.getState().getName();
+        location += ", " + state.getCountry().getName();
 
         return RoomDetailsDTO.builder()
                 .thumbnail(room.renderThumbnailImage())

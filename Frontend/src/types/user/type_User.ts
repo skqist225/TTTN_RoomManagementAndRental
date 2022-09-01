@@ -15,7 +15,7 @@ export interface IAddress {
         name: string;
         id: number;
     };
-    aprtNoAndStreet: string;
+    street: string;
 }
 
 export interface IUser extends IRegisterUser {

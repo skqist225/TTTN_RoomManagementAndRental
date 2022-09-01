@@ -53,6 +53,29 @@ export const updateUserInfo = createAsyncThunk(
     }
 );
 
+export const updateUserPassword = createAsyncThunk(
+    "user/updateUserPassword",
+    async (updatedInfo: IUserUpdate, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const { data } = await api.put(`/user/update-personal-info`, updatedInfo);
+
+            if (data) {
+                const lsUser = localStorage.getItem("user");
+                if (lsUser) {
+                    const { token } = JSON.parse(lsUser);
+                    localStorage.removeItem("user");
+                    data.token = token;
+                    localStorage.setItem("user", JSON.stringify(data as IUser));
+                }
+            }
+
+            return { data };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
+
 export const updateUserAvatar = createAsyncThunk(
     "user/updateUserAvatar",
     async (formData: FormData, { dispatch, getState, rejectWithValue }) => {
@@ -64,8 +87,13 @@ export const updateUserAvatar = createAsyncThunk(
             });
 
             if (data) {
-                localStorage.removeItem("user");
-                localStorage.setItem("user", JSON.stringify(data));
+                const lsUser = localStorage.getItem("user");
+                if (lsUser) {
+                    const { token } = JSON.parse(lsUser);
+                    localStorage.removeItem("user");
+                    data.token = token;
+                    localStorage.setItem("user", JSON.stringify(data as IUser));
+                }
             }
 
             return { data };
@@ -95,6 +123,11 @@ type UserState = {
         errorMessage: string | null;
         successMessage: string | null;
     };
+    updatePassword: {
+        loading: boolean;
+        errorMessage: string | null;
+        successMessage: string | null;
+    };
     wishlistsIDs: number[];
     wishlists: RoomWishlists[];
     bookedRooms: IBookedRoom[];
@@ -111,6 +144,11 @@ const initialState: UserState = {
         errorMessage: null,
         successMessage: null,
     },
+    updatePassword: {
+        loading: true,
+        errorMessage: null,
+        successMessage: null,
+    },
     wishlistsIDs: [],
     wishlists: [],
     bookedRooms: [],
@@ -122,6 +160,9 @@ const userSlice = createSlice({
     reducers: {
         setUser: (state, { payload }) => {
             state.user = payload as IUser;
+        },
+        clearUSAErrorMessage(state) {
+            state.update.errorMessage = null;
         },
     },
     extraReducers: builder => {
@@ -157,6 +198,20 @@ const userSlice = createSlice({
                 state.update.loading = false;
                 state.update.errorMessage = payload as string;
             })
+            .addCase(updateUserPassword.pending, (state, _) => {
+                state.update.loading = true;
+                state.update.successMessage = null;
+                state.update.errorMessage = null;
+            })
+            .addCase(updateUserPassword.fulfilled, (state, { payload }) => {
+                state.update.loading = false;
+                state.user = payload?.data;
+                state.update.successMessage = "Update user successfully";
+            })
+            .addCase(updateUserPassword.rejected, (state, { payload }) => {
+                state.update.loading = false;
+                state.update.errorMessage = payload as string;
+            })
             .addCase(updateUserAvatar.fulfilled, (state, { payload }) => {
                 state.user = payload?.data;
                 state.update.loading = false;
@@ -168,6 +223,6 @@ const userSlice = createSlice({
     },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, clearUSAErrorMessage } = userSlice.actions;
 export const userState = (state: RootState) => state.user;
 export default userSlice.reducer;

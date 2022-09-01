@@ -147,7 +147,7 @@ public class BookingDetailRestController {
     @GetMapping("numberOfCartBookingDetails")
     public ResponseEntity<StandardJSONResponse<Integer>> numberOfCartBookingDetails(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User customer = userDetails.getUser();
-        System.out.println(userDetails.getFullname());
+
         List<Booking> cartBookings = bookingService.findByCustomerAndCartStatus(customer);
 
         Integer numberOfCartBookingDetails = cartBookings.stream().reduce(0, (subtotal, booking) ->

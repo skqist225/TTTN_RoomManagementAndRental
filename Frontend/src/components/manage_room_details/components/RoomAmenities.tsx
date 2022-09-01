@@ -58,7 +58,7 @@ const RoomAmenities: FC<IRoomAmenitiesProps> = ({ title, amentities, dataType })
                                             fill: "none",
                                             height: "16px",
                                             width: "16px",
-                                            stroke: " rgb(113, 113, 113)",
+                                            stroke: "#fff",
                                             strokeWidth: "3",
                                             overflow: "visible",
                                         }}

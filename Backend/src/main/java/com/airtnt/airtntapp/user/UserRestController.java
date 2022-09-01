@@ -35,10 +35,10 @@ public class UserRestController {
     @PostMapping("check-password-constraint")
     public String checkPasswordConstaint(@RequestBody Map<String, String> payLoad,
                                          @AuthenticationPrincipal UserDetailsImpl userDetails) throws UserNotFoundException {
-        Integer userId = Integer.parseInt(payLoad.get("userId").toString());
+        Integer userId = Integer.parseInt(payLoad.get("userId"));
         User currentUser = userService.findById(userId);
-        String oldPassword = payLoad.get("oldPassword").toString();
-        String newPassword = payLoad.get("newPassword").toString();
+        String oldPassword = payLoad.get("oldPassword");
+        String newPassword = payLoad.get("newPassword");
 
         checkConstraint.put("oldPasswordError", "Vui lòng nhập mật khẩu cũ.");
         checkConstraint.put("newPasswordError", "Vui lòng nhập mật khẩu mới.");
@@ -61,7 +61,7 @@ public class UserRestController {
         }
 
         if (!userService.isPasswordMatch(oldPassword, currentUser.getPassword())) {
-            jsonObject.put("oldPasswordError", "Mật khẩu cũ không hợp lệ!!!");
+            jsonObject.put("oldPasswordError", "Mật khẩu cũ không đúng");
             return jsonObject.toString();
         }
 

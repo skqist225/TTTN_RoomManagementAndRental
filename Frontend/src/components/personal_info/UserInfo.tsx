@@ -2,6 +2,8 @@ import { FC } from "react";
 import { getImage } from "../../helpers";
 import { FormEdit } from "./FormEdit";
 import turnOffEditMode from "./script/turn_off_edit_mode";
+import { useDispatch } from "react-redux";
+import { clearUSAErrorMessage } from "../../features/user/userSlice";
 import $ from "jquery";
 
 interface IUserInfoProps {
@@ -11,6 +13,8 @@ interface IUserInfoProps {
 }
 
 export const UserInfo: FC<IUserInfoProps> = ({ title, dataEdit, value }) => {
+    const dispatch = useDispatch();
+
     return (
         <>
             <div className='personal__info_part'>
@@ -22,6 +26,7 @@ export const UserInfo: FC<IUserInfoProps> = ({ title, dataEdit, value }) => {
                             <button
                                 className='closeBtn'
                                 onClick={e => {
+                                    dispatch(clearUSAErrorMessage());
                                     turnOffEditMode($(e.currentTarget));
                                 }}
                             >

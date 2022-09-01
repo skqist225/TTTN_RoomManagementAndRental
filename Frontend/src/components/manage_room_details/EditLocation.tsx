@@ -1,19 +1,22 @@
-import { FC, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ManageYSContainer } from '.';
-import { countryState, fetchCountries } from '../../features/country/countrySlice';
-import { Image } from '../../globalStyle';
-import { getImage } from '../../helpers';
-import { IRoomDetails } from '../../types/room/type_RoomDetails';
-import BoxFooter from './BoxFooter';
-import DisplayEditUI from './components/DisplayEditUI';
-import HideEditBox from './components/HideEditBox';
-import axios from 'axios';
+import { FC, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ManageYSContainer } from ".";
+import { countryState, fetchCountries } from "../../features/country/countrySlice";
+import { Image } from "../../globalStyle";
+import { getImage } from "../../helpers";
+import { IRoomDetails } from "../../types/room/type_RoomDetails";
+import BoxFooter from "./BoxFooter";
+import DisplayEditUI from "./components/DisplayEditUI";
+import HideEditBox from "./components/HideEditBox";
+import axios from "axios";
 
-import { hideEditBox } from '../../pages/script/manage_your_space';
-import { userState } from '../../features/user/userSlice';
+import { hideEditBox } from "../../pages/script/manage_your_space";
+import { userState } from "../../features/user/userSlice";
 
-import $ from 'jquery';
+import $ from "jquery";
+import { fetchStatesByCountry } from "../../features/address/stateSlice";
+import { fetchCitiesByState } from "../../features/address/citySlice";
+import { RootState } from "../../store";
 
 interface IEditLocationProps {
     room: IRoomDetails;
@@ -21,16 +24,23 @@ interface IEditLocationProps {
 
 const EditLocation: FC<IEditLocationProps> = ({ room }) => {
     const dispatch = useDispatch();
-    const { countries } = useSelector(countryState);
-    const { user } = useSelector(userState);
+    const { states } = useSelector((state: RootState) => state.state);
+    const { cities } = useSelector((state: RootState) => state.city);
+
+    const {
+        address: { city, street },
+        state,
+    } = room;
 
     useEffect(() => {
-        dispatch(fetchCountries());
+        dispatch(fetchStatesByCountry({ countryId: 216 }));
     }, []);
 
-    function useCurrentPosition() {
-        getLocation();
-    }
+    useEffect(() => {
+        if (state) {
+            dispatch(fetchCitiesByState({ stateId: state }));
+        }
+    }, []);
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -46,7 +56,7 @@ const EditLocation: FC<IEditLocationProps> = ({ room }) => {
     let userLng = 0;
     async function showPosition(position: { coords: { latitude: number; longitude: number } }) {
         const accessToken =
-            'pk.eyJ1IjoibG9yZGVkc3dpZnQyMjUiLCJhIjoiY2t3MDJvZ2E5MDB0dDJxbndxbjZxM20wOCJ9.hYxzgffyfc93Aiogipp5bA';
+            "pk.eyJ1IjoibG9yZGVkc3dpZnQyMjUiLCJhIjoiY2t3MDJvZ2E5MDB0dDJxbndxbjZxM20wOCJ9.hYxzgffyfc93Aiogipp5bA";
         userLat = position.coords.latitude;
         userLng = position.coords.longitude;
 
@@ -54,7 +64,7 @@ const EditLocation: FC<IEditLocationProps> = ({ room }) => {
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${userLng},${userLat}.json?access_token=${accessToken}`,
             {
                 headers: {
-                    'Access-Control-Allow-Origin': '*',
+                    "Access-Control-Allow-Origin": "*",
                 },
             }
         );
@@ -63,19 +73,21 @@ const EditLocation: FC<IEditLocationProps> = ({ room }) => {
         console.log(place_name);
 
         if (place_name.length) {
-            const placeNameLength = place_name.split(',').length;
+            const placeNameLength = place_name.split(",").length;
 
-            let country22 = place_name.toString().split(',')[placeNameLength - 1] || 'no-country';
-            const state2 = place_name.toString().split(',')[placeNameLength - 2] || 'no-state';
-            const city2 = place_name.toString().split(',')[placeNameLength - 3] || 'no-city';
-            const street2 = place_name.toString().split(',')[placeNameLength - 4] || 'no-street';
+            let country22 = place_name.toString().split(",")[placeNameLength - 1] || "no-country";
+            const state2 = place_name.toString().split(",")[placeNameLength - 2] || "no-state";
+            const city2 = place_name.toString().split(",")[placeNameLength - 3] || "no-city";
+            const street2 = place_name.toString().split(",")[placeNameLength - 4] || "no-street";
 
-            $('#manage-ys__location-country').val(216);
-            $('#manage-ys__location-state').val(state2 === 'no-state' ? '' : state2);
-            $('#manage-ys__location-city').val(city2 === 'no-city' ? '' : city2);
-            $('#manage-ys__location-street').val(street2 === 'no-street' ? '' : street2);
+            $("#manage-ys__location-country").val(216);
+            $("#manage-ys__location-state").val(state2 === "no-state" ? "" : state2);
+            $("#manage-ys__location-city").val(city2 === "no-city" ? "" : city2);
+            $("#manage-ys__location-street").val(street2 === "no-street" ? "" : street2);
         }
     }
+
+    console.log(room);
 
     return (
         <ManageYSContainer id='roomLocation'>
@@ -85,9 +97,7 @@ const EditLocation: FC<IEditLocationProps> = ({ room }) => {
                     <div className='flex-space'>
                         <div>
                             <div className='manage-ys__section-content-title'>Địa chỉ</div>
-                            <div className='manage-ys__section-content-info'>
-                                {room?.cityName}, {room?.stateName},{room?.countryName}
-                            </div>
+                            <div className='manage-ys__section-content-info'>{room?.location}</div>
                         </div>
                         <div>
                             <DisplayEditUI sectionKey='location' />
@@ -101,8 +111,8 @@ const EditLocation: FC<IEditLocationProps> = ({ room }) => {
                         <div className='manage-ys__header-edit-main-title'>Địa chỉ</div>
                         <HideEditBox sectionKey='location' hideEditBox={hideEditBox} />
                     </div>
-                    <div style={{ maxWidth: '584px' }}>
-                        <div style={{ margin: '25px 0' }}>
+                    <div style={{ maxWidth: "584px" }}>
+                        {/* <div style={{ margin: '25px 0' }}>
                             <button
                                 className='
                                                     manage-ys__location-control__useCurrentPosition-btn
@@ -114,8 +124,8 @@ const EditLocation: FC<IEditLocationProps> = ({ room }) => {
                                 </span>
                                 <span>Sử dụng địa chỉ hiện tại</span>
                             </button>
-                        </div>
-                        <div>
+                        </div> */}
+                        {/* <div>
                             <div>Quốc gia/Khu vực</div>
                             <select id='manage-ys__location-country' className='manage-ys__input'>
                                 {countries.map(country => (
@@ -128,13 +138,13 @@ const EditLocation: FC<IEditLocationProps> = ({ room }) => {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
                         <div>
                             <div>Đường/phố</div>
                             <div>
                                 <input
                                     type='text'
-                                    value={room?.streetName}
+                                    value={street}
                                     className='manage-ys__input'
                                     id='manage-ys__location-street'
                                 />
@@ -144,25 +154,31 @@ const EditLocation: FC<IEditLocationProps> = ({ room }) => {
                             <div className='grid-2'>
                                 <div className='col-flex'>
                                     <div>Thành phố</div>
-                                    <div>
-                                        <input
-                                            type='text'
-                                            value={room?.cityName}
-                                            className='manage-ys__input'
-                                            id='manage-ys__location-city'
-                                        />
-                                    </div>
+                                    <select
+                                        id='manage-ys__location-city'
+                                        className='manage-ys__input'
+                                        value={city.id || 0}
+                                    >
+                                        {cities.map(city => (
+                                            <option key={city.id} value={city.id}>
+                                                {city.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div>
                                     <div>Tỉnh</div>
-                                    <div>
-                                        <input
-                                            type='text'
-                                            value={room?.stateName}
-                                            className='manage-ys__input'
-                                            id='manage-ys__location-state'
-                                        />
-                                    </div>
+                                    <select
+                                        id='manage-ys__location-state'
+                                        className='manage-ys__input'
+                                        value={state || 0}
+                                    >
+                                        {states.map(state => (
+                                            <option key={state.id} value={state.id}>
+                                                {state.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                         </div>

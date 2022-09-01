@@ -10,15 +10,13 @@ import {
     AddressEdit,
     PasswordEdit,
 } from "./components";
-import {
-    checkBirthdayIsGreaterThenPresent,
-    checkEmailDuplicated,
-    checkFirstNameAndLastNameConstraint,
-    checkPasswordConstraint,
-    checkPhoneNumberConstraint,
-} from "./script/check_constraints";
 
-import { updateUserAvatar, updateUserInfo, userState } from "../../features/user/userSlice";
+import {
+    updateUserAvatar,
+    updateUserInfo,
+    updateUserPassword,
+    userState,
+} from "../../features/user/userSlice";
 import { IUserUpdate } from "../../types/user/type_User";
 import { callToast } from "../../helpers";
 
@@ -32,12 +30,9 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
     const { handleSubmit, register } = useForm();
     const {
         user,
-        update: { loading, successMessage, errorMessage },
+        update: { errorMessage },
+        updatePassword: { successMessage, errorMessage: upaErrorMessage },
     } = useSelector(userState);
-
-    useEffect(() => {
-        if (errorMessage === "UPDATE_USER_FAILURE") callToast("error", "Cập nhật thất bại");
-    }, [errorMessage]);
 
     function updateInfo(updateInfo: IUserUpdate, field: string) {
         dispatch(updateUserInfo(updateInfo));
@@ -106,44 +101,53 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
 
                 break;
             }
-            case "email": {
-                const { email } = data;
-                const status = await checkEmailDuplicated(email, user!.id);
-                console.log(status);
-                if (status === "OK")
-                    updateInfo(
-                        {
-                            updatedField: "email",
-                            updateData: {
-                                email,
-                            },
-                        },
-                        "email"
-                    );
-                break;
-            }
             case "password": {
                 const { oldPassword, newPassword } = data;
 
-                const status = await checkPasswordConstraint(oldPassword, newPassword, user!.id);
-                if (status === "OK")
-                    updateInfo(
-                        {
-                            updatedField: "password",
-                            updateData: {
-                                newPassword,
-                            },
+                dispatch(
+                    updateUserPassword({
+                        updatedField: "password",
+                        updateData: {
+                            newPassword,
+                            oldPassword,
                         },
-                        "mật khẩu"
-                    );
+                    })
+                );
 
                 break;
             }
             case "phoneNumber": {
-                checkPhoneNumberConstraint(data.phoneNumber);
+                const { phoneNumber } = data;
+                updateInfo(
+                    {
+                        updatedField: "phoneNumber",
+                        updateData: {
+                            phoneNumber,
+                        },
+                    },
+                    "số điện thoại"
+                );
+
                 break;
             }
             case "address": {
+                const { city, aprtNoAndStreet: street } = data;
+
+                if (!street) {
+                    callToast("error", "Vui lòng điền địa chỉ đường phố");
+                    return;
+                }
+                updateInfo(
+                    {
+                        updatedField: "address",
+                        updateData: {
+                            city: parseInt(city),
+                            street,
+                        },
+                    },
+                    "số điện thoại"
+                );
+
                 break;
             }
             case "avatar": {
@@ -179,24 +183,18 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
                             errorMessage={errorMessage}
                         />
                     )}
-                    {dataEdit === "password" && <PasswordEdit register={register} />}
+                    {dataEdit === "password" && (
+                        <PasswordEdit register={register} errorMessage={upaErrorMessage} />
+                    )}
                     {dataEdit === "phoneNumber" && (
-                        <PhoneNumberEdit register={register} defaultValue={user.phoneNumber} />
+                        <PhoneNumberEdit
+                            register={register}
+                            defaultValue={user.phoneNumber}
+                            errorMessage={errorMessage}
+                        />
                     )}
                     {dataEdit === "address" && (
-                        <AddressEdit
-                            register={register}
-                            address={user.addressDetails}
-                            countryDefaultValue={
-                                user.addressDetails.country ? user.addressDetails.country.id : 216
-                            }
-                            stateDefaultValue={
-                                user.addressDetails.state ? user.addressDetails.state.id : 120
-                            }
-                            cityDefaultValue={
-                                user.addressDetails.city ? user.addressDetails.city.id : 8618
-                            }
-                        />
+                        <AddressEdit register={register} address={user.addressDetails} />
                     )}
                     {dataEdit === "avatar" && <AvatarEdit saveNewAvatar={saveNewAvatar} />}
                     <button type='submit' className='saveEditBtn' data-edit={dataEdit}>

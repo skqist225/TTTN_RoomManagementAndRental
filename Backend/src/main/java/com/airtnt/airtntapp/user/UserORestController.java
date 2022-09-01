@@ -1,11 +1,9 @@
 package com.airtnt.airtntapp.user;
 
 import com.airtnt.airtntapp.FileUploadUtil;
+import com.airtnt.airtntapp.address.AddressService;
 import com.airtnt.airtntapp.booking.BookingService;
-import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
-import com.airtnt.airtntapp.city.CityService;
 import com.airtnt.airtntapp.common.GetResource;
-import com.airtnt.airtntapp.country.CountryService;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
 import com.airtnt.airtntapp.exception.UserNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
@@ -13,7 +11,6 @@ import com.airtnt.airtntapp.response.error.BadResponse;
 import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.airtntapp.room.RoomService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
-import com.airtnt.airtntapp.state.StateService;
 import com.airtnt.airtntapp.user.dto.BookedRoomDTO;
 import com.airtnt.airtntapp.user.dto.CreateHostReviewDTO;
 import com.airtnt.airtntapp.user.dto.CreateHostReviewDTOTest;
@@ -26,13 +23,14 @@ import com.airtnt.entity.Address;
 import com.airtnt.entity.Booking;
 import com.airtnt.entity.Chat;
 import com.airtnt.entity.City;
-import com.airtnt.entity.Country;
 import com.airtnt.entity.Image;
 import com.airtnt.entity.Room;
 import com.airtnt.entity.Sex;
-import com.airtnt.entity.State;
 import com.airtnt.entity.User;
 import com.airtnt.entity.UserReview;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -68,32 +66,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/user/")
 public class UserORestController {
 
-    public final String REGISTER_USER_SUCCESS = "REGISTER_USER_SUCCESSFULLY";
-    public final String REGISTER_USER_FAILURE = "REGISTER_USER_FAILURE";
-
-    public final String LOGIN_SUCCESS = "LOGIN_SUCCESSFULLY";
-    public final String LOGOUT_SUCCESS = "LOGOUT_SUCCESSFULLY";
-
-    public final String UPDATE_USER_SUCCESS = "UPDATE_USER_SUCCESSFULLY";
-    public final String UPDATE_USER_FAILURE = "UPDATE_USER_FAILURE";
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private UserService userService;
 
     @Autowired
     private BookingService bookingService;
-
-    @Autowired
-    private BookingDetailService bookingDetailService;
-
-    @Autowired
-    private CountryService countryService;
-
-    @Autowired
-    private StateService stateService;
-
-    @Autowired
-    private CityService cityService;
 
     @Autowired
     private RoomService roomService;
@@ -106,6 +86,10 @@ public class UserORestController {
 
     @Autowired
     private UserReviewService UserReviewService;
+
+
+    @Autowired
+    private AddressService addressService;
 
     @GetMapping("sex")
     public ResponseEntity<StandardJSONResponse<List<UserSexDTO>>> getSexs() {
@@ -201,38 +185,52 @@ public class UserORestController {
                     return new BadResponse<User>("Birthday is required").response();
                 }
 
-                int year = Integer.parseInt(birthdayStr.split("-")[0]);
-                int month = Integer.parseInt(birthdayStr.split("-")[1]);
-                int date = Integer.parseInt(birthdayStr.split("-")[2]);
-
-                LocalDate birthday = LocalDate.of(year, month, date);
+                LocalDate birthday = LocalDate.parse(updateData.get("birthday"));
                 System.out.println(birthday);
                 if (userService.checkBirthday(birthday)) {
                     return new BadResponse<User>("Your age must be greater than 18").response();
                 }
 
-                LocalDate birthd = LocalDate.parse(updateData.get("birthday"));
-                currentUser.setBirthday(birthd);
+                currentUser.setBirthday(birthday);
                 savedUser = userService.saveUser(currentUser);
                 break;
             }
             case "address": {
-                Integer countryId = Integer.parseInt(updateData.get("country"));
-                Integer stateId = Integer.parseInt(updateData.get("country"));
-                Integer cityId = Integer.parseInt(updateData.get("country"));
-                String aprtNoAndStreet = updateData.get("aprtNoAndStreet");
+                int cityId = Integer.parseInt(updateData.get("city"));
+                String street = updateData.get("street");
 
-                Country country = countryService.getCountryById(countryId);
-                State state = stateService.getStateById(stateId);
-                City city = cityService.getCityById(cityId);
+                Address address = addressService.findByStreetAndCity(street, new City(cityId));
+                if (address != null) {
+                    currentUser.setAddress(address);
+                } else {
+                    address = new Address(new City(cityId), street);
+                    currentUser.setAddress(addressService.save(address));
+                }
 
-                Address newAddress = new Address(city, aprtNoAndStreet);
-                currentUser.setAddress(newAddress);
                 savedUser = userService.saveUser(currentUser);
                 break;
             }
             case "password": {
+                String oldPassword = updateData.get("oldPassword");
                 String newPassword = updateData.get("newPassword");
+
+                ArrayNode arrays = objectMapper.createArrayNode();
+
+                if (!userService.isPasswordMatch(oldPassword, currentUser.getPassword())) {
+                    ObjectNode node = objectMapper.createObjectNode();
+                    node.put("oldPassword", "Old password does not correct");
+                    arrays.add(node);
+                }
+
+                if (newPassword.length() < 8) {
+                    ObjectNode node = objectMapper.createObjectNode();
+                    node.put("newPassword", "New password length must be greater than 8 characters");
+                    arrays.add(node);
+                }
+
+                if (arrays.size() > 0) {
+                    return new BadResponse<User>(arrays.toString()).response();
+                }
 
                 currentUser.setPassword(newPassword);
                 userService.encodePassword(currentUser);
@@ -241,6 +239,10 @@ public class UserORestController {
             }
             case "phoneNumber": {
                 String newPhoneNumber = updateData.get("phoneNumber");
+
+                if (userService.checkPhoneNumber(newPhoneNumber, true, currentUser.getId())) {
+                    return new BadResponse<User>("Phone number has already been taken").response();
+                }
 
                 currentUser.setPhoneNumber(newPhoneNumber);
                 savedUser = userService.saveUser(currentUser);
@@ -351,22 +353,19 @@ public class UserORestController {
         }
     }
 
-    @PutMapping("remove-from-favoritelists/{roomid}")
+    @PutMapping("remove-from-favoritelists/{roomId}")
     public ResponseEntity<StandardJSONResponse<String>> removeFromWishLists(
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("roomid") Integer roomId) {
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("roomId") Integer roomId) throws RoomNotFoundException {
         User user = userDetailsImpl.getUser();
-        try {
-            user.removeFromWishLists(roomService.findById(roomId));
 
-            User savedUser = userService.saveUser(user);
-            if (savedUser != null) {
-                return new OkResponse<String>("remove from wishlists successfully").response();
-            }
+        user.removeFromWishLists(roomService.findById(roomId));
 
-            return new BadResponse<String>("can not sync user data into database").response();
-        } catch (RoomNotFoundException e) {
-            return new BadResponse<String>(e.getMessage()).response();
+        User savedUser = userService.saveUser(user);
+        if (savedUser != null) {
+            return new OkResponse<String>("remove from wishlists successfully").response();
         }
+
+        return new BadResponse<String>("can not sync user data into database").response();
     }
 
     @PostMapping("create-host-review")

@@ -44,7 +44,7 @@ const BoxFooter: FC<IBoxFooterProps> = ({
         let obj = {};
         if (sectionKey === "name") obj = { name };
         if (sectionKey === "description") obj = { description };
-        if (sectionKey === "groupAndTypeAndPrivacy") obj = { roomGroup, category, roomPrivacy };
+        if (sectionKey === "groupAndTypeAndPrivacy") obj = { category, roomPrivacy };
         if (sectionKey === "location")
             obj = {
                 country,
@@ -91,14 +91,10 @@ const BoxFooter: FC<IBoxFooterProps> = ({
                 break;
             }
             case "groupAndTypeAndPrivacy": {
-                const groupId = $('select[id="manage-ys__group-input"]').val();
                 const categoryId = $('select[id="manage-ys__type-input"]').val();
                 const privacyId = $('select[id="manage-ys__privacy-input"]').val();
 
-                console.log(groupId, categoryId);
-
                 sendRequest({
-                    roomGroup: groupId,
                     category: categoryId,
                     roomPrivacy: privacyId,
                 });
