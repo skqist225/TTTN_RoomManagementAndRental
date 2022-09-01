@@ -1,12 +1,12 @@
 import React, { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { logout } from "../features/auth/authSlice";
+import { Link, useNavigate } from "react-router-dom";
+import { authState, clearLASuccessMessage, logout } from "../features/auth/authSlice";
 import {
     fetchRoomsByCategoryAndConditions,
     resetCurretnFilterObject,
 } from "../features/room/roomSlice";
-import { userState } from "../features/user/userSlice";
+import { setUser, userState } from "../features/user/userSlice";
 import { getImage } from "../helpers";
 import "./header.css";
 import Badge, { BadgeProps } from "@mui/material/Badge";
@@ -31,8 +31,9 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 
 const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigationHeader }) => {
     const dispatch = useDispatch();
-    const { user } = useSelector(userState);
+    const navigate = useNavigate();
 
+    const { user } = useSelector(userState);
     const {
         getCartNumberAction: { cartNumber },
     } = useSelector(bookingDetailState);
@@ -55,12 +56,14 @@ const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigatio
 
     useEffect(() => {
         jQuerycode();
-
         dispatch(getCartNumber());
+        dispatch(dispatch(clearLASuccessMessage()));
     }, []);
 
     const handleLogout = () => {
-        dispatch(logout({}));
+        navigate("/auth/login");
+        dispatch(setUser(null));
+        localStorage.removeItem("user");
     };
 
     function refreshPage() {

@@ -104,6 +104,29 @@
     margin-bottom: 10px;
 }
 
+.c-validation-remove-triangle{
+    background: #c51244;
+    padding: 10px 5px;
+    border-radius: 2px;
+    position: relative;
+    display: inline-block;
+    box-shadow: 1px 1px 1px #aaaaaa;
+    margin-top: 5px;
+    width: 100%;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.c-validation-remove-triangle:before {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #c51244;
+    position: absolute;
+    top: -10px;
+}
+
 .c-validation:before {
     content: '';
     width: 0;
@@ -114,6 +137,7 @@
     position: absolute;
     top: -10px;
 }
+
 .c-label:after {
     color: #c51244;
 }

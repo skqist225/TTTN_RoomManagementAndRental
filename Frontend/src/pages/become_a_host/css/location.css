@@ -252,7 +252,7 @@
 
 button:disabled {
     cursor: no-drop;
-    background-color: #717171;
+    /* background-color: #717171; */
 }
 
 #location__search-btn {

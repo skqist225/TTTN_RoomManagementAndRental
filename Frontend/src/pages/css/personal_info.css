@@ -26,7 +26,7 @@
 
 .formEdit_firstNameAndLastName,
 .formEdit_sex,
-.formEdit_birthday,
+.formEdit_birthdayWeb,
 .formEdit_email,
 .formEdit_phoneNumber,
 .formEdit_address,
@@ -37,7 +37,7 @@
 
 .formEdit_firstNameAndLastName.editMode,
 .formEdit_sex.editMode,
-.formEdit_birthday.editMode,
+.formEdit_birthdayWeb.editMode,
 .formEdit_email.editMode,
 .formEdit_phoneNumber.editMode,
 .formEdit_address.editMode,

@@ -35,11 +35,21 @@ export const updateUserInfo = createAsyncThunk(
     async (updatedInfo: IUserUpdate, { dispatch, getState, rejectWithValue }) => {
         try {
             const { data } = await api.put(`/user/update-personal-info`, updatedInfo);
-            //update local user info
-            if (data) setUserToLocalStorage(data as IUser);
+
+            if (data) {
+                const lsUser = localStorage.getItem("user");
+                if (lsUser) {
+                    const { token } = JSON.parse(lsUser);
+                    localStorage.removeItem("user");
+                    data.token = token;
+                    localStorage.setItem("user", JSON.stringify(data as IUser));
+                }
+            }
 
             return { data };
-        } catch (error) {}
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
     }
 );
 
@@ -52,6 +62,7 @@ export const updateUserAvatar = createAsyncThunk(
                     "Content-Type": DataType.MULTIPARTFORMDATA,
                 },
             });
+
             if (data) {
                 localStorage.removeItem("user");
                 localStorage.setItem("user", JSON.stringify(data));
@@ -132,12 +143,19 @@ const userSlice = createSlice({
             .addCase(fetchBookedRooms.fulfilled, (state, { payload }) => {
                 state.bookedRooms = payload?.data;
             })
+            .addCase(updateUserInfo.pending, (state, _) => {
+                state.update.loading = true;
+                state.update.successMessage = null;
+                state.update.errorMessage = null;
+            })
             .addCase(updateUserInfo.fulfilled, (state, { payload }) => {
                 state.update.loading = false;
                 state.user = payload?.data;
+                state.update.successMessage = "Update user successfully";
             })
-            .addCase(updateUserInfo.pending, (state, _) => {
-                state.update.loading = true;
+            .addCase(updateUserInfo.rejected, (state, { payload }) => {
+                state.update.loading = false;
+                state.update.errorMessage = payload as string;
             })
             .addCase(updateUserAvatar.fulfilled, (state, { payload }) => {
                 state.user = payload?.data;

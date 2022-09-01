@@ -5,7 +5,6 @@ import {
     FirstNameAndLastNameEdit,
     SexEdit,
     BirthdayEdit,
-    // EmailEdit,
     PhoneNumberEdit,
     AvatarEdit,
     AddressEdit,
@@ -22,8 +21,6 @@ import {
 import { updateUserAvatar, updateUserInfo, userState } from "../../features/user/userSlice";
 import { IUserUpdate } from "../../types/user/type_User";
 import { callToast } from "../../helpers";
-
-import $ from "jquery";
 
 interface IFormEditProps {
     dataEdit: string;
@@ -54,24 +51,28 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
     }
 
     const onSubmit = async (data: any) => {
-        console.log(data);
+        console.log("[dataEdit] : ", data);
 
         switch (dataEdit) {
             case "firstNameAndLastName": {
                 const { firstName, lastName } = data;
-                const status = await checkFirstNameAndLastNameConstraint(firstName, lastName);
 
-                if (status === "OK")
-                    updateInfo(
-                        {
-                            updatedField: "firstNameAndLastName",
-                            updateData: {
-                                firstName,
-                                lastName,
-                            },
+                if (!firstName || !lastName) {
+                    callToast("error", "Vui lòng nhập cả họ và tên");
+                    return;
+                }
+
+                updateInfo(
+                    {
+                        updatedField: "firstNameAndLastName",
+                        updateData: {
+                            firstName,
+                            lastName,
                         },
-                        "họ và tên"
-                    );
+                    },
+                    "họ và tên"
+                );
+
                 break;
             }
             case "sex": {
@@ -88,25 +89,20 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
                 break;
             }
             case "birthdayWeb": {
-                const { yearOfBirth, monthOfBirth, dayOfBirth } = data;
-                const status = checkBirthdayIsGreaterThenPresent(
-                    yearOfBirth,
-                    monthOfBirth,
-                    dayOfBirth
-                );
+                if (!data.birthday) {
+                    callToast("error", "Vui lòng chọn ngày sinh");
+                    return;
+                }
 
-                if (status === "OK")
-                    updateInfo(
-                        {
-                            updatedField: "birthday",
-                            updateData: {
-                                yearOfBirth,
-                                monthOfBirth,
-                                dayOfBirth,
-                            },
+                updateInfo(
+                    {
+                        updatedField: "birthday",
+                        updateData: {
+                            birthday: data.birthday,
                         },
-                        "ngày sinh"
-                    );
+                    },
+                    "ngày sinh"
+                );
 
                 break;
             }
@@ -176,12 +172,13 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
                         />
                     )}
                     {dataEdit === "sex" && <SexEdit register={register} defaultValue={user.sex} />}
-                    {dataEdit === "birthday" && (
-                        <BirthdayEdit birthday={user.birthday} register={register} />
+                    {dataEdit === "birthdayWeb" && (
+                        <BirthdayEdit
+                            birthday={user.birthday}
+                            register={register}
+                            errorMessage={errorMessage}
+                        />
                     )}
-                    {/* {dataEdit === "email" && (
-                        <EmailEdit register={register} defaultValue={user.email} />
-                    )} */}
                     {dataEdit === "password" && <PasswordEdit register={register} />}
                     {dataEdit === "phoneNumber" && (
                         <PhoneNumberEdit register={register} defaultValue={user.phoneNumber} />

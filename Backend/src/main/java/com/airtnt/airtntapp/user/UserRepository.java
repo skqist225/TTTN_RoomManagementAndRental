@@ -44,5 +44,5 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     public List<User> findByPhoneNumberAndId(String phoneNumber, Integer userId);
 
     @Query("SELECT u FROM User u WHERE u.email = :email AND u.id <> :userId")
-    public List<User> findByPhoneEmailAndId(String email, Integer userId);
+    public List<User> findByEmailAndId(String email, Integer userId);
 }

@@ -5,31 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/rule/AdminRuleRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Admin/src/components/room/AddRoomImages.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Admin/src/components/room/AddRoomImages.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/mavenProjectSettings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/PostAddRoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/PostAddRoomDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/rule/RuleRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/rule/RuleRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/buitansang@gmail.com/pexels-laura-meinhardt-13248572.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/buitansang@gmail.com/pexels-pixabay-462235.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPriceMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPriceMainContent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPrivacyMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPrivacyMainContent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyRoomImagesMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyRoomImagesMainContent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RightPageContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RightPageContent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RoomPreviewMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RoomPreviewMainContent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyLocationPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyLocationPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyPricePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/PropertyPricePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/RoomPreviewPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/become_a_host/RoomPreviewPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/script/manage_photos.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/store.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/types/room/type_Room.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/types/room/type_Room.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserORestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserORestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,12 +66,12 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable&quot;: &quot;ALL&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/skqist225/Projects/AirTn_DATN/Backend&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/skqist225/TMA-workspace&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.grazie&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Java&quot;,
     &quot;spring.configuration.checksum&quot;: &quot;c94958ada0c81bb4e847abe659379e76&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -135,7 +120,11 @@
       <workItem from="1661511107879" duration="17575000" />
       <workItem from="1661563853469" duration="2592000" />
       <workItem from="1661574032842" duration="7445000" />
-      <workItem from="1661656043046" duration="8789000" />
+      <workItem from="1661656043046" duration="10261000" />
+      <workItem from="1661958699896" duration="292000" />
+      <workItem from="1661960391942" duration="376000" />
+      <workItem from="1661960841282" duration="996000" />
+      <workItem from="1661998754725" duration="11547000" />
     </task>
     <servers />
   </component>
@@ -152,5 +141,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

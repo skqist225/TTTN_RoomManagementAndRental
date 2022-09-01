@@ -1,5 +1,5 @@
-import { FloatingLabel, Form } from 'react-bootstrap';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { FloatingLabel, Form } from "react-bootstrap";
+import { FieldValues, UseFormRegister } from "react-hook-form";
 
 export type IOption = {
     value: string;
@@ -26,7 +26,7 @@ export default function DropDown({
     return (
         <>
             {options.length && (
-                <FloatingLabel label={label} style={{ margin: '20px 0' }}>
+                <FloatingLabel label={label} style={{ margin: "20px 0" }}>
                     <Form.Select {...register(fieldName)} defaultValue={defaultValue} id={id}>
                         {options.map(({ value, displayText }) => (
                             <option value={value} key={value}>

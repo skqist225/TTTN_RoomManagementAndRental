@@ -31,8 +31,8 @@ export const resetPassword = createAsyncThunk(
             const { data } = await api.put(`/auth/reset-password`, resetPasswordData);
 
             return { data };
-        } catch ({ data: { errorMessage } }) {
-            return rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
@@ -45,15 +45,22 @@ export const forgotPassword = createAsyncThunk(
                 data: { message, resetPasswordCode, email },
             } = await api.post("/auth/forgot-password", forgotPassword);
             return { message, resetPasswordCode, email };
-        } catch ({ data: { errorMessage } }) {
-            return rejectWithValue(errorMessage);
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
         }
     }
 );
 
-export const logout = makeGetAsyncThunk("auth/logout", {
-    uri: "/auth/logout/",
-    isLogout: true,
+export const logout = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
+    try {
+        return {
+            data: {
+                success: true,
+            },
+        };
+    } catch ({ data: { error } }) {
+        return rejectWithValue(error);
+    }
 });
 
 export const checkPhoneNumber = createAsyncThunk(
@@ -72,9 +79,18 @@ export const checkPhoneNumber = createAsyncThunk(
     }
 );
 
-export const registerUser = makePostAsyncThunk("auth/register", {
-    uri: "/auth/register",
-});
+export const registerUser = createAsyncThunk(
+    "auth/registerUser",
+    async (user: IRegisterUser, { rejectWithValue }) => {
+        try {
+            const { data } = await api.post(`auth/register/`, user);
+
+            return { data };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
 
 type AuthState = {
     user: IUser | null;
@@ -83,7 +99,23 @@ type AuthState = {
     successMessage: string | null;
     loginAction: {
         loading: boolean;
-        success: boolean;
+        successMessage: string | null;
+        errorMessage: string | null;
+    };
+    checkPhoneNumberAction: {
+        loading: boolean;
+        successMessage: string | null;
+        errorMessage: string | null;
+    };
+    registerAction: {
+        loading: boolean;
+        errors: any;
+        successMessage: string | null;
+    };
+    resetPasswordAction: {
+        loading: boolean;
+        errorMessage: string | null;
+        successMessage: string | null;
     };
 };
 
@@ -92,9 +124,25 @@ const initialState: AuthState = {
     loading: true,
     errorMessage: null,
     successMessage: "",
+    registerAction: {
+        loading: true,
+        errors: null,
+        successMessage: null,
+    },
     loginAction: {
         loading: true,
-        success: false,
+        successMessage: null,
+        errorMessage: null,
+    },
+    checkPhoneNumberAction: {
+        loading: true,
+        successMessage: null,
+        errorMessage: null,
+    },
+    resetPasswordAction: {
+        loading: true,
+        successMessage: null,
+        errorMessage: null,
     },
 };
 
@@ -111,26 +159,46 @@ const authSlice = createSlice({
         clearSuccessMessage(state, _) {
             state.successMessage = null;
         },
+        clearLASuccessMessage(state) {
+            state.loginAction.successMessage = null;
+        },
+        clearLAErrorMessage(state) {
+            state.loginAction.errorMessage = null;
+        },
+        clearRASuccessMessage(state) {
+            state.registerAction.successMessage = null;
+        },
     },
     extraReducers: builder => {
         builder
+            .addCase(registerUser.pending, (state, { payload }) => {
+                state.registerAction.loading = true;
+                state.registerAction.errors = null;
+            })
             .addCase(registerUser.fulfilled, (state, { payload }) => {
-                state.loading = false;
-                state.user = payload.data;
+                state.registerAction.loading = false;
+                if (payload.data) {
+                    state.registerAction.successMessage = "Register user successfully";
+                }
+            })
+            .addCase(registerUser.rejected, (state, { payload }) => {
+                state.registerAction.loading = false;
+                state.registerAction.errors = JSON.parse(payload as any);
             })
             .addCase(login.pending, (state, { payload }) => {
                 state.loginAction.loading = true;
-                state.loginAction.success = false;
+                state.loginAction.successMessage = null;
+                state.loginAction.errorMessage = null;
             })
             .addCase(login.fulfilled, (state, { payload }) => {
                 state.loginAction.loading = false;
-                state.loginAction.success = true;
+                if (payload!.data) {
+                    state.loginAction.successMessage = "Login successfully";
+                }
             })
-            .addCase(logout.fulfilled, (state, { payload }) => {
-                state.loading = false;
-                state.successMessage = payload.data;
-                state.user = null;
-                localStorage.removeItem("user");
+            .addCase(login.rejected, (state, { payload }) => {
+                state.loginAction.loading = false;
+                state.loginAction.errorMessage = payload as string;
             })
             .addCase(
                 forgotPassword.fulfilled,
@@ -140,31 +208,40 @@ const authSlice = createSlice({
                     localStorage.setItem("resetPasswordCode", resetPasswordCode);
                 }
             )
+            .addCase(resetPassword.pending, (state, { payload }) => {
+                state.resetPasswordAction.loading = true;
+                state.resetPasswordAction.successMessage = null;
+                state.resetPasswordAction.errorMessage = null;
+            })
             .addCase(resetPassword.fulfilled, (state, { payload }) => {
-                state.successMessage = payload.data;
+                state.resetPasswordAction.loading = false;
+                state.resetPasswordAction.successMessage = payload.data;
+            })
+            .addCase(resetPassword.rejected, (state, { payload }) => {
+                state.resetPasswordAction.loading = false;
+                state.resetPasswordAction.errorMessage = payload as string;
+            })
+            .addCase(checkPhoneNumber.pending, (state, { payload }) => {
+                state.checkPhoneNumberAction.loading = true;
+                state.checkPhoneNumberAction.successMessage = null;
+                state.checkPhoneNumberAction.errorMessage = null;
             })
             .addCase(checkPhoneNumber.fulfilled, (state, { payload }) => {
-                state.successMessage = payload.data as string;
+                state.checkPhoneNumberAction.loading = false;
+                state.checkPhoneNumberAction.successMessage = payload!.data as string;
+
+                localStorage.removeItem("email");
+                localStorage.removeItem("resetPasswordCode");
+            })
+            .addCase(checkPhoneNumber.rejected, (state, { payload }) => {
+                state.checkPhoneNumberAction.loading = false;
+                state.checkPhoneNumberAction.errorMessage = payload as string;
+            })
+            .addMatcher(isAnyOf(forgotPassword.pending, resetPassword.pending), (state, _) => {
+                state.loading = true;
             })
             .addMatcher(
-                isAnyOf(
-                    logout.pending,
-                    forgotPassword.pending,
-                    resetPassword.pending,
-                    registerUser.pending
-                ),
-                (state, _) => {
-                    state.loading = true;
-                }
-            )
-            .addMatcher(
-                isAnyOf(
-                    logout.rejected,
-                    forgotPassword.rejected,
-                    resetPassword.rejected,
-                    registerUser.rejected,
-                    checkPhoneNumber.rejected
-                ),
+                isAnyOf(forgotPassword.rejected, checkPhoneNumber.rejected),
                 (state, { payload }) => {
                     state.loading = false;
                     if (payload) state.errorMessage = payload as string;
@@ -173,6 +250,12 @@ const authSlice = createSlice({
     },
 });
 
-export const { clearErrorMessage, clearSuccessMessage } = authSlice.actions;
+export const {
+    clearErrorMessage,
+    clearSuccessMessage,
+    clearLAErrorMessage,
+    clearLASuccessMessage,
+    clearRASuccessMessage,
+} = authSlice.actions;
 export const authState = (state: RootState) => state.auth;
 export default authSlice.reducer;

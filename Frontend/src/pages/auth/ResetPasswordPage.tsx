@@ -35,7 +35,10 @@ const ResetPasswordPage: FC<HomeProps> = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const { user, successMessage, errorMessage } = useSelector(authState);
+    const {
+        resetPasswordAction: { successMessage, errorMessage },
+    } = useSelector(authState);
+
     const {
         register,
         handleSubmit,
@@ -43,10 +46,6 @@ const ResetPasswordPage: FC<HomeProps> = () => {
     } = useForm({
         resolver: yupResolver(resetPasswordSchema),
     });
-
-    useEffect(() => {
-        dispatch(fetchCountries());
-    }, []);
 
     useEffect(() => {
         const bg = getImage("/images/register_background.jpg");
@@ -61,19 +60,13 @@ const ResetPasswordPage: FC<HomeProps> = () => {
 
     useEffect(() => {
         if (successMessage) {
-            callToast("success", successMessage);
-            setTimeout(() => {
-                navigate("/auth/login");
-            }, 2000);
+            navigate("/auth/login");
         }
     }, [successMessage]);
 
     useEffect(() => {
-        if (errorMessage?.includes("Discard reset password session")) {
-            callToast("error", errorMessage);
-            setTimeout(() => {
-                navigate("/auth/login");
-            }, 2000);
+        if (errorMessage?.includes("Reset password session is out of time")) {
+            navigate("/auth/login");
         }
     }, [errorMessage]);
 
@@ -96,7 +89,6 @@ const ResetPasswordPage: FC<HomeProps> = () => {
                     </header>
                     <Divider />
                     <article id='register__body'>
-                        <div>Chào mừng bạn đến với AirJ18</div>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <FormGroup
                                 label='Mật khẩu mới'
@@ -118,6 +110,10 @@ const ResetPasswordPage: FC<HomeProps> = () => {
                                     <FormError message={errors.confirmNewPassword.message} />
                                 )}
                             </div>
+                            {errorMessage ===
+                                "New password does not match confirm new password" && (
+                                <FormError message='Mật khẩu không khớp' removeTriangle />
+                            )}
                             <MainButton
                                 type='submit'
                                 className='customBtn'
@@ -135,22 +131,8 @@ const ResetPasswordPage: FC<HomeProps> = () => {
                                 <span className='register__or--option'>hoặc</span>
                                 <Divider className='flex-1'></Divider>
                             </div>
-                            <div className='register__login flex-space'>
-                                <button className='register__login--button mr-10'>
-                                    <span>
-                                        <FacebookLogo width='20px' height='20px' />
-                                    </span>
-                                    <span>Tiếp tục với Facebook</span>
-                                </button>
-                                <button className='register__login--button'>
-                                    <span>
-                                        <GoogleLogo width='20px' height='20px' />
-                                    </span>
-                                    <span>Tiếp tục với Google</span>
-                                </button>
-                            </div>
                             <div className='flex-center'>
-                                Bạn mới biết đến AirJ18?&nbsp;
+                                Bạn mới biết đến AirTn?&nbsp;
                                 <Link
                                     to={"/auth/register"}
                                     style={{
@@ -165,7 +147,6 @@ const ResetPasswordPage: FC<HomeProps> = () => {
                     </article>
                 </div>
             </div>
-            <Toast />
         </div>
     );
 };

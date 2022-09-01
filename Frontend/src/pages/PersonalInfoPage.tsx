@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { UserInfo } from "../components/personal_info/UserInfo";
 import { getImage, formatDate, getUserSex, callToast } from "../helpers";
-import { RootState } from "../store";
 
 import { jqueryCode } from "../components/personal_info/script/personal_info";
 import Toast from "../components/notify/Toast";
@@ -16,9 +15,6 @@ import { userState } from "../features/user/userSlice";
 type IPersonalInfoPageProps = {};
 
 const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-
     const {
         user,
         update: { loading, successMessage, errorMessage },
@@ -29,14 +25,15 @@ const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
     }, []);
 
     useEffect(() => {
-        if (successMessage === "UPDATE_USER_SUCCESSFULLY")
+        if (successMessage) {
             callToast("success", "Cập nhật thành công");
+        }
     }, [successMessage]);
 
     return (
         <>
             <Header includeMiddle={false} excludeBecomeHostAndNavigationHeader={false} />
-            <Toast />
+
             {user !== null && (
                 <div id='personal-info__page'>
                     <div id='personal-info__container'>
@@ -51,7 +48,7 @@ const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
                         <div id='personal__content-wrapper'>
                             <div className='personal-info__left'>
                                 <UserInfo
-                                    title='Tên pháp lý'
+                                    title='Họ và tên'
                                     dataEdit='firstNameAndLastName'
                                     value={user.firstName + " " + user.lastName}
                                 />
@@ -65,11 +62,6 @@ const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
                                     dataEdit='birthdayWeb'
                                     value={formatDate(user.birthday)}
                                 />
-                                {/* <UserInfo
-                                    title='Địa chỉ email'
-                                    dataEdit='email'
-                                    value={user.email}
-                                /> */}
                                 <UserInfo
                                     title='Mật khẩu'
                                     dataEdit='password'
@@ -99,24 +91,11 @@ const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
                                     </div>
                                     <h4>Bạn có thể chỉnh sửa những thông tin nào?</h4>
                                     <p>
-                                        Không thể thay đổi thông tin mà Airbnb sử dụng để xác minh
-                                        danh tính của bạn. Bạn có thể chỉnh sửa thông tin liên hệ và
-                                        một số thông tin cá nhân, nhưng chúng tôi có thể yêu cầu bạn
-                                        xác minh danh tính vào lần tới khi bạn đặt phòng hoặc tạo
-                                        mục cho thuê.
-                                    </p>
-                                </div>
-                                <div>
-                                    <div>
-                                        <Image
-                                            src={getImage("/svg/paper_identity.svg")}
-                                            size='40px'
-                                        />
-                                    </div>
-                                    <h4>Thông tin nào được chia sẻ với người khác?</h4>
-                                    <p>
-                                        Airbnb chỉ tiết lộ thông tin liên lạc cho Chủ nhà/Người tổ
-                                        chức và khách sau khi đặt phòng/đặt chỗ được xác nhận.
+                                        Không thể thay đổi thông tin mà Airtn sử dụng để xác minh
+                                        danh tính của bạn như địa chỉ <b>email</b>. Bạn có thể chỉnh
+                                        sửa thông tin liên hệ và một số thông tin cá nhân, nhưng
+                                        chúng tôi có thể yêu cầu bạn xác minh danh tính vào lần tới
+                                        khi bạn đặt phòng hoặc tạo mục cho thuê.
                                     </p>
                                 </div>
                             </div>
@@ -124,6 +103,7 @@ const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
                     </div>
                 </div>
             )}
+            <Toast />
         </>
     );
 };

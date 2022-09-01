@@ -1,37 +1,18 @@
 import { FC, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FormGroup, DropDown } from "../../components/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
-import $ from "jquery";
-
 import * as yup from "yup";
-import { FloatingLabel, Form } from "react-bootstrap";
 import { Divider, MainButton } from "../../globalStyle";
-import { FacebookLogo, GoogleLogo } from "../../icon/icon";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCountries } from "../../features/country/countrySlice";
-import { RootState } from "../../store";
 import FormError from "../../components/register/FormError";
 import { getImage } from "../../helpers";
-import {
-    checkPhoneNumber,
-    clearErrorMessage,
-    clearSuccessMessage,
-    registerUser,
-} from "../../features/auth/authSlice";
+import { authState, registerUser } from "../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
-import "../css/register.css";
+import { FloatingLabel, Form } from "react-bootstrap";
 
-const phoneNumberSchema = yup
-    .object({
-        phoneNumber: yup
-            .string()
-            .matches(
-                /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
-                "Số điện thoại không hợp lệ!"
-            ),
-    })
-    .required();
+import $ from "jquery";
+import "../css/register.css";
 
 const schema = yup
     .object({
@@ -41,8 +22,15 @@ const schema = yup
         birthday: yup.string().required("Vui lòng chọn ngày sinh."),
         email: yup
             .string()
-            .email("Địa chỉ email chưa đúng định dạng.")
+            .email("Địa chỉ email không hợp lệ.")
             .required("Vui lòng nhập địa chỉ email."),
+        phoneNumber: yup
+            .string()
+            .required("Vui lòng nhập số điện thoại")
+            .matches(
+                /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
+                "Số điện thoại không hợp lệ!"
+            ),
     })
     .required();
 
@@ -51,31 +39,34 @@ type HomeProps = {};
 const RegisterPage: FC<HomeProps> = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { countries } = useSelector((state: RootState) => state.country);
-    const { user, successMessage, errorMessage } = useSelector((state: RootState) => state.auth);
+    const {
+        registerAction: { errors: raErrors, successMessage },
+    } = useSelector(authState);
+
+    let birthdayErrorFromServer = null,
+        emailErrorFromServer = null,
+        phoneNumberErrorFromServer = null;
+    if (raErrors && raErrors.length > 0) {
+        raErrors.forEach((error: any) => {
+            if (error.birthday) {
+                birthdayErrorFromServer = error.birthday;
+            }
+            if (error.email) {
+                emailErrorFromServer = error.email;
+            }
+            if (error.phoneNumber) {
+                phoneNumberErrorFromServer = error.phoneNumber;
+            }
+        });
+    }
+
     const {
         register,
-        control,
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: yupResolver(phoneNumberSchema),
-    });
-
-    const {
-        register: register2,
-        handleSubmit: handleSubmit2,
-        formState: { errors: errors2 },
-    } = useForm({
         resolver: yupResolver(schema),
     });
-
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [country, setCountry] = useState("");
-
-    useEffect(() => {
-        dispatch(fetchCountries());
-    }, []);
 
     useEffect(() => {
         const bg = getImage("/images/register_background.jpg");
@@ -88,54 +79,21 @@ const RegisterPage: FC<HomeProps> = () => {
         });
     }, []);
 
-    function hide(id: string) {
-        $(id).css("display", "none");
-    }
-
-    function display(id: string) {
-        $(id).css("display", "block");
-    }
-
-    const onSubmit = (data: any) => {
-        setPhoneNumber(data.phoneNumber);
-        setCountry(data.country);
-        dispatch(
-            checkPhoneNumber({
-                phoneNumber: data.phoneNumber,
-                edit: false,
-            })
-        );
-    };
-
     const backToPreviousPage = () => {
-        display("#register__first--form");
-        display("#register__login--section");
-        hide("#register__second--form");
-        hide("#register__header--back");
+        navigate("/auth/login");
     };
 
     const onSubmitFinalStep = (data: any) => {
+        console.log("[registered data] : ", data);
         dispatch(
             registerUser({
                 ...data,
-                phoneNumber,
             })
         );
     };
 
     useEffect(() => {
-        if (user != null) navigate("/auth/login");
-    }, [user]);
-
-    useEffect(() => {
-        if (successMessage === "Phone number has not been used by anyone yet") {
-            dispatch(clearErrorMessage({}));
-            hide("#register__first--form");
-            hide("#register__login--section");
-            display("#register__second--form");
-            display("#register__header--back");
-            dispatch(clearSuccessMessage({}));
-        }
+        if (successMessage) navigate("/auth/login");
     }, [successMessage]);
 
     return (
@@ -150,79 +108,41 @@ const RegisterPage: FC<HomeProps> = () => {
                     </header>
                     <Divider />
                     <article id='register__body'>
-                        <div>Chào mừng bạn đến với AirJ18</div>
-                        <form onSubmit={handleSubmit(onSubmit)} id='register__first--form'>
-                            <FloatingLabel controlId='floatingSelect' label='Quốc gia/Khu vực'>
-                                <Controller
-                                    name='country'
-                                    defaultValue={"216"}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Form.Select {...field}>
-                                            {countries.map(country => (
-                                                <option key={country.id} value={country.id}>
-                                                    {country.name} ({country.dialCode})
-                                                </option>
-                                            ))}
-                                        </Form.Select>
-                                    )}
-                                />{" "}
-                            </FloatingLabel>
-                            <div style={{ width: "100%", height: "10px" }}></div>
-                            <FormGroup
-                                label='Số điện thoại'
-                                register={register}
-                                fieldName='phoneNumber'
-                                type='text'
-                            />
-                            {errors?.phoneNumber && (
-                                <FormError message={errors.phoneNumber.message} />
-                            )}
-                            {errorMessage === "Phone number has already been taken" && (
-                                <FormError message='Số điện thoại đã được sử dụng' />
-                            )}
-                            <div style={{ textAlign: "center" }}>
-                                <MainButton type='submit' style={{ width: "100%" }}>
-                                    <span>Tiếp tục</span>
-                                </MainButton>
-                            </div>
-                        </form>
                         <form
-                            onSubmit={handleSubmit2(onSubmitFinalStep)}
+                            onSubmit={handleSubmit(onSubmitFinalStep)}
                             id='register__second--form'
                         >
-                            <FormGroup
-                                label='Tên'
-                                placeholder='Tên'
-                                fieldName='firstName'
-                                type='text'
-                                register={register2}
-                            />
-                            {errors2?.firstName && (
-                                <FormError message={errors2.firstName.message} />
-                            )}
                             <FormGroup
                                 label='Họ'
                                 placeholder='Họ'
                                 fieldName='lastName'
                                 type='text'
-                                register={register2}
+                                register={register}
                             />
-                            {errors2?.lastName && <FormError message={errors2.lastName.message} />}
+                            {errors?.lastName && <FormError message={errors.lastName.message} />}
+                            <FormGroup
+                                label='Tên'
+                                placeholder='Tên'
+                                fieldName='firstName'
+                                type='text'
+                                register={register}
+                            />
+                            {errors?.firstName && <FormError message={errors.firstName.message} />}
+
                             <FormGroup
                                 label='Ngày sinh'
                                 fieldName='birthday'
                                 type='date'
-                                register={register2}
+                                register={register}
                             />
-                            {errors2?.birthday && <FormError message={errors2.birthday.message} />}
-                            {errorMessage === "Không chọn ngày lớn hơn hiện tại." && (
-                                <FormError message={errorMessage} />
+                            {errors?.birthday && <FormError message={errors.birthday.message} />}
+                            {birthdayErrorFromServer && (
+                                <FormError message={"Tuổi của bạn không lớn hơn 18"} />
                             )}
                             <DropDown
                                 label='Giới tính'
                                 fieldName='sex'
-                                register={register2}
+                                register={register}
                                 options={[
                                     {
                                         value: "MALE",
@@ -238,53 +158,38 @@ const RegisterPage: FC<HomeProps> = () => {
                                     },
                                 ]}
                             />
-                            {errors2?.sex && <FormError message={errors2.sex.message} />}
+                            {errors?.sex && <FormError message={errors.sex.message} />}
                             <FormGroup
                                 label='Địa chỉ Email'
                                 fieldName='email'
-                                type='text'
-                                register={register2}
+                                type='email'
+                                register={register}
                             />
-                            {errors2?.email && <FormError message={errors2.email.message} />}
-                            {errorMessage === "Email has already been taken" && (
-                                <FormError message='Địa chỉ email đã tồn tại' />
+                            {errors?.email && <FormError message={errors.email.message} />}
+                            {emailErrorFromServer && (
+                                <FormError message='Địa chỉ email đã được sử dụng' />
                             )}
                             <FormGroup
                                 label='Mật khẩu'
                                 fieldName='password'
                                 type='password'
-                                register={register2}
+                                register={register}
                             />
-                            {errors2?.password && <FormError message={errors2.password.message} />}
+                            {errors?.password && <FormError message={errors.password.message} />}
+                            <FloatingLabel label='Số điện thoại' className='mb-3'>
+                                <Form.Control type='text' {...register("phoneNumber")} />
+                            </FloatingLabel>
+                            {errors?.phoneNumber && (
+                                <FormError message={errors.phoneNumber.message} />
+                            )}
+                            {phoneNumberErrorFromServer && (
+                                <FormError message='Số điện thoại đã được sử dụng' />
+                            )}
 
                             <MainButton type='submit' className='customBtn'>
                                 <span>Đăng ký</span>
                             </MainButton>
                         </form>
-
-                        {/* <div id='register__login--section'>
-                            <div className='normal-flex'>
-                                <Divider className='flex-1'></Divider>
-                                <span className='register__or--option'>hoặc</span>
-                                <Divider className='flex-1'></Divider>
-                            </div>
-                            <div className='register__login'>
-                                <button className='register__login--button'>
-                                    <span>
-                                        <FacebookLogo width='20px' height='20px' />
-                                    </span>
-                                    <span>Tiếp tục với Facebook</span>
-                                </button>
-                            </div>
-                            <div>
-                                <button className='register__login--button'>
-                                    <span>
-                                        <GoogleLogo width='20px' height='20px' />
-                                    </span>
-                                    <span>Tiếp tục với Google</span>
-                                </button>
-                            </div>
-                        </div> */}
                     </article>
                 </div>
             </div>

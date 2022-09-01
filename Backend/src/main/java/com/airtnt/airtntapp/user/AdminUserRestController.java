@@ -90,7 +90,7 @@ public class AdminUserRestController {
     @DeleteMapping("users/{id}")
     public ResponseEntity<StandardJSONResponse<String>> deleteUser(@PathVariable(value = "id") Integer id) {
         try {
-            return new OkResponse<String>(userService.deleteUser(id)).response();
+            return new OkResponse<String>(userService.deleteById(id)).response();
         } catch (UserNotFoundException | VerifiedUserException e) {
             return new BadResponse<String>(e.getMessage()).response();
         }

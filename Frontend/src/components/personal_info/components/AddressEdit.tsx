@@ -21,32 +21,21 @@ interface IAddressEditProps {
 const AddressEdit: FC<IAddressEditProps> = ({
     register,
     address,
-    countryDefaultValue,
     stateDefaultValue,
     cityDefaultValue,
 }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(fetchCountries());
-    }, [dispatch]);
+        dispatch(fetchStatesByCountry({ countryId: 216 }));
+    }, []);
 
     useEffect(() => {
-        dispatch(fetchStatesByCountry({ countryId: countryDefaultValue }));
-    }, [countryDefaultValue]);
-
-    useEffect(() => {
-        dispatch(fetchCitiesByState({ stateId: stateDefaultValue }));
+        dispatch(fetchCitiesByState({ stateId: 120 }));
     }, [stateDefaultValue]);
 
-    const { countries, loading: countryLoading } = useSelector((state: RootState) => state.country);
     const { states, loading: stateLoading } = useSelector((state: RootState) => state.state);
     const { cities } = useSelector((state: RootState) => state.city);
-
-    const countryOptions: IOption[] = countries.map(country => ({
-        value: country.id.toString(),
-        displayText: country.name,
-    }));
 
     const stateOptions: IOption[] = states.map(state => ({
         value: state.id.toString(),
@@ -59,26 +48,14 @@ const AddressEdit: FC<IAddressEditProps> = ({
     }));
 
     useEffect(() => {
-        if (!countryLoading) {
-            $("#countrySelect").on("change", function () {
-                const countryId = parseInt($(this).children("option:selected").val() as string);
-
-                if (countryDefaultValue && countryId !== countryDefaultValue) {
-                    dispatch(fetchStatesByCountry({ countryId: countryDefaultValue }));
-                }
-            });
-        }
-    }, [countryLoading]);
-
-    useEffect(() => {
         if (!stateLoading) {
-            $("#stateSelect").on("change", function () {
-                const stateId = parseInt($(this).children("option:selected").val() as string);
+            $("#stateSelect")
+                .off("change")
+                .on("change", function () {
+                    const stateId = parseInt($(this).children("option:selected").val() as string);
 
-                if (stateDefaultValue && stateId !== stateDefaultValue) {
-                    dispatch(fetchCitiesByState({ stateId: stateDefaultValue }));
-                }
-            });
+                    dispatch(fetchCitiesByState({ stateId }));
+                });
         }
     }, [stateLoading]);
 
@@ -88,16 +65,7 @@ const AddressEdit: FC<IAddressEditProps> = ({
                 <input type='hidden' value={address.country.name} id='userCountryName' />
             )}
             {address.state && <input type='hidden' value={address.state.name} id='userStateName' />}
-            <div>
-                <DropDown
-                    register={register}
-                    id='countrySelect'
-                    fieldName='country'
-                    label='Quốc gia/khu vực'
-                    options={countryOptions}
-                    defaultValue={countryDefaultValue.toString()}
-                />
-            </div>
+
             <div>
                 <DropDown
                     register={register}
@@ -122,7 +90,6 @@ const AddressEdit: FC<IAddressEditProps> = ({
             </div>
             <FormGroup
                 fieldName='aprtNoAndStreet'
-                placeholder='Tên/số nhà + đường/phố'
                 register={register}
                 label='Địa chỉ đường/phố'
                 type='text'
