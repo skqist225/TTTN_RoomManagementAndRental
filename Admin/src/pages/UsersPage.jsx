@@ -4,13 +4,14 @@ import { callToast, getImage } from "../helpers";
 import Stack from "@mui/material/Stack";
 import TablePagination from "@material-ui/core/TablePagination";
 import { Link } from "react-router-dom";
-import "../css/page/rooms.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { clearUserState, deleteUser, fetchUsers, userState } from "../features/user/userSlice";
-import Toast from "../components/notify/Toast";
 import { Image } from "../globalStyle";
 import { MyButton } from "../components/common";
+import Toast from "../components/notify/Toast";
+
+import "../css/page/rooms.css";
 
 const UsersPage = () => {
     const dispatch = useDispatch();

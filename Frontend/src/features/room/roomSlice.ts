@@ -204,7 +204,6 @@ export const updateRoom = createAsyncThunk(
 
             if (data) {
                 dispatch(fetchRoomById({ roomId: roomId.toString() }));
-                dispatch(resetUpdateStatus());
             }
 
             return { data };
@@ -290,9 +289,6 @@ const roomSlice = createSlice({
                 bookingDates: [],
             };
         },
-        resetUpdateStatus: state => {
-            state.updateSuccess = false;
-        },
         setRoomQuery: (state, { payload }) => {
             state.filterObject.query = payload;
         },
@@ -353,6 +349,9 @@ const roomSlice = createSlice({
                 console.log(payload);
                 state.newlyCreatedRoomId = parseInt(payload!.data as any as string);
             })
+            .addCase(updateRoom.pending, (state, { payload }) => {
+                state.updateSuccess = false;
+            })
             .addCase(updateRoom.fulfilled, (state, { payload }) => {
                 state.updateSuccess = true;
             })
@@ -375,7 +374,6 @@ export const {
         setMockingRoomLoading,
         setCurrentFilterObject,
         resetCurretnFilterObject,
-        resetUpdateStatus,
         setRoomInfo,
         setRoomQuery,
         setListingPage,

@@ -1,34 +1,46 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { roomState } from "../../../features/room/roomSlice";
-import IAmenity from "../../../types/type_Amenity";
 import $ from "jquery";
+import IAmenity from "../../../types/type_Amenity";
 
 interface IRoomAmenitiesProps {
-    title: string;
     amentities: IAmenity[];
-    dataType: string;
 }
 
-const RoomAmenities: FC<IRoomAmenitiesProps> = ({ title, amentities, dataType }) => {
+const RoomAmenities: FC<IRoomAmenitiesProps> = ({ amentities }) => {
     const { room } = useSelector(roomState);
 
     const amenitiesIds = room?.amenities.map(({ id }) => id);
-    console.log(amenitiesIds);
 
-    if (room!.amenities) {
+    useEffect(() => {
         $(".manage-ys__uncheck-btn").each(function () {
-            if (!amenitiesIds!.includes($(this).data("edit"))) {
-                $(this).addClass("checked");
-                $(this)
-                    .siblings(`.manage-ys__check-btn.${$(this).data("edit")}`)
-                    .removeClass("checked");
-            }
+            $(this).addClass("checked");
+            $(this)
+                .siblings(`.manage-ys__check-btn.${$(this).data("edit")}`)
+                .removeClass("checked");
         });
-    }
+
+        if (room?.amenities && room.amenities.length) {
+            $(".manage-ys__uncheck-btn").each(function () {
+                if (!amenitiesIds!.includes($(this).data("edit"))) {
+                    $(this).addClass("checked");
+                    $(this)
+                        .siblings(`.manage-ys__check-btn.${$(this).data("edit")}`)
+                        .removeClass("checked");
+                } else {
+                    $(this)
+                        .siblings(`.manage-ys__check-btn.${$(this).data("edit")}`)
+                        .addClass("checked");
+
+                    $(this).removeClass("checked");
+                }
+            });
+        }
+    }, []);
+
     return (
         <div>
-            <div className='manage-ys__header-edit-main-title'>{title}</div>
             <div>
                 {amentities.map(amentity => (
                     <div
@@ -45,6 +57,7 @@ const RoomAmenities: FC<IRoomAmenitiesProps> = ({ title, amentities, dataType })
                             <button
                                 className='manage-ys__uncheck-btn mr-10'
                                 data-edit={amentity.id}
+                                style={{ marginRight: "10px" }}
                             >
                                 <span>
                                     <svg
@@ -58,7 +71,7 @@ const RoomAmenities: FC<IRoomAmenitiesProps> = ({ title, amentities, dataType })
                                             fill: "none",
                                             height: "16px",
                                             width: "16px",
-                                            stroke: "#fff",
+                                            stroke: "currentcolor",
                                             strokeWidth: "3",
                                             overflow: "visible",
                                         }}
@@ -71,7 +84,6 @@ const RoomAmenities: FC<IRoomAmenitiesProps> = ({ title, amentities, dataType })
                             <button
                                 className={`manage-ys__check-btn ${amentity.id}`}
                                 data-edit={amentity.id}
-                                data-type={dataType}
                             >
                                 <span>
                                     <svg

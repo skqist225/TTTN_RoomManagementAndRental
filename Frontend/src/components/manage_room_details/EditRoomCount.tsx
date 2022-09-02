@@ -1,29 +1,29 @@
-import {FC, useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {ManageYSContainer} from ".";
-import {categoryState, fetchCategories} from "../../features/category/categorySlice";
-import {fetchRoomPrivacies, roomState} from "../../features/room/roomSlice";
-import {Div} from "../../globalStyle";
-import {IRoomDetails} from "../../types/room/type_RoomDetails";
+import { FC, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ManageYSContainer } from ".";
+import { categoryState, fetchCategories } from "../../features/category/categorySlice";
+import { fetchRoomPrivacies, roomState } from "../../features/room/roomSlice";
+import { Div } from "../../globalStyle";
+import { IRoomDetails } from "../../types/room/type_RoomDetails";
 import BoxFooter from "./BoxFooter";
-import {HideEditBox} from "./components";
+import { HideEditBox } from "./components";
 import DisplayEditUI from "./components/DisplayEditUI";
 
-import {hideEditBox} from "../../pages/script/manage_your_space";
-import {IncAndDecBtn} from "../utils/IncAndDecBtn";
+import { hideEditBox } from "../../pages/script/manage_your_space";
+import { IncAndDecBtn } from "../utils/IncAndDecBtn";
 
 interface IEditRoomCountProps {
     room: IRoomDetails;
 }
 
-const EditRoomCount: FC<IEditRoomCountProps> = ({room}) => {
+const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchCategories());
         dispatch(fetchRoomPrivacies());
     }, []);
-    const {roomPrivacies} = useSelector(roomState);
-    const {categories} = useSelector(categoryState);
+    const { roomPrivacies } = useSelector(roomState);
+    const { categories } = useSelector(categoryState);
 
     return (
         <ManageYSContainer id='roomInfo' data-aos='fade-up' data-aos-duration='2000'>
@@ -39,10 +39,11 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({room}) => {
                             <div>
                                 <div className='manage-ys__section-content-title'>Loại chỗ ở</div>
                                 <div className='manage-ys__section-content-info'>
-                                    {room.groupName} cho thuê
+                                    Thể loại: <b style={{ color: "#222" }}> {room.category} </b>
                                 </div>
                                 <div className='manage-ys__section-content-info'>
-                                    Loại hình cho thuê: {room.privacy}
+                                    Loại hình cho thuê:{" "}
+                                    <b style={{ color: "#222" }}> {room.privacy} </b>
                                 </div>
                             </div>
                             <div>

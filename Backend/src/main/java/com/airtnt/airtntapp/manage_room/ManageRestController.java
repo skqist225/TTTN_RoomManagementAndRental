@@ -33,19 +33,14 @@ public class ManageRestController {
             values.put("category", payload.get("category").toString());
             values.put("roomPrivacy", payload.get("roomPrivacy").toString());
         } else if (fieldName.equals("location")) {
-            values.put("country", payload.get("country").toString());
-            values.put("state", payload.get("state").toString());
             values.put("city", payload.get("city").toString());
             values.put("street", payload.get("street").toString());
+            values.put("longitude", payload.get("longitude").toString());
+            values.put("latitude", payload.get("latitude").toString());
         } else if (fieldName.equals("status")) {
             values.put("status", payload.get("status").toString());
         } else if (fieldName.equals("amentities")) {
-        	
-        	
-        	
             values.put("checked", payload.get("checked").toString());
-            values.put("unchecked", payload.get("unchecked").toString());
-            
         } else if (fieldName.equals("thumbnail")) {
             values.put("thumbnail", payload.get("thumbnail").toString());
         } else

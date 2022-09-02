@@ -1,28 +1,52 @@
 package com.airtnt.airtntapp.room;
 
 import com.airtnt.airtntapp.FileUploadUtil;
+import com.airtnt.airtntapp.address.AddressService;
 import com.airtnt.airtntapp.amenity.AmentityService;
-import com.airtnt.airtntapp.city.CityRepository;
 import com.airtnt.airtntapp.dashboard.dto.CountCreatedRoomDTO;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
 import com.airtnt.airtntapp.privacy.PrivacyTypeRepository;
-import com.airtnt.airtntapp.state.StateRepository;
 import com.airtnt.airtntapp.user.UserRepository;
-import com.airtnt.entity.*;
+import com.airtnt.entity.Address;
+import com.airtnt.entity.Amentity;
+import com.airtnt.entity.Category;
+import com.airtnt.entity.City;
+import com.airtnt.entity.Image;
+import com.airtnt.entity.Room;
+import com.airtnt.entity.RoomPrivacy;
+import com.airtnt.entity.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -41,10 +65,7 @@ public class RoomService {
     private UserRepository userRepository;
 
     @Autowired
-    private StateRepository stateRepository;
-
-    @Autowired
-    private CityRepository cityRepository;
+    private AddressService addressService;
 
     @Autowired
     private EntityManager entityManager;
@@ -265,29 +286,23 @@ public class RoomService {
                 break;
             }
             case "location": {
-                Country country = new Country(216);
-                State state = new State(values.get("state"), country);
-                City city = new City(values.get("city"), state);
+                String cityStr = values.get("city");
+                String street = values.get("street");
+                String longitude = values.get("longitude");
+                String latitude = values.get("latitude");
 
-                State state2;
-                state2 = stateRepository.findByName(values.get("state"));
-                if (state2 == null)
-                    state2 = stateRepository.save(state);
+                Address savedAddress = null;
+                Address address = addressService.findByStreetAndCity(street, new City(Integer.parseInt(cityStr)));
+                if (Objects.isNull(address)) {
+                    savedAddress = addressService.save(new Address(new City(Integer.parseInt(cityStr)), street));
+                } else {
+                    savedAddress = address;
+                }
 
-                City city2;
-                city2 = cityRepository.findByName(values.get("city"));
-                if (city2 == null)
-                    city2 = cityRepository.save(city);
+                room.setLatitude(Float.parseFloat(latitude));
+                room.setLongitude(Float.parseFloat(longitude));
+                room.setAddress(savedAddress);
 
-                System.out.println(values.get("country"));
-                System.out.println(values.get("city"));
-                System.out.println(values.get("state"));
-                System.out.println(values.get("street"));
-
-                // room.setCountry(country);
-                // room.setState(state2);
-                // room.setCity(city2);
-                // room.setStreet(values.get("street"));
                 break;
             }
             case "status": {
@@ -308,37 +323,39 @@ public class RoomService {
                 break;
             }
             case "amentities": {
+                String checkStr = values.get("checked");
 
-                Set<Amentity> updatedAmentities = new HashSet<Amentity>();
-                List<Amentity> amentities = amentityService.getAllAmentities();
-                for (Amentity a : amentities) {
-                    updatedAmentities.add(a);
-                }
+                if(checkStr.equals("-1")) {
+                    room.getAmentities().removeAll(room.getAmentities());
+                } else  {
+                    List<Integer> amenitiesItgs = new ArrayList<>();
+                    Set<Amentity> amenities = new HashSet<>();
+                    Set<Amentity> removedSet = new HashSet<>();
 
-                String[] checkedArr = values.get("checked").split(",");
-                String[] uncheckedArr = values.get("unchecked").split(",");
+                    String[] checkedArr = values.get("checked").split(",");
 
-                System.out.println("checked");
-                for (String s : checkedArr)
-                    System.out.println(s);
+                    for (String s : checkedArr) {
+                        amenitiesItgs.add(Integer.parseInt(s));
+                        amenities.add(new Amentity(Integer.parseInt(s)));
+                    }
 
-                System.out.println("unchecked");
-                for (String s : uncheckedArr)
-                    System.out.println(s);
+                    for (Amentity amenity : room.getAmentities()) {
+                        if (amenitiesItgs.stream().noneMatch(amenity.getId()::equals)) {
+                            removedSet.add(amenity);
+                        }
+                    }
 
-                for (Amentity amentity : amentities) {
-                    if (values.get("unchecked").contains(amentity.getId().toString())) {
-                        updatedAmentities.remove(amentity);
+                    System.out.println("removed set : " + removedSet);
+                    for (Amentity amentity : removedSet) {
+                        room.removeAmenity(amentity);
+                    }
+
+                    for (Amentity amentity : amenities) {
+                        room.addAmenity(amentity);
                     }
                 }
 
-                for (Amentity amentity : amentities) {
-                    if (values.get("checked").contains(amentity.getId().toString())) {
-                        updatedAmentities.add(amentity);
-                    }
-                }
 
-                room.setAmentities(updatedAmentities);
                 break;
             }
             case "thumbnail": {

@@ -1,12 +1,12 @@
 import React, { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "../../axios";
-import { resetUpdateStatus, roomState, updateRoom } from "../../features/room/roomSlice";
+import { roomState, updateRoom } from "../../features/room/roomSlice";
 import { callToast } from "../../helpers";
 
 import $ from "jquery";
 import "./css/box_footer.css";
-import Toast from "../notify/Toast";
+import axios from "axios";
+import { RootState } from "../../store";
 
 interface IBoxFooterProps {
     sectionKey: string;
@@ -28,7 +28,6 @@ const BoxFooter: FC<IBoxFooterProps> = ({
     idInput,
     name,
     description,
-    roomGroup,
     category,
     roomPrivacy,
     country,
@@ -38,7 +37,9 @@ const BoxFooter: FC<IBoxFooterProps> = ({
     hideEditBox,
 }) => {
     const dispatch = useDispatch();
-    const { updateSuccess } = useSelector(roomState);
+
+    const { states } = useSelector((state: RootState) => state.state);
+    const { cities } = useSelector((state: RootState) => state.city);
 
     function closeEditBox() {
         let obj = {};
@@ -64,10 +65,6 @@ const BoxFooter: FC<IBoxFooterProps> = ({
                 postObj: data,
             })
         );
-
-        if (updateSuccess) {
-            callToast("success", "Cập nhật thông tin phòng thành công!");
-        }
     }
 
     async function updateField() {
@@ -75,7 +72,6 @@ const BoxFooter: FC<IBoxFooterProps> = ({
             case "name": {
                 const roomName = $(idInput).val();
                 sendRequest({ name: roomName });
-                closeEditBox();
                 break;
             }
             case "roomInfo": {
@@ -102,16 +98,32 @@ const BoxFooter: FC<IBoxFooterProps> = ({
                 break;
             }
             case "location": {
-                const country = $("#manage-ys__location-country").val();
-                const state = $("#manage-ys__location-state").val();
-                const city = $("#manage-ys__location-city").val();
+                const lState = $("#manage-ys__location-state").val();
+                const lCity = $("#manage-ys__location-city").val();
                 const street = $("#manage-ys__location-street").val();
 
-                sendRequest({
-                    country,
-                    state,
+                const filteredCity = cities.filter(
+                    city => city.id === parseInt(lCity!.toString())
+                )[0];
+                const filteredState = states.filter(
+                    state => state.id === parseInt(lState!.toString())
+                )[0];
+
+                const placeToSearch =
+                    street + " " + filteredCity.name + " " + filteredState.name + " " + "Vietnam";
+
+                const coords = await getPositionFromInput(placeToSearch);
+
+                console.log({
                     city,
                     street,
+                    ...coords,
+                });
+
+                sendRequest({
+                    city: lCity,
+                    street,
+                    ...coords,
                 });
 
                 break;
@@ -149,7 +161,6 @@ const BoxFooter: FC<IBoxFooterProps> = ({
             }
             case "amentities": {
                 let checkedArray: string[] = [];
-                let uncheckedArray: string[] = [];
 
                 $(".manage-ys__check-btn").each(function () {
                     if ($(this).hasClass("checked")) {
@@ -157,20 +168,29 @@ const BoxFooter: FC<IBoxFooterProps> = ({
                     }
                 });
 
-                $(".manage-ys__uncheck-btn").each(function () {
-                    if ($(this).hasClass("checked")) {
-                        uncheckedArray.push($(this).data("edit"));
-                    }
-                });
-
                 sendRequest({
-                    checked: checkedArray.join(",").trim(),
-                    unchecked: uncheckedArray.join(",").trim(),
+                    checked: checkedArray.length > 0 ? checkedArray.join(",").trim() : "-1",
                 });
 
                 break;
             }
         }
+
+        closeEditBox();
+    }
+
+    async function getPositionFromInput(placeToSearch: string) {
+        const accessToken =
+            "pk.eyJ1IjoibG9yZGVkc3dpZnQyMjUiLCJhIjoiY2t3MDJvZ2E5MDB0dDJxbndxbjZxM20wOCJ9.hYxzgffyfc93Aiogipp5bA";
+
+        const { data } = await axios.get(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${placeToSearch}.json?access_token=${accessToken}`
+        );
+
+        return Promise.resolve({
+            latitude: data.features[0].center[1],
+            longitude: data.features[0].center[0],
+        });
     }
 
     return (

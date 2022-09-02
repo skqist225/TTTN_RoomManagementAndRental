@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {useLocation, useParams} from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import { fetchRoomById, roomState } from "../features/room/roomSlice";
 
@@ -17,17 +17,19 @@ import { amenityState, fetchAmenities } from "../features/amenity/amenitySlice";
 import "./css/manage_room_details.css";
 import { initComp } from "./script/manage_your_space";
 import Toast from "../components/notify/Toast";
+import { callToast } from "../helpers";
 
 interface IManageRoomDetailsPageProps {}
 
 const ManageRoomDetailsPage: FC<IManageRoomDetailsPageProps> = () => {
     const dispatch = useDispatch();
-    const { pathname } = useLocation();
+
+    const { updateSuccess } = useSelector(roomState);
 
     const { room } = useSelector(roomState);
     const { amenities } = useSelector(amenityState);
 
-    const {roomId} = useParams();
+    const { roomId } = useParams();
 
     useEffect(() => {
         dispatch(fetchRoomById({ roomId: roomId! }));
@@ -38,6 +40,12 @@ const ManageRoomDetailsPage: FC<IManageRoomDetailsPageProps> = () => {
     useEffect(() => {
         if (room) initComp(room, amenities);
     }, [room, amenities]);
+
+    useEffect(() => {
+        if (updateSuccess) {
+            callToast("success", "Cập nhật thông tin phòng thành công!");
+        }
+    }, [updateSuccess]);
 
     return (
         <>
@@ -52,7 +60,7 @@ const ManageRoomDetailsPage: FC<IManageRoomDetailsPageProps> = () => {
                             <div className='manage-ys__right-content'>
                                 <EditImage images={room!.images} roomid={room.id} />
                                 <EditRoomInfo room={room} />
-                                <EditAmenity amenities={amenities} />
+                                <EditAmenity amenities={amenities} room={room} />
                                 <EditLocation room={room} />
                                 <EditRoomCount room={room} />
                             </div>
