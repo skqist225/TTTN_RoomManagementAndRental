@@ -39,7 +39,7 @@ export default function BookingStatus({ rowData }) {
                             className='booking-status fs-14 inline-block'
                             style={{ paddingLeft: "4px" }}
                         >
-                            Approved
+                            Hoàn tất
                         </span>
                     </div>
                 )}
@@ -78,7 +78,7 @@ export default function BookingStatus({ rowData }) {
                             className='booking-status fs-14 inline-block'
                             style={{ paddingLeft: "4px" }}
                         >
-                            Pending
+                            Đang phê duyệt
                         </span>
                     </div>
                 )}
@@ -115,7 +115,47 @@ export default function BookingStatus({ rowData }) {
                                 color: "white",
                             }}
                         >
-                            Cancelled
+                            Đã hủy
+                        </span>
+                    </div>
+                )}
+
+                {rowData.state === "OUTOFDATE" && (
+                    <div
+                        style={{
+                            padding: "1px 6px",
+                            borderRadius: "4px",
+                            backgroundColor: "rgb(227 232 238)",
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
+                        <span style={{ color: "rgba(14, 98, 69, 1)" }}>
+                            <svg
+                                aria-hidden='true'
+                                className='
+                                                SVGInline-svg SVGInline--cleaned-svg
+                                                SVG-svg
+                                                Icon-svg Icon--clock-svg Icon-color-svg
+                                                Icon-color--gray500-svg
+                                            '
+                                height='12'
+                                width='12'
+                                viewBox='0 0 16 16'
+                                xmlns='http://www.w3.org/2000/svg'
+                                style={{ fill: "rgb(105 115 134)" }}
+                            >
+                                <path
+                                    d='M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16zm1-8.577V4a1 1 0 1 0-2 0v4a1 1 0 0 0 .517.876l2.581 1.49a1 1 0 0 0 1-1.732z'
+                                    fillRule='evenodd'
+                                ></path>
+                            </svg>
+                        </span>
+                        <span
+                            className='booking-status fs-14 inline-block'
+                            style={{ paddingLeft: "4px" }}
+                        >
+                            Quá thời hạn
                         </span>
                     </div>
                 )}

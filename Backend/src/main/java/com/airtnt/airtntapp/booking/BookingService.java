@@ -1,11 +1,31 @@
 package com.airtnt.airtntapp.booking;
 
-import com.airtnt.airtntapp.booking.dto.*;
+import com.airtnt.airtntapp.booking.dto.BookingListDTO;
+import com.airtnt.airtntapp.booking.dto.BookingUserOrderDTO;
+import com.airtnt.airtntapp.booking.dto.CountBookingByMonthInYear;
+import com.airtnt.airtntapp.booking.dto.CountBookingByStatusAndMonthDTO;
+import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
+import com.airtnt.airtntapp.booking.dto.CreateBookingDTO;
+import com.airtnt.airtntapp.booking.dto.PostCreateBookingDetailDTO;
+import com.airtnt.airtntapp.booking.dto.RevenueByYearAndStatus;
 import com.airtnt.airtntapp.bookingDetail.BookingDetailRepository;
 import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
-import com.airtnt.airtntapp.exception.*;
+import com.airtnt.airtntapp.exception.AlreadyCancelException;
+import com.airtnt.airtntapp.exception.BookingDetailNotFoundException;
+import com.airtnt.airtntapp.exception.BookingNotFoundException;
+import com.airtnt.airtntapp.exception.CancelDateGreaterThanCheckinDateException;
+import com.airtnt.airtntapp.exception.ForbiddenException;
+import com.airtnt.airtntapp.exception.ReserveDateInThePastException;
+import com.airtnt.airtntapp.exception.RoomHasBeenBookedException;
+import com.airtnt.airtntapp.exception.RoomNotFoundException;
+import com.airtnt.airtntapp.exception.UserHasBeenBookedThisRoomException;
 import com.airtnt.airtntapp.room.RoomService;
-import com.airtnt.entity.*;
+import com.airtnt.entity.Booking;
+import com.airtnt.entity.BookingDetail;
+import com.airtnt.entity.Room;
+import com.airtnt.entity.Status;
+import com.airtnt.entity.User;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,14 +34,28 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class BookingService {
@@ -289,7 +323,7 @@ public class BookingService {
         return bookingRepository.save(canceledBooking);
     }
 
-    public BookingListDTO getBookingListByRooms(List<Integer> roomIds, Map<String, String> filters, int page) {
+    public BookingListDTO getBookingListByRooms(List<Integer> roomIds, Map<String, String> filters, int page, Integer hostId) {
         String query = filters.get("query");
         String bookingDateStr = filters.get("bookingDate");
         String isCompleteStr = filters.get("isComplete");
@@ -310,7 +344,7 @@ public class BookingService {
         }
 
         sort = sortDir.equals("ASC") ? sort.ascending() : sort.descending();
-        Pageable pageable = PageRequest.of(page - 1, MAX_BOOKING_PER_FETCH_BY_HOST, sort);
+        Pageable pageable = PageRequest.of(page - 1, MAX_BOOKING_PER_FETCH_BY_HOST);
 
         Page<Booking> bookingPage = bookingRepository.findAll(new Specification<Booking>() {
             @Override
@@ -319,7 +353,8 @@ public class BookingService {
                 List<Predicate> predicates = new ArrayList<>();
 
                 Expression<String> bookingId = root.get("id");
-//                Expression<String> roomName = root.get("room").get("name");
+                Expression<String> customerFirstName = root.get("customer").get("firstName");
+                Expression<String> customerLastName = root.get("customer").get("lastName");
                 Expression<LocalDateTime> bookingDate = root.get("bookingDate");
 //                Expression<User> roomId = root.get("room").get("id");
 //                Expression<Float> cleanFee = root.get("cleanFee");
@@ -329,12 +364,15 @@ public class BookingService {
 
                 predicates.add(criteriaBuilder.and(joinOptions.get("room").get("id").in(roomIds)));
 
-//                predicates.add(criteriaBuilder.and(roomId.in(roomIds)));
 
-//                if (!StringUtils.isEmpty(query)) {
-//                    Expression<String> wantedQueryField = criteriaBuilder.concat(bookingId, roomName);
-//                    predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + query + "%")));
-//                }
+                if (!StringUtils.isEmpty(query)) {
+                    Expression<String> wantedQueryField = criteriaBuilder.concat(bookingId, " ");
+                    wantedQueryField =criteriaBuilder.concat(wantedQueryField, customerFirstName);
+                    wantedQueryField =criteriaBuilder.concat(wantedQueryField, " ");
+//                    Expression<String> wantedQueryField2 = criteriaBuilder.concat(" ", customerLastName);
+                    wantedQueryField =criteriaBuilder.concat(wantedQueryField, customerLastName);
+                    predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + query + "%")));
+                }
 
 //                if (!StringUtils.isEmpty(bookingDateStr)) {
 //                    try {
@@ -352,9 +390,24 @@ public class BookingService {
 //                    }
 //                }
 //
-//                if (!StringUtils.isEmpty(isCompleteStr)) {
-//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(state, isCompleteStr)));
-//                }
+
+                List<Status> bookingStatuses = new ArrayList<>();
+                if (isCompleteStr.split(",").length > 0) {
+                    for (String status : isCompleteStr.split(",")) {
+                        if (Objects.equals(status, "APPROVED")) {
+                            bookingStatuses.add(Status.APPROVED);
+                        } else if (Objects.equals(status, "PENDING")) {
+                            bookingStatuses.add(Status.PENDING);
+                        } else {
+                            bookingStatuses.add(Status.CANCELLED);
+                        }
+                    }
+                }
+
+                if (bookingStatuses.size() > 0) {
+                    predicates.add(criteriaBuilder.and(state.in(bookingStatuses)));
+                }
+
 
 //                if (!StringUtils.isEmpty(bookingDateMonth) && !StringUtils.isEmpty(bookingDateYear)) {
 //                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
@@ -380,7 +433,8 @@ public class BookingService {
 //                Expression<Float> roomFee = criteriaBuilder.prod(numberOfDays, root.get("room").get("price"));
 //                Expression<Float> summ = criteriaBuilder.sum(criteriaBuilder.sum(roomFee, siteFee), cleanFee);
 
-                criteriaQuery.groupBy(bookingId);
+                criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id"))).groupBy(joinOptions.get("booking"));
+
 
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
@@ -391,7 +445,7 @@ public class BookingService {
             bookingListDTOs.add(BookingUserOrderDTO.build(b));
         }
 
-        return new BookingListDTO(bookingListDTOs, bookingPage.getTotalElements(), bookingPage.getTotalPages());
+        return new BookingListDTO(bookingListDTOs, bookingRepository.getNumberOfBookingsOfHost(hostId), bookingPage.getTotalPages());
     }
 
     @Transactional
@@ -404,6 +458,8 @@ public class BookingService {
             }
 
             approvedBooking.setState(Status.APPROVED);
+            approvedBooking.setCancelDate(null);
+            approvedBooking.setRefundPaid(0f);
 
             return bookingRepository.save(approvedBooking);
         } catch (BookingNotFoundException e) {

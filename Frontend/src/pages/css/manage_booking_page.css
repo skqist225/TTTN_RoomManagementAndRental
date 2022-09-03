@@ -79,7 +79,11 @@
     height: fit-content;
     left: 0px;
     right: auto;
-    display: none;
+    /* display: none; */
+}
+
+#listings__filter-bookingStatus.active {
+    display: block;
 }
 
 .listings__search-room {

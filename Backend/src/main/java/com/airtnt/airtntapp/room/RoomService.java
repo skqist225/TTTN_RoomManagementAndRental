@@ -187,9 +187,6 @@ public class RoomService {
         float minPrice = Float.parseFloat(filters.get("minPrice"));
         float maxPrice = Float.parseFloat(filters.get("maxPrice"));
 
-        System.out.println(minPrice);
-        System.out.println(maxPrice);
-
         int bedroomCount = Integer.parseInt(filters.get("bedRoom"));
         int bedCount = Integer.parseInt(filters.get("bed"));
         int bathroomCount = Integer.parseInt(filters.get("bathRoom"));
@@ -199,9 +196,9 @@ public class RoomService {
         List<Integer> privaciesID = privacyTypeRepository.getPrivacyIDs();
         List<Date> bookingDates = new ArrayList<>();
 
-        if (!filters.get("privacies").isEmpty()) {
+        if (!filters.get("privacy").isEmpty()) {
             privaciesID.removeAll(privaciesID);
-            String[] privacies = filters.get("privacies").split(" ");
+            String[] privacies = filters.get("privacy").split(" ");
 
             for (int i = 0; i < privacies.length; i++)
                 privaciesID.add(Integer.parseInt(privacies[i]));
@@ -275,12 +272,13 @@ public class RoomService {
                 break;
             }
             case "roomInfo": {
+                room.setAccomodatesCount(Integer.parseInt(values.get("guestCount")));
                 room.setBedCount(Integer.parseInt(values.get("bedCount")));
                 room.setBedroomCount(Integer.parseInt(values.get("bedroomCount")));
                 room.setBathroomCount(Integer.parseInt(values.get("bathroomCount")));
                 break;
             }
-            case "groupAndTypeAndPrivacy": {
+            case "categoryAndPrivacy": {
                 room.setCategory(new Category(Integer.parseInt(values.get("category"))));
                 room.setPrivacyType(new RoomPrivacy(Integer.parseInt(values.get("roomPrivacy"))));
                 break;
@@ -322,12 +320,12 @@ public class RoomService {
                 }
                 break;
             }
-            case "amentities": {
+            case "amenities": {
                 String checkStr = values.get("checked");
 
-                if(checkStr.equals("-1")) {
+                if (checkStr.equals("-1")) {
                     room.getAmentities().removeAll(room.getAmentities());
-                } else  {
+                } else {
                     List<Integer> amenitiesItgs = new ArrayList<>();
                     Set<Amentity> amenities = new HashSet<>();
                     Set<Amentity> removedSet = new HashSet<>();
@@ -358,8 +356,11 @@ public class RoomService {
 
                 break;
             }
+            case "price": {
+                room.setPrice(Float.parseFloat(values.get("price")));
+                break;
+            }
             case "thumbnail": {
-                // room.getImages().remove(new Image(values.get("thumbnail")));
                 boolean isHaving = false;
                 for (Image image : room.getImages()) {
                     if (image.getImage().equals(room.getThumbnail())) {

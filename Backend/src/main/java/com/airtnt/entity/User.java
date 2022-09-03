@@ -113,9 +113,6 @@ public class User extends BaseEntity {
     private Integer resetPasswordCode;
     @JsonIgnore
     private LocalDateTime resetPasswordExpirationTime;
-    @Builder.Default
-    @OneToMany(mappedBy = "host")
-    private Set<UserReview> reviews = new HashSet<>();
 
     public User(int id) {
         super(id);
@@ -197,10 +194,9 @@ public class User extends BaseEntity {
                 ObjectNode roomNode = mapper.createObjectNode();
                 ArrayNode imagesNode = mapper.createArrayNode();
                 Room room = this.getOwnedRooms().get(i);
-                room.getImagesPath().forEach(image -> imagesNode.add(image));
+                room.getImagesPath().forEach(imagesNode::add);
                 roomNode.put("id", room.getId()).put("name", room.getName()).put("thumbnail",
                                 room.renderThumbnailImage()).put("price", room.getPrice())
-                        .put("currencySymbol", room.getCurrency().getSymbol())
                         .put("averageRatings", room.getAverageRatings())
                         .put("numberOfReviews", room.getNumberOfReviews())
                         .set("images", imagesNode);
@@ -222,10 +218,6 @@ public class User extends BaseEntity {
     }
 
     public boolean hasRole(String role) {
-        if (role.equals(this.getRole().getName())) {
-            return true;
-        }
-
-        return false;
+        return role.equals(this.getRole().getName());
     }
 }

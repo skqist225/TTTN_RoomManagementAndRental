@@ -1,6 +1,6 @@
-import { Radio } from 'antd';
-import { FC } from 'react';
-import { MyNumberForMat } from '../../utils';
+import { Radio } from "antd";
+import { FC } from "react";
+import { MyNumberForMat } from "../../utils";
 
 interface IPaymentMethodOptionProps {
     paymentMethodTitle: string;
@@ -20,16 +20,9 @@ const PaymentMethodOption: FC<IPaymentMethodOptionProps> = ({
             <div className='flex-space'>
                 <div className='fs-16 fw-600'>{paymentMethodTitle}</div>
                 <div className='normal-flex'>
-                    <MyNumberForMat
-                        isPrefix
-                        removeStayType
-                        price={price}
-                        currency={currencySymbol}
-                        priceFontSize='16px'
-                        priceFontWeight='600'
-                    />
-                    <Radio.Group size='large' buttonStyle='solid' style={{ marginLeft: '10px' }}>
-                        {' '}
+                    <MyNumberForMat price={price} priceFontSize='16px' priceFontWeight='600' />
+                    <Radio.Group size='large' buttonStyle='solid' style={{ marginLeft: "10px" }}>
+                        {" "}
                         <Radio className='payment--method__radioBtn' />
                     </Radio.Group>
                 </div>

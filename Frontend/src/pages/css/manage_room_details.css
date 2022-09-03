@@ -185,9 +185,10 @@
 
 #manage-ys__name-control-container,
 #manage-ys__description-control-container,
+#manage-ys__price-control-container,
 #manage-ys__status-control-container,
 #manage-ys__location-control-container,
-#manage-ys__groupAndTypeAndPrivacy-control-container,
+#manage-ys__categoryAndPrivacy-control-container,
 #manage-ys__roomInfo-control-container,
 #manage-ys__amentities-control-container {
     position: relative;
@@ -200,9 +201,10 @@
 
 #manage-ys__name-control-container.unhideEditBox,
 #manage-ys__description-control-container.unhideEditBox,
+#manage-ys__price-control-container.unhideEditBox,
 #manage-ys__status-control-container.unhideEditBox,
 #manage-ys__location-control-container.unhideEditBox,
-#manage-ys__groupAndTypeAndPrivacy-control-container.unhideEditBox,
+#manage-ys__categoryAndPrivacy-control-container.unhideEditBox,
 #manage-ys__roomInfo-control-container.unhideEditBox,
 #manage-ys__amentities-control-container.unhideEditBox {
     display: block;
@@ -212,12 +214,14 @@
 #manage-ys__name-control-container,
 #manage-ys__description-control-view.hideViewBox,
 #manage-ys__description-control-container,
+#manage-ys__price-control-view.hideViewBox,
+#manage-ys__price-control-container,
 #manage-ys__status-control-view.hideViewBox,
 #manage-ys__status-control-container,
 #manage-ys__location-control-view.hideViewBox,
 #manage-ys__location-control-container,
-#manage-ys__groupAndTypeAndPrivacy-control-view.hideViewBox,
-#manage-ys__groupAndTypeAndPrivacy-control-container,
+#manage-ys__categoryAndPrivacy-control-view.hideViewBox,
+#manage-ys__categoryAndPrivacy-control-container,
 #manage-ys__roomInfo-control-view.hideViewBox,
 #manage-ys__roomInfo-control-container,
 #manage-ys__roomInfo-control-view.hideViewBox,

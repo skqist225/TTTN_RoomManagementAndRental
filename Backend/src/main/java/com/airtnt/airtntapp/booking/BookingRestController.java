@@ -81,7 +81,7 @@ public class BookingRestController {
         filters.put("bookingDateYear", bookingDateYear);
         filters.put("totalFee", totalFee);
 
-        BookingListDTO bookings = bookingService.getBookingListByRooms(roomIds, filters, page);
+        BookingListDTO bookings = bookingService.getBookingListByRooms(roomIds, filters, page, host.getId());
 
         return new OkResponse<BookingListDTO>(bookings).response();
 

@@ -104,12 +104,9 @@ const ReserveRoom: FC<IReserveRoomProps> = ({ room }) => {
             <div className='rdt__booking--container'>
                 <Div>
                     <MyNumberForMat
-                        isPrefix
                         price={room!.price}
-                        currency={room!.currencySymbol}
                         priceFontSize='22px'
                         priceFontWeight='600'
-                        stayTypeFontSize='16px'
                     />
                 </Div>
                 <RDTBookingRatingAndReview className='normal-flex'>
@@ -155,14 +152,7 @@ const ReserveRoom: FC<IReserveRoomProps> = ({ room }) => {
                         <div className='f1'>
                             <div className='normal-flex'>
                                 <div>
-                                    <MyNumberForMat
-                                        isPrefix
-                                        price={room!.price}
-                                        currency={room!.currencySymbol}
-                                        priceFontSize='16px'
-                                        stayTypeFontSize='16px'
-                                        removeStayType
-                                    />
+                                    <MyNumberForMat price={room!.price} priceFontSize='16px' />
                                 </div>
                                 <div style={{ color: "rgb(32, 32, 32)" }} className='fs-16'>
                                     <span>&nbsp;x&nbsp;</span>

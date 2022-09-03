@@ -11,6 +11,8 @@ import RoomStatus from "./components/RoomStatus";
 
 import "./css/edit_room_info.css";
 import { hideEditBox, onKeyDown } from "../../pages/script/manage_your_space";
+import { MyNumberForMat } from "../utils";
+import { InputNumber } from "antd";
 
 interface IEditRoomInfoProps {
     room: IRoomDetails;
@@ -19,6 +21,11 @@ interface IEditRoomInfoProps {
 const EditRoomInfo: FC<IEditRoomInfoProps> = ({ room }) => {
     const [roomName, setRoomName] = useState(room?.name);
     const [roomDescription, setRoomDescription] = useState(room?.description);
+    const [price, setPrice] = useState(room.price || 0);
+
+    const onChange = (value: number) => {
+        setPrice(value);
+    };
 
     return (
         <ManageYSContainer id='basicRoomInfos' data-aos='fade-down' data-aos-duration='2000'>
@@ -140,15 +147,43 @@ const EditRoomInfo: FC<IEditRoomInfoProps> = ({ room }) => {
             </div>
 
             <div className='viewAndEdit__line'>
-                <div className='flex-space manage-ys__section-content'>
-                    <div className='manage-ys__section-content-title'>Số lượng khách</div>
+                <div
+                    className='flex-space manage-ys__section-content'
+                    id='manage-ys__price-control-view'
+                >
                     <div>
-                        <IncAndDecBtn
-                            dataEdit='guestNumber'
-                            dataTrigger=''
-                            data={room!.accomodates}
+                        <div className='manage-ys__section-content-title'>Giá tiền</div>
+                        <div className='manage-ys__section-content-info'>
+                            <MyNumberForMat price={room.price} />
+                        </div>
+                    </div>
+                    <div>
+                        <DisplayEditUI sectionKey='price' />
+                    </div>
+                </div>
+                <div id='manage-ys__price-control-container'>
+                    <div style={{ padding: "24px 24px 0" }}>
+                        <div className='flex-space'>
+                            <div className='manage-ys__header-edit-main-title'>
+                                <div>Giá tiền nhà/phòng cho thuê</div>
+                            </div>
+                            <HideEditBox
+                                sectionKey='price'
+                                description={roomDescription}
+                                hideEditBox={hideEditBox}
+                            />
+                        </div>
+                        <InputNumber
+                            id='roomPrice'
+                            addonAfter='₫'
+                            defaultValue={100}
+                            onChange={onChange}
+                            value={price}
+                            style={{ width: "100%", height: "50px" }}
                         />
                     </div>
+
+                    <BoxFooter sectionKey='price' idInput='#roomPrice' hideEditBox={hideEditBox} />
                 </div>
             </div>
 
@@ -201,13 +236,6 @@ const EditRoomInfo: FC<IEditRoomInfoProps> = ({ room }) => {
                                 title='Đã hủy đăng'
                                 subTitle='Khách không thể đặt phòng hoặc tìm thấy nhà/phòng cho thuê của bạn trong kết quả tìm kiếm.'
                             />
-                            {/* <RoomStatus
-                                id='deleteRoom'
-                                imageName='stop'
-                                title='Hủy kích hoạt'
-                                subTitle='Xóa vĩnh viễn nhà/phòng cho thuê của bạn
-                                                        khỏi AirJ18.' */}
-                            {/* /> */}
                         </div>
                     </div>
                     <BoxFooter sectionKey='status' idInput='' hideEditBox={hideEditBox} />

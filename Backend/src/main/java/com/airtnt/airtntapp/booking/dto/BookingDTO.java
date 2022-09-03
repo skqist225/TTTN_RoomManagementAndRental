@@ -29,20 +29,12 @@ public class BookingDTO {
 			bookingDetailDTOS.add(BookingDetailDTO.build(bookingDetail));
 		}
 		
-		return BookingDTO.builder().bookingId(booking.getId()).state(booking.getState())
+		return BookingDTO.builder().bookingId(booking.getId()).state(booking.determineStatus())
 				.customerAvatar(booking.getCustomer().getAvatarPath())
 				.customerFullName(booking.getCustomer().getFullName())
 				.customerId(booking.getCustomer().getId())
 				.bookingDetails(bookingDetailDTOS)
 				.totalFee(booking.getTotalFee())
 				.build();
-
-//		return BookingDTO.builder().bookingId(booking.getId()).state(booking().getState())
-//				.customerAvatar(booking.getBooking().getCustomer().getAvatarPath())
-//				.customerFullName(booking.getBooking().getCustomer().getFullName())
-//				.customerId(booking.getBooking().getCustomer().getId())
-//				.bookingDetails(bookingDetailDTOS)
-//				.totalFee(booking.getTotalFee())
-//				.build();
 	}
 }

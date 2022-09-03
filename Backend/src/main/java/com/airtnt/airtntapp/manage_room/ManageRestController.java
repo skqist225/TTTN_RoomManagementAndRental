@@ -25,26 +25,39 @@ public class ManageRestController {
         
         System.out.println("updated fields: " + fieldName);
 
-        if (fieldName.equals("roomInfo")) {
-            values.put("bedroomCount", payload.get("bedroom").toString());
-            values.put("bedCount", payload.get("bed").toString());
-            values.put("bathroomCount", payload.get("bathroom").toString());
-        } else if (fieldName.equals("groupAndTypeAndPrivacy")) {
-            values.put("category", payload.get("category").toString());
-            values.put("roomPrivacy", payload.get("roomPrivacy").toString());
-        } else if (fieldName.equals("location")) {
-            values.put("city", payload.get("city").toString());
-            values.put("street", payload.get("street").toString());
-            values.put("longitude", payload.get("longitude").toString());
-            values.put("latitude", payload.get("latitude").toString());
-        } else if (fieldName.equals("status")) {
-            values.put("status", payload.get("status").toString());
-        } else if (fieldName.equals("amentities")) {
-            values.put("checked", payload.get("checked").toString());
-        } else if (fieldName.equals("thumbnail")) {
-            values.put("thumbnail", payload.get("thumbnail").toString());
-        } else
-            values.put(fieldName, payload.get(fieldName).toString());
+        switch (fieldName) {
+            case "roomInfo":
+                values.put("guestCount", payload.get("guest").toString());
+                values.put("bedroomCount", payload.get("bedroom").toString());
+                values.put("bedCount", payload.get("bed").toString());
+                values.put("bathroomCount", payload.get("bathroom").toString());
+                break;
+            case "categoryAndPrivacy":
+                values.put("category", payload.get("category").toString());
+                values.put("roomPrivacy", payload.get("roomPrivacy").toString());
+                break;
+            case "location":
+                values.put("city", payload.get("city").toString());
+                values.put("street", payload.get("street").toString());
+                values.put("longitude", payload.get("longitude").toString());
+                values.put("latitude", payload.get("latitude").toString());
+                break;
+            case "status":
+                values.put("status", payload.get("status").toString());
+                break;
+            case "amenities":
+                values.put("checked", payload.get("checked").toString());
+                break;
+            case "thumbnail":
+                values.put("thumbnail", payload.get("thumbnail").toString());
+                break;
+            case "price":
+                values.put("price", payload.get("price").toString());
+                break;
+            default:
+                values.put(fieldName, payload.get(fieldName).toString());
+                break;
+        }
 
         return roomService.updateField(roomId, fieldName, values);
     }

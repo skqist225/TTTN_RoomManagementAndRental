@@ -3,10 +3,22 @@ package com.airtnt.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,35 +36,32 @@ import java.util.Locale;
 @Table(name = "booking_details")
 public class BookingDetail extends BaseEntity implements Serializable {
 
+    @Transient
+    long lastUpdated;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date checkinDate;
-
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date checkoutDate;
-
     @Column(columnDefinition = "Decimal(20,2)", nullable = false)
     private float siteFee;
-
     @Column(columnDefinition = "Decimal(20,2)", nullable = false)
     private float cleanFee;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "booking_id")
     private Booking booking;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
-
-    @Transient
-    long lastUpdated;
-
     @OneToOne
     @JoinColumn(name = "review_id", unique = true, referencedColumnName = "id")
     private Review review;
+
+    public BookingDetail(Integer bookingId) {
+        super(bookingId);
+    }
 
     @Transient
     public long getNumberOfDays() {
@@ -77,19 +86,7 @@ public class BookingDetail extends BaseEntity implements Serializable {
 
     @Transient
     public float getPricePerDay() {
-        float roomPrice = this.getRoom().getPrice();
-        String currency = this.getRoom().getCurrency().getSymbol();
-        if (currency.equals("$")) {
-            roomPrice *= 23397;
-        } else if (currency.equals("£")) {
-            roomPrice *= 28404;
-        } else if (currency.equals("¥")) {
-            roomPrice *= 3900;
-        } else {
-            return roomPrice;
-        }
-
-        return roomPrice;
+        return this.getRoom().getPrice();
     }
 
     @Transient
@@ -114,9 +111,5 @@ public class BookingDetail extends BaseEntity implements Serializable {
         }
 
         return 0;
-    }
-
-    public BookingDetail(Integer bookingId) {
-        super(bookingId);
     }
 }

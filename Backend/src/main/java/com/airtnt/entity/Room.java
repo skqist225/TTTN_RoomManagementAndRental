@@ -17,7 +17,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.time.LocalDate;
@@ -55,9 +54,7 @@ public class Room extends BaseEntity implements Comparable<Room> {
     private int accomodatesCount;
     @Column(nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
     private int bedCount;
-    @OneToOne
-    @JoinColumn(name = "currency_id")
-    private Currency currency;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -88,7 +85,7 @@ public class Room extends BaseEntity implements Comparable<Room> {
 
     @Builder
     public Room(Integer id, String name, Set<Image> images, String thumbnail, byte rating, Address address,
-                int bedroomCount, int bathroomCount, int accomodatesCount, int bedCount, Currency currency,
+                int bedroomCount, int bathroomCount, int accomodatesCount, int bedCount,
                 Category category, String description, Set<Amentity> amentities, float latitude, float longitude,
                 float price, RoomPrivacy privacyType, User host, Set<Rule> rules, boolean status) {
         super(status);
@@ -101,7 +98,6 @@ public class Room extends BaseEntity implements Comparable<Room> {
         this.bathroomCount = bathroomCount;
         this.accomodatesCount = accomodatesCount;
         this.bedCount = bedCount;
-        this.currency = currency;
         this.category = category;
         this.description = description;
         this.amentities = amentities;
@@ -118,15 +114,14 @@ public class Room extends BaseEntity implements Comparable<Room> {
     }
 
     @Transient
-    public static Room buildRoom(PostAddRoomDTO payload, Set<Image> images, Set<Amentity> amenities, Address address,
+    public static Room build(PostAddRoomDTO payload, Set<Image> images, Set<Amentity> amenities, Address address,
                                  Set<Rule> rules, boolean status) {
         return Room.builder().name(payload.getName()).accomodatesCount(payload.getGuestCount())
                 .bathroomCount(payload.getBathroomCount()).bedCount(payload.getBedCount())
                 .bedroomCount(payload.getBedroomCount()).description(payload.getDescription()).amentities(amenities)
                 .images(images).latitude(payload.getLatitude()).longitude(payload.getLongitude())
                 .price(payload.getPrice()).rules(rules).host(new User(payload.getHost()))
-                .host(new User(payload.getHost())).category(new Category(payload.getCategory()))
-                .currency(new Currency(payload.getCurrency())).privacyType(new RoomPrivacy(payload.getPrivacy()))
+                .host(new User(payload.getHost())).category(new Category(payload.getCategory())).privacyType(new RoomPrivacy(payload.getPrivacy()))
                 .address(address)
                 .thumbnail(images.iterator().next().getImage()).status(true).build();
     }

@@ -13,7 +13,6 @@ import { userState } from "../../features/user/userSlice";
 
 import "./css/right_content.css";
 import Toast from "../notify/Toast";
-import { currencyState } from "../../features/currency/currencySlice";
 import { stateState } from "../../features/address/stateSlice";
 import { cityState } from "../../features/address/citySlice";
 
@@ -51,10 +50,6 @@ const RightPageContent: FC<IRightPageContentProps> = ({
     function showErrorNotification(message: string) {
         callToast("error", message);
     }
-
-    const {
-        listing: { currencies },
-    } = useSelector(currencyState);
 
     function setRoomAttrToLocalStorage(value: any) {
         let room: IRoomLocalStorage = {};
@@ -220,14 +215,9 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                     return;
                 }
 
-                const selectedCurrency = currencies.filter(
-                    ({ id }: { id: any }) => id === parseInt($("#room-currency").val()!.toString())
-                )[0];
-
                 setRoomAttrToLocalStorage({
                     price,
                     currency: parseInt($("#room-currency").val()!.toString()),
-                    currencySymbol: (selectedCurrency as any).symbol,
                 });
 
                 break;
@@ -261,7 +251,6 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                         bedRoomNumber,
                         category,
                         city: lsCity,
-                        currency,
                         description,
                         guestNumber,
                         images,
@@ -299,7 +288,6 @@ const RightPageContent: FC<IRightPageContentProps> = ({
                         description,
 
                         price: parseInt(price!),
-                        currency,
 
                         host: user?.id!,
                     };

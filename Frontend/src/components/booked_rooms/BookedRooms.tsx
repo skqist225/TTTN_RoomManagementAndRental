@@ -547,10 +547,8 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                                 <span>
                                                     <span className='fw-600'>
                                                         <MyNumberForMat
-                                                            currency={booking.currency}
                                                             price={booking.pricePerDay}
                                                             priceFontSize='16px'
-                                                            stayTypeFontSize='16px'
                                                         />
                                                     </span>
                                                 </span>
@@ -568,10 +566,7 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                                     {booking.currency}
                                                 </span>
                                                 <span className='fw-600'>
-                                                    <MyNumberForMat
-                                                        price={booking.siteFee}
-                                                        currency={booking.currency}
-                                                    />
+                                                    <MyNumberForMat price={booking.siteFee} />
                                                 </span>
                                             </div>
                                         </Div>
@@ -599,11 +594,7 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                                 booking.pricePerDay * booking.numberOfDays +
                                                 booking.siteFee
                                             }
-                                            currency={booking.currency}
-                                            removeStayType
                                             priceFontSize='20px'
-                                            stayTypeFontSize='20px'
-                                            isSuffix
                                         />
                                     </span>
                                 </span>

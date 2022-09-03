@@ -34,7 +34,7 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
                         <div
                             style={{ height: "85px", borderBottom: "1px solid #d3d6db" }}
                             className='flex-space'
-                            id='manage-ys__groupAndTypeAndPrivacy-control-view'
+                            id='manage-ys__categoryAndPrivacy-control-view'
                         >
                             <div>
                                 <div className='manage-ys__section-content-title'>Loại chỗ ở</div>
@@ -47,17 +47,17 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
                                 </div>
                             </div>
                             <div>
-                                <DisplayEditUI sectionKey='groupAndTypeAndPrivacy' />
+                                <DisplayEditUI sectionKey='categoryAndPrivacy' />
                             </div>
                         </div>
-                        <div id='manage-ys__groupAndTypeAndPrivacy-control-container'>
+                        <div id='manage-ys__categoryAndPrivacy-control-container'>
                             <div className='manage-ys__location-control-content'>
                                 <div className='flex-space'>
                                     <div className='manage-ys__header-edit-main-title'>
                                         Loại chỗ ở
                                     </div>
                                     <HideEditBox
-                                        sectionKey='groupAndTypeAndPrivacy'
+                                        sectionKey='categoryAndPrivacy'
                                         hideEditBox={hideEditBox}
                                     />
                                 </div>
@@ -107,7 +107,7 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
                                 </div>
                             </div>
                             <BoxFooter
-                                sectionKey='groupAndTypeAndPrivacy'
+                                sectionKey='categoryAndPrivacy'
                                 idInput=''
                                 hideEditBox={hideEditBox}
                             />
@@ -118,8 +118,14 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
                         <div id='manage-ys__roomInfo-control-view'>
                             <Div className='flex-space' height='139px'>
                                 <div>
-                                    <div className='manage-ys__section-content-title'>
+                                    <div
+                                        className='manage-ys__section-content-title'
+                                        style={{ fontWeight: "bold" }}
+                                    >
                                         Phòng và không gian khác
+                                    </div>
+                                    <div className='manage-ys__section-content-info'>
+                                        Số khách: {room?.guest}
                                     </div>
                                     <div className='manage-ys__section-content-info'>
                                         Phòng ngủ: {room?.bedroom}
@@ -147,13 +153,26 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
 
                                 <div className='flex-space manage-ys__section-content'>
                                     <div className='manage-ys__section-content-title'>
+                                        Số lượng khách
+                                    </div>
+                                    <div>
+                                        <IncAndDecBtn
+                                            dataEdit='manage-ys__guest'
+                                            dataTrigger=''
+                                            data={room!.accomodates}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className='flex-space manage-ys__section-content'>
+                                    <div className='manage-ys__section-content-title'>
                                         Phòng ngủ
                                     </div>
                                     <div>
                                         <IncAndDecBtn
                                             dataEdit='manage-ys__bedRoom'
                                             dataTrigger=''
-                                            data={room!.accomodates}
+                                            data={room!.bedroom}
                                         />
                                     </div>
                                 </div>
@@ -164,7 +183,7 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
                                         <IncAndDecBtn
                                             dataEdit='manage-ys__bed'
                                             dataTrigger=''
-                                            data={room!.accomodates}
+                                            data={room!.bed}
                                         />
                                     </div>
                                 </div>
@@ -178,7 +197,7 @@ const EditRoomCount: FC<IEditRoomCountProps> = ({ room }) => {
                                         <IncAndDecBtn
                                             dataEdit='manage-ys__bathRoom'
                                             dataTrigger=''
-                                            data={room!.accomodates}
+                                            data={room!.bathroom}
                                         />
                                     </div>
                                 </div>

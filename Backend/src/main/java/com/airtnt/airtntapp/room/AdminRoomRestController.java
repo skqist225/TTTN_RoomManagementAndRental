@@ -14,7 +14,6 @@ import com.airtnt.airtntapp.rule.RuleService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
 import com.airtnt.airtntapp.state.StateService;
 import com.airtnt.airtntapp.user.UserService;
-import com.airtnt.entity.Currency;
 import com.airtnt.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -139,7 +138,7 @@ public class AdminRoomRestController {
         userService.saveUser(host);
 
         boolean status = host.isPhoneVerified();
-        Room room = Room.buildRoom(payload, images, amenities, address, rules, status);
+        Room room = Room.build(payload, images, amenities, address, rules, status);
         Room savedRoom = roomService.save(room);
 
         /* MOVE IMAGE TO FOLDER */
@@ -238,7 +237,6 @@ public class AdminRoomRestController {
                 room.setName(payload.getName());
                 room.setDescription(payload.getDescription());
                 room.setPrice(payload.getPrice());
-                room.setCurrency(new Currency(payload.getCurrency()));
             } else if (activeStep == 1) {
                 Address address = null;
                 if (payload.getCity() != null) {

@@ -75,18 +75,20 @@ const BoxFooter: FC<IBoxFooterProps> = ({
                 break;
             }
             case "roomInfo": {
+                const guest = $("#manage-ys__guest").text().trim();
                 const bedroom = $("#manage-ys__bedRoom").text().trim();
                 const bed = $("#manage-ys__bed").text().trim();
                 const bathroom = $("#manage-ys__bathRoom").text().trim();
 
                 sendRequest({
+                    guest,
                     bedroom,
                     bed,
                     bathroom,
                 });
                 break;
             }
-            case "groupAndTypeAndPrivacy": {
+            case "categoryAndPrivacy": {
                 const categoryId = $('select[id="manage-ys__type-input"]').val();
                 const privacyId = $('select[id="manage-ys__privacy-input"]').val();
 
@@ -143,11 +145,6 @@ const BoxFooter: FC<IBoxFooterProps> = ({
                     sendRequest({
                         status: request,
                     });
-
-                    // if (data === "OK") {
-                    //     const status = request === 1 ? true : false;
-                    //     callToast("success", "Cập nhật thông tin phòng thành công!");
-                    // }
                 }
 
                 break;
@@ -159,7 +156,7 @@ const BoxFooter: FC<IBoxFooterProps> = ({
                 });
                 break;
             }
-            case "amentities": {
+            case "amenities": {
                 let checkedArray: string[] = [];
 
                 $(".manage-ys__check-btn").each(function () {
@@ -172,6 +169,12 @@ const BoxFooter: FC<IBoxFooterProps> = ({
                     checked: checkedArray.length > 0 ? checkedArray.join(",").trim() : "-1",
                 });
 
+                break;
+            }
+            case "price": {
+                sendRequest({
+                    price: $("#roomPrice").val(),
+                });
                 break;
             }
         }

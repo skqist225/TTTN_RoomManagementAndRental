@@ -43,7 +43,6 @@ public class BookedRoomDTO {
     private String roomName;
     private String hostName;
     private String hostAvatar;
-    private String currency;
     private String privacyType;
     private String roomCategory;
 
@@ -70,7 +69,7 @@ public class BookedRoomDTO {
                     b.getPricePerDay(), b.getNumberOfDays(),
                     b.getSiteFee(), b.getRoom().getId(), roomThumbnail, b.getRoom().getName(),
                     userFullName,
-                    userAvatar, b.getRoom().getCurrency().getSymbol(), b.getRoom().getPrivacyType().getName(),
+                    userAvatar, b.getRoom().getPrivacyType().getName(),
                     b.getRoom().getCategory().getName(),
                     bookingReview, reviewRating, b.getBooking().getState());
 

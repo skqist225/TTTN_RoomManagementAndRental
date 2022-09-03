@@ -20,10 +20,19 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
     @Query("SELECT b FROM Booking b WHERE b.state = :type")
     public Page<Booking> findAll(@Param("type") Status type, Pageable pageable);
 
-    // @Query("SELECT b FROM Booking b WHERE b.room.id = :roomId AND b.state =
-    // 'APPROVED'")
-    // public List<Booking> getBookedDates(Integer roomId);
 
+
+    @Query(value = "SELECT count(temp.id) as numberOfBookings FROM (SELECT bs.* FROM airtn.bookings as bs" +
+            " LEFT JOIN booking_details as bds on bs.id = bds.booking_id" +
+            " WHERE bds.room_id in (select id from rooms as r where r.host_id = :hostId)" +
+            " group by bs.id) as temp",nativeQuery = true)
+    public Integer getNumberOfBookingsOfHost(Integer hostId);
+
+//    public static interface RevenueByYear {
+//
+//        Long getNumber();
+//
+//    }
     // @Query("SELECT b FROM Booking b WHERE b.checkinDate = :checkinDate AND
     // b.checkoutDate = :checkoutDate" +
     // " AND b.room.id = :roomId AND b.customer.id = :customerId")

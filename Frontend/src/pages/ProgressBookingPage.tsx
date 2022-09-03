@@ -207,9 +207,6 @@ const ProgressBookingPage: FC<IProgressBookingPageProps> = () => {
                                                     <div className='fs-16 fw-600'>Tổng &nbsp;</div>
                                                     <div>
                                                         <MyNumberForMat
-                                                            isPrefix
-                                                            removeStayType
-                                                            currency={"đ"}
                                                             price={booking.totalPrice}
                                                             priceFontSize='16px'
                                                             priceFontWeight='600'

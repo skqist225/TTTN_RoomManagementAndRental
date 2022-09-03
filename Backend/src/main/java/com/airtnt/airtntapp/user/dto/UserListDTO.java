@@ -35,7 +35,6 @@ public class UserListDTO {
                 .emailVerified(user.isEmailVerified())
                 .phoneVerified(user.isPhoneVerified())
                 .identityVerified(false)
-                .numberOfReviews(user.getReviews().size())
                 .build();
     }
 }

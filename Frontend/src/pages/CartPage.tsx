@@ -82,88 +82,6 @@ const CartPage: FC<ICartPageProps> = () => {
         dispatch(fetchUserOrders());
     }, []);
 
-    const DeleteProductInCartModal = (props: any) => {
-        const parent = document.getElementById("root");
-        return ReactDOM.createPortal(props.children, parent as any);
-    };
-
-    const Child = () => {
-        // const handleDeleteProduct = () => {
-        //     dispatch(deleteProductInCart(productId));
-        // };
-
-        // const handleCloseModal = e => {
-        //     setShowModal({ anchor: null });
-        // };
-
-        console.log("Child rendering...");
-
-        // useEffect(() => {
-        //     return () => handleDeleteProduct;
-        // }, []);
-
-        return (
-            <ModalContainer>
-                <OpacityBackground>
-                    {/*<OutsideClickHandler onClickOutside={handleCloseModal}>*/}
-                    <Modal className='insideModal'>
-                        <div className='modalHeader'>Bạn chắc chắn muốn xóa bỏ sản phẩm này ? </div>
-
-                        {/*<div style={{ flex: '1' }}>{productName}</div>*/}
-                        {/*<Flex width="100%" justifyContent="space-between">*/}
-                        {/*    <YesButton children="Có" onClick={handleDeleteProduct} />*/}
-                        {/*    <CancelButton children="Không" onClick={handleCloseModal} />*/}
-                        {/*</Flex>*/}
-                    </Modal>
-                    {/*</OutsideClickHandler>*/}
-                </OpacityBackground>
-            </ModalContainer>
-        );
-    };
-
-    const SelectProductNotification = () => {
-        // const handleCloseModal = e => {
-        //     setShowNotifyModal({ anchor: null });
-        // };
-
-        return (
-            <ModalContainer>
-                <OpacityBackground>
-                    {/*<OutsideClickHandler onClickOutside={handleCloseModal}>*/}
-                    <Modal className='insideModal'>
-                        <div className='modalHeader'>Bạn vẫn chưa chọn sản phẩm nào để mua.</div>
-                        <div style={{ flex: "1" }}></div>
-                        <Flex width='100%' justifyContent='space-between'>
-                            {/*<OKButton children="OK" onClick={handleCloseModal} />*/}
-                        </Flex>
-                    </Modal>
-                    {/*</OutsideClickHandler>*/}
-                </OpacityBackground>
-            </ModalContainer>
-        );
-    };
-
-    const deleteModal = useMemo(() => {
-        return showModal.anchor ? (
-            <DeleteProductInCartModal>
-                <Child />
-            </DeleteProductInCartModal>
-        ) : null;
-    }, [showModal.anchor]);
-
-    const NotifySelectProductInCart = (props: any) => {
-        const parent = document.getElementById("root");
-        return ReactDOM.createPortal(props.children, parent as any);
-    };
-
-    const notifyModal = useMemo(() => {
-        return showNotifyModal.anchor ? (
-            <NotifySelectProductInCart>
-                <SelectProductNotification />
-            </NotifySelectProductInCart>
-        ) : null;
-    }, [showNotifyModal.anchor]);
-
     function refreshFinalPrice() {
         const finalPrice = bookings.reduce((acc, booking) => acc + booking.totalPrice, 0);
         setFinalPrice(finalPrice);
@@ -251,7 +169,7 @@ const CartPage: FC<ICartPageProps> = () => {
 
     useEffect(() => {
         if (successMessage) {
-            callToast("success", successMessage);
+            callToast("success", "Xóa chi tiết đơn đặt phòng thành công");
             dispatch(fetchUserOrders());
             if (allBookings) {
                 refreshFinalPrice();
@@ -289,9 +207,6 @@ const CartPage: FC<ICartPageProps> = () => {
                 <div>
                     {!loading && bookings.length > 0 ? (
                         <div id='viewCartParent'>
-                            {deleteModal}
-                            {notifyModal}
-
                             <table style={{ width: "100%" }}>
                                 <thead>
                                     <tr>
@@ -377,8 +292,6 @@ const CartPage: FC<ICartPageProps> = () => {
                                                     <td>
                                                         <MyNumberForMat
                                                             price={bookingDetail.pricePerDay}
-                                                            currency={bookingDetail.roomCurrency}
-                                                            isPrefix
                                                         />
                                                     </td>
                                                     <td>{bookingDetail.checkinDate}</td>
@@ -386,23 +299,17 @@ const CartPage: FC<ICartPageProps> = () => {
                                                     <td>
                                                         <MyNumberForMat
                                                             price={bookingDetail.siteFee}
-                                                            currency={bookingDetail.roomCurrency}
-                                                            isPrefix
                                                         />
                                                     </td>
                                                     <td>
                                                         <MyNumberForMat
                                                             price={bookingDetail.cleanFee}
-                                                            currency={bookingDetail.roomCurrency}
-                                                            isPrefix
                                                         />
                                                     </td>
                                                     <td>
                                                         <FinalPrice>
                                                             <MyNumberForMat
                                                                 price={bookingDetail.totalFee}
-                                                                currency={"đ"}
-                                                                isPrefix
                                                             />
                                                         </FinalPrice>
                                                     </td>
@@ -442,8 +349,6 @@ const CartPage: FC<ICartPageProps> = () => {
                                                             {finalPrice > 0 && (
                                                                 <MyNumberForMat
                                                                     price={finalPrice}
-                                                                    currency={"đ"}
-                                                                    isPrefix
                                                                 />
                                                             )}
                                                         </FinalPrice>

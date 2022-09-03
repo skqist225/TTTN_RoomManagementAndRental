@@ -1,13 +1,22 @@
 package com.airtnt.airtntapp.booking.dto;
 
 
-import com.airtnt.entity.*;
+import com.airtnt.entity.BookingDetail;
+import com.airtnt.entity.Review;
+import com.airtnt.entity.Room;
+import com.airtnt.entity.Status;
+import com.airtnt.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -31,11 +40,9 @@ public class BookingDetailDTO {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDateTime cancelDate;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private Date checkinDate;
+    private String checkinDate;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    private Date checkoutDate;
+    private String checkoutDate;
 
     private float pricePerDay;
     private long numberOfDays;
@@ -55,6 +62,10 @@ public class BookingDetailDTO {
         Room room = bookingDetail.getRoom();
         User customer = bookingDetail.getBooking().getCustomer();
 
+        DateFormat outputFormatter = new SimpleDateFormat("dd-MM-yyyy");
+        String checkinDateStr = outputFormatter.format(bookingDetail.getCheckinDate());
+        String checkoutDateStr = outputFormatter.format(bookingDetail.getCheckoutDate());
+
         return BookingDetailDTO.builder()
                 .bookingDetailId(bookingDetail.getId())
                 .bookingId(bookingDetail.getId())
@@ -62,11 +73,10 @@ public class BookingDetailDTO {
                 .roomName(room.getName())
                 .roomThumbnail(room.renderThumbnailImage())
                 .roomCategory(room.getCategory().getName())
-                .roomCurrency(room.getCurrency().getSymbol())
                 .state(bookingDetail.getBooking().getState())
                 .bookingDate(bookingDetail.getBooking().getBookingDate())
-                .checkinDate(bookingDetail.getCheckinDate())
-                .checkoutDate(bookingDetail.getCheckoutDate())
+                .checkinDate(checkinDateStr)
+                .checkoutDate(checkoutDateStr)
                 .cancelDate(bookingDetail.getBooking().getCancelDate())
                 .pricePerDay(room.getPrice())
                 .numberOfDays(bookingDetail.getNumberOfDays())

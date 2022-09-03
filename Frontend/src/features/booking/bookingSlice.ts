@@ -34,7 +34,7 @@ export const fetchUserBookings = createAsyncThunk(
         try {
             let fetchUrl = `/booking/listings/${page}?query=${query}`;
             const state = getState() as RootState;
-            // const { fetchData } = state.booking;
+            const { fetchData } = state.booking;
 
             // if (
             //     (bookingDateMonth && bookingDateYear) ||
@@ -58,22 +58,22 @@ export const fetchUserBookings = createAsyncThunk(
             //     dispatch(setBookingDate(bookingDate || fetchData.bookingDate));
             // }
 
-            // if (isComplete || fetchData.isComplete) {
-            //     fetchUrl += `&is_complete=${isComplete || fetchData.isComplete}`;
-            //     dispatch(setIsComplete(isComplete || fetchData.isComplete));
-            // }
+            if (isComplete || fetchData.isComplete) {
+                fetchUrl += `&is_complete=${isComplete || fetchData.isComplete}`;
+                dispatch(setIsComplete(isComplete || fetchData.isComplete));
+            }
 
-            // if (totalFee || fetchData.bookingDate) {
-            //     fetchUrl += `&total_fee=${totalFee || fetchData.totalFee}`;
-            //     dispatch(setTotalFee(totalFee || fetchData.totalFee));
-            // }
+            if (totalFee || fetchData.bookingDate) {
+                fetchUrl += `&total_fee=${totalFee || fetchData.totalFee}`;
+                dispatch(setTotalFee(totalFee || fetchData.totalFee));
+            }
 
-            // dispatch(setQuery(query || fetchData.query));
+            dispatch(setQuery(query || fetchData.query));
             // fetchUrl += `&sort_field=${sortField}&sort_dir=${sortDir}`;
             // dispatch(setSortField(sortField || fetchData.sortField));
             // dispatch(setSortDir(sortDir || fetchData.sortDir));
 
-            // console.info(fetchUrl);
+            console.info(fetchUrl);
 
             const {
                 data: { bookings, totalElements, totalPages },
@@ -426,6 +426,12 @@ const bookingSlice = createSlice({
         setCancelledBooking: (state, { payload }) => {
             state.cancelledBookingId = payload;
         },
+        clearApproveAndDenyState(state) {
+            state.approveBookingAction.successMessage = null;
+            state.approveBookingAction.errorMessage = null;
+            state.cancelBookingAction.successMessage = null;
+            state.cancelBookingAction.errorMessage = null;
+        },
     },
     extraReducers: builder => {
         builder
@@ -548,6 +554,7 @@ export const {
     setSortDir,
     clearAllFetchData,
     setCancelledBooking,
+    clearApproveAndDenyState,
 } = bookingSlice.actions;
 export const bookingState = (state: RootState) => state.booking;
 export default bookingSlice.reducer;

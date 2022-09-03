@@ -74,9 +74,9 @@ public class RoomRestController {
     @RequestMapping("/api/rooms")
     public ResponseEntity<StandardJSONResponse<List<RoomHomePageDTO>>> fetchRoomsByCategoryId(
             @RequestParam("categoryId") Integer categoryId,
-            @RequestParam(value = "privacy", required = false, defaultValue = "") String privacies,
+            @RequestParam(value = "privacy", required = false, defaultValue = "") String privacy,
             @RequestParam(value = "minPrice", required = false, defaultValue = "0") String minPrice,
-            @RequestParam(value = "maxPrice", required = false, defaultValue = "1000000000") String maxPrice,
+            @RequestParam(value = "maxPrice", required = false, defaultValue = "9999999999") String maxPrice,
             @RequestParam(value = "bedRoom", required = false, defaultValue = "0") String bedRoom,
             @RequestParam(value = "bed", required = false, defaultValue = "0") String bed,
             @RequestParam(value = "bathRoom", required = false, defaultValue = "0") String bathRoom,
@@ -84,7 +84,7 @@ public class RoomRestController {
             @RequestParam(value = "bookingDates", required = false, defaultValue = "") String bookingDates,
             @RequestParam(value = "query", required = false, defaultValue = "") String query) throws ParseException {
         Map<String, String> filters = new HashMap<>();
-        filters.put("privacies", privacies);
+        filters.put("privacy", privacy);
         filters.put("minPrice", minPrice);
         filters.put("maxPrice", maxPrice);
         filters.put("bedRoom", bedRoom);
@@ -203,7 +203,7 @@ public class RoomRestController {
 
         boolean status = user.isPhoneVerified();
 
-        Room room = Room.buildRoom(payload, images, amenities, address, rules, status);
+        Room room = Room.build(payload, images, amenities, address, rules, status);
         Room savedRoom = roomService.save(room);
 
         /* MOVE IMAGE TO FOLDER */

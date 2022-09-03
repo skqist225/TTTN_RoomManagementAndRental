@@ -1,29 +1,25 @@
 // @ts-nocheck
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useParams } from "react-router-dom";
-import { BookingsTable } from "../components/booking";
+import { Link, useParams } from "react-router-dom";
 import Header from "../components/Header";
-import { FilterFooter, MyNumberForMat, Pagination } from "../components/utils";
+import { MyNumberForMat } from "../components/utils";
 import {
     approveBooking,
     bookingState,
     cancelBooking,
     clearAllFetchData,
+    clearApproveAndDenyState,
     fetchUserBookings,
     setBookingDate,
     setBookingDateMonth,
     setBookingDateYear,
-    setPage,
-    setQuery,
     setTotalFee,
 } from "../features/booking/bookingSlice";
-import { Div, Image } from "../globalStyle";
+import { Image } from "../globalStyle";
 import { callToast, getImage, seperateNumber } from "../helpers";
+import "./css/manage_booking_page.css";
 
-// import "./css/manage_booking_page.css";
-// import "../components/hosting/listings/css/filter_by_line.css";
-// import "../components/hosting/listings/css/filter_footer.css";
 import $ from "jquery";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -38,17 +34,18 @@ import { tableIcons } from "./tableIcon";
 import { BookingDetail } from "../types/booking/type_Booking";
 import Toast from "../components/notify/Toast";
 import BookingStatus from "../components/common/BookingStatus";
-import { setAutoFreeze } from "immer";
+import { FilterButton } from "../components/hosting/listings/components";
+import { Col, Slider } from "antd";
 
 interface IManageBookingPageProps {}
 
 const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
-    // setAutoFreeze(false);
     const [page, setPage] = useState(0);
+    const [searchText, setSearchText] = useState("");
 
     const dispatch = useDispatch();
     const params = useParams();
-    const [query, setLocalQuery] = useState("");
+    const [localQuery, setLocalQuery] = useState("");
 
     const {
         bookings,
@@ -61,7 +58,6 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
 
     useEffect(() => {
         dispatch(fetchUserBookings({ ...fetchData, page: parseInt(params.page!) }));
-        // dispatch(setPage(parseInt(params.page!)));
     }, [params.page!]);
 
     function handleFindBookingByRoomIdAndName(event: any) {
@@ -74,6 +70,10 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
             })
         );
     }
+
+    useEffect(() => {
+        dispatch(clearApproveAndDenyState());
+    }, []);
 
     useEffect(() => {
         if (successMessage) {
@@ -124,7 +124,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                     }
                 });
         });
-    }, []);
+    }, [bookings.length]);
 
     function enableDeleteButton(value: string, footerOf: string) {
         const deleteButton = $(`.deleteBtn.${footerOf}`);
@@ -171,23 +171,19 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
     };
 
     const handlePageChange = (e: any, pn: any) => {
-        // dispatch(
-        //     fetchBookings({
-        //         page: pn + 1,
-        //         type,
-        //     })
-        // );
+        dispatch(fetchUserBookings({ ...fetchData, page: pn + 1 }));
+
         setPage(pn);
     };
 
     const roomColumns = [
         {
-            title: "Id",
+            title: "Mã nhà/phòng",
             field: "id",
             render: (rowData: any) => <div style={{ maxWidth: "20px" }}>{rowData.id}</div>,
         },
         {
-            title: "Customer",
+            title: "Khách hàng",
             field: "customerFullName",
             render: (rowData: any) => (
                 <span className='inline-flex items-center'>
@@ -201,46 +197,61 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
             ),
         },
         {
-            title: "Status",
+            title: "Trạng thái",
             field: "state",
             render: (rowData: any) => <BookingStatus rowData={rowData} />,
         },
         {
-            title: "Booking Date",
+            title: "Ngày đặt phòng",
             field: "bookingDate",
         },
         {
-            title: "Total Fee",
-            field: "totalPrice",
-            render: (rowData: any) => (
-                <MyNumberForMat currency='đ' price={rowData.totalPrice} removeStayType isPrefix />
-            ),
+            title: "Ngày hủy phòng",
+            field: "cancelDate",
         },
         {
-            title: "Action",
+            title: "Phí hoàn trả",
+            field: "refundPaid",
+            render: (rowData: any) => {
+                return <MyNumberForMat price={rowData.refundPaid} />;
+            },
+        },
+        {
+            title: "Tổng phí",
+            field: "totalPrice",
+            render: (rowData: any) => {
+                return <MyNumberForMat price={rowData.totalPrice} />;
+            },
+        },
+        {
+            title: "Thao tác",
             field: "",
-            render: (rowData: any) => (
-                <div>
-                    <Stack spacing={2} direction='row'>
-                        <Button
-                            variant='outlined'
-                            onClick={() => {
-                                apprBooking(rowData.id);
-                            }}
-                        >
-                            Phê duyệt
-                        </Button>
-                        <Button
-                            variant='outlined'
-                            onClick={() => {
-                                dropoutBooking(rowData.id);
-                            }}
-                        >
-                            Từ chối
-                        </Button>
-                    </Stack>
-                </div>
-            ),
+            render: (rowData: any) => {
+                return (
+                    <div style={{ width: "255px" }}>
+                        <Stack spacing={2} direction='row'>
+                            <Button
+                                variant='outlined'
+                                onClick={() => {
+                                    apprBooking(rowData.id);
+                                }}
+                                disabled={!rowData.canDoAction}
+                            >
+                                Phê duyệt
+                            </Button>
+                            <Button
+                                variant='outlined'
+                                onClick={() => {
+                                    dropoutBooking(rowData.id);
+                                }}
+                                disabled={!rowData.canDoAction}
+                            >
+                                Từ chối
+                            </Button>
+                        </Stack>
+                    </div>
+                );
+            },
         },
     ];
 
@@ -250,18 +261,163 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
         <>
             <Header includeMiddle={true} excludeBecomeHostAndNavigationHeader={true} />
 
+            <div className='normal-flex' style={{ marginTop: "100px" }}>
+                <div className='listings__search-room'>
+                    <div className='listings__search-icon-container'>
+                        <Image src={getImage("/svg/search.svg")} size='12px' />
+                    </div>
+                    <div className='f1' style={{ marginLeft: "10px" }}>
+                        <input
+                            type='text'
+                            placeholder='Tìm kiếm theo mã đơn, tên khách hàng'
+                            id='listings__search-input'
+                            value={localQuery}
+                            onChange={handleFindBookingByRoomIdAndName}
+                        />
+                    </div>
+                </div>
+                <div>
+                    <FilterButton
+                        dataDropDown='listings__filter-bookingStatus'
+                        title='Trạng thái đặt phòng'
+                        width='300px'
+                        height='300px'
+                        content={
+                            <>
+                                <div className='listings__filter-wrapper'>
+                                    <div style={{ padding: "24px" }} className='f1'>
+                                        <div
+                                            className='normal-flex listings__filter-status-row'
+                                            style={{ marginBottom: "10px" }}
+                                        >
+                                            <div
+                                                style={{ marginRight: "10px" }}
+                                                className='normal-flex'
+                                            >
+                                                <input
+                                                    type='checkbox'
+                                                    className='isCompleteSelected'
+                                                    value='APPROVED'
+                                                />
+                                            </div>
+                                            <BookingStatus
+                                                rowData={{
+                                                    state: "APPROVED",
+                                                }}
+                                            />
+                                        </div>
+                                        <div
+                                            className='normal-flex listings__filter-status-row'
+                                            style={{ marginBottom: "10px" }}
+                                        >
+                                            <div
+                                                style={{ marginRight: "10px" }}
+                                                className='normal-flex'
+                                            >
+                                                <input
+                                                    type='checkbox'
+                                                    className='isCompleteSelected'
+                                                    value='PENDING'
+                                                />
+                                            </div>
+                                            <BookingStatus
+                                                rowData={{
+                                                    state: "PENDING",
+                                                }}
+                                            />
+                                        </div>
+                                        <div
+                                            className='normal-flex listings__filter-status-row'
+                                            style={{ marginBottom: "10px" }}
+                                        >
+                                            <div
+                                                style={{ marginRight: "10px" }}
+                                                className='normal-flex'
+                                            >
+                                                <input
+                                                    type='checkbox'
+                                                    className='isCompleteSelected'
+                                                    value='CANCELLED'
+                                                />
+                                            </div>
+                                            <BookingStatus
+                                                rowData={{
+                                                    state: "CANCELLED",
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        }
+                        footerOf='bookingStatus'
+                    />
+                </div>
+                <div>
+                    <FilterButton
+                        dataDropDown='listings__filter-totalFee'
+                        title='Tổng phí'
+                        width='300px'
+                        height='200px'
+                        content={
+                            <>
+                                <div className='listings__filter-wrapper'>
+                                    <div className='filter-box overflow-hidden'>
+                                        <div className='normal-flex listings__filter-others-row'>
+                                            <Col span={24}>
+                                                <Slider
+                                                    min={0}
+                                                    max={100000000}
+                                                    step={500000}
+                                                    onChange={onChange}
+                                                    tooltipVisible={false}
+                                                    value={fetchData.totalFee!}
+                                                />
+                                            </Col>
+                                        </div>
+                                        <div className='normal-flex listings__filter-others-row'>
+                                            <input
+                                                type='text'
+                                                id='totalFeeInput'
+                                                value={seperateNumber(fetchData.totalFee!)}
+                                                className='form-control'
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        }
+                        footerOf='totalFee'
+                    />
+                </div>
+                <div>
+                    <FilterButton
+                        dataDropDown='clearFilter'
+                        title='Xóa toàn bộ bộ lọc'
+                        width=''
+                        height=''
+                        content={<></>}
+                        footerOf=''
+                        haveBox={false}
+                    />
+                </div>
+            </div>
             <>
                 {bookings && bookings.length > 0 && (
-                    <div style={{ marginTop: "80px" }}>
+                    <div style={{ marginTop: "0px" }}>
                         <MaterialTable
                             title={
-                                <>
-                                    Total Bookings:
-                                    <span className='text-base font-semibold'>
-                                        {" "}
+                                <div>
+                                    <span style={{ fontSize: "16px", fontWeight: "600" }}>
+                                        Tổng đơn đặt phòng: &nbsp;
+                                    </span>
+                                    <span
+                                        className='text-base font-semibold'
+                                        style={{ fontSize: "16px", fontWeight: "600" }}
+                                    >
                                         {totalElements}
                                     </span>
-                                </>
+                                </div>
                             }
                             icons={tableIcons}
                             columns={roomColumns}
@@ -275,7 +431,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                                 actionsColumnIndex: -1,
                                 pageSizeOptions: [10],
                                 pageSize: 10,
-                                exportButton: true,
+                                search: false,
                             }}
                             detailPanel={(rowData: any) => {
                                 if (rowData.bookingDetails && rowData.bookingDetails.length > 0) {
@@ -290,16 +446,15 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                                                         >
                                                             <TableHead>
                                                                 <TableRow>
-                                                                    <TableCell>Room</TableCell>
-                                                                    <TableCell>State</TableCell>
-                                                                    <TableCell>Total Fee</TableCell>
+                                                                    <TableCell>Nhà/phòng</TableCell>
+                                                                    <TableCell>Tổng phí</TableCell>
                                                                     <TableCell>
-                                                                        Checkin Date
+                                                                        Ngày nhận phòng
                                                                     </TableCell>
                                                                     <TableCell>
-                                                                        Checkout Date
+                                                                        Ngày trả phòng
                                                                     </TableCell>
-                                                                    <TableCell>Action</TableCell>
+                                                                    <TableCell>Đánh giá</TableCell>
                                                                 </TableRow>
                                                             </TableHead>
                                                             <TableBody>
@@ -338,20 +493,11 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                                                                                     </Link>
                                                                                 </TableCell>
                                                                                 <TableCell>
-                                                                                    <BookingStatus
-                                                                                        rowData={
-                                                                                            rowData
-                                                                                        }
-                                                                                    />
-                                                                                </TableCell>
-                                                                                <TableCell>
                                                                                     {" "}
                                                                                     <MyNumberForMat
                                                                                         price={
                                                                                             bookingDetail.totalFee
                                                                                         }
-                                                                                        currency='đ'
-                                                                                        removeStayType
                                                                                     />
                                                                                 </TableCell>
                                                                                 <TableCell>
@@ -380,6 +526,16 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                                 }
                             }}
                             onRowClick={(event, rowData, togglePanel) => togglePanel()}
+                            components={{
+                                Pagination: _ => (
+                                    <TablePagination
+                                        onChangePage={handlePageChange}
+                                        rowsPerPage={10}
+                                        page={page}
+                                        count={totalElements}
+                                    />
+                                ),
+                            }}
                         />
                     </div>
                 )}

@@ -21,7 +21,6 @@ import {
     setIsComplete,
     setTotalFee,
 } from "../../features/booking/bookingSlice";
-import { convertToObject } from "typescript";
 
 interface IFilterFooterProps {
     footerOf: string;
@@ -148,12 +147,15 @@ const FilterFooter: FC<IFilterFooterProps> = ({ footerOf }) => {
                                     isComplete.push($(this).val()!.toString());
                                 }
                             });
-                            dispatch(
-                                fetchUserBookings({
-                                    ...fetchData,
-                                    isComplete: isComplete.join(","),
-                                })
-                            );
+
+                            if (isComplete.length > 0) {
+                                dispatch(
+                                    fetchUserBookings({
+                                        ...fetchData,
+                                        isComplete: isComplete.join(","),
+                                    })
+                                );
+                            }
 
                             break;
                         }

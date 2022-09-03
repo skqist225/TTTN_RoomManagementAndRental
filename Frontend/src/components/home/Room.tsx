@@ -1,10 +1,11 @@
-import { FC, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { getImage } from '../../helpers';
-import NumberFormat from 'react-number-format';
-import { IRoom } from '../../types/room/type_Room';
-import $ from 'jquery';
-import './css/home.css';
+import { FC, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { getImage } from "../../helpers";
+import NumberFormat from "react-number-format";
+import { IRoom } from "../../types/room/type_Room";
+import $ from "jquery";
+import "./css/home.css";
+import { MyNumberForMat } from "../utils";
 interface IRoomsProps {
     room: IRoom;
     index: number;
@@ -13,9 +14,9 @@ interface IRoomsProps {
 export const Room: FC<IRoomsProps> = ({ room, index }) => {
     const getIndex = (array: JQuery<HTMLElement>, index: number): number => {
         array.each(function () {
-            if ($(this).hasClass('active')) {
-                index = parseInt($(this).data('index')!);
-                $(this).removeClass('active');
+            if ($(this).hasClass("active")) {
+                index = parseInt($(this).data("index")!);
+                $(this).removeClass("active");
                 return false;
             }
         });
@@ -24,30 +25,30 @@ export const Room: FC<IRoomsProps> = ({ room, index }) => {
     };
     const addActiveClass = (array: JQuery<HTMLElement>, index: number) => {
         array.each(function () {
-            if (parseInt($(this).data('index')!) === index) $(this).addClass('active');
+            if (parseInt($(this).data("index")!) === index) $(this).addClass("active");
         });
     };
 
     function changeImage(self: JQuery<HTMLElement>, className: string) {
         let index: number = -1;
 
-        const functionName: string = self.data('function-name');
-        const roomId: number = self.data('room-id');
+        const functionName: string = self.data("function-name");
+        const roomId: number = self.data("room-id");
 
         let roomImages: JQuery<HTMLElement> =
             roomId !== undefined ? $(`.${className}${roomId}`) : $(`.${className}`);
 
         index = getIndex(roomImages, index);
 
-        if (functionName === 'nextImage' && ++index > roomImages.length) index = 1;
-        if (functionName === 'prevImage' && --index === 0) index = roomImages.length;
+        if (functionName === "nextImage" && ++index > roomImages.length) index = 1;
+        if (functionName === "prevImage" && --index === 0) index = roomImages.length;
 
         addActiveClass(roomImages, index);
     }
 
     const jQuerycode = async () => {
-        $('.img_idt').each(function () {
-            if (parseInt($(this).data('index')) === 1) $(this).addClass('active');
+        $(".img_idt").each(function () {
+            if (parseInt($(this).data("index")) === 1) $(this).addClass("active");
         });
     };
 
@@ -65,7 +66,7 @@ export const Room: FC<IRoomsProps> = ({ room, index }) => {
                                 src={getImage(image)}
                                 data-index={idx + 1}
                                 className={`room__image${index + 1} img_idt`}
-                                style={{ objectFit: 'cover' }}
+                                style={{ objectFit: "cover" }}
                                 key={image + idx}
                             />
                         ))}
@@ -74,12 +75,12 @@ export const Room: FC<IRoomsProps> = ({ room, index }) => {
                 <div className='room__changeImage__pseudoContainer'>
                     <div className='room__changeImage'>
                         <button
-                            className={'prevImgBtn'}
+                            className={"prevImgBtn"}
                             data-room-id={index + 1}
                             data-function-name='prevImage'
                             onClick={e => {
                                 e.preventDefault();
-                                changeImage($(e.currentTarget), 'room__image');
+                                changeImage($(e.currentTarget), "room__image");
                             }}
                         >
                             <svg
@@ -88,28 +89,28 @@ export const Room: FC<IRoomsProps> = ({ room, index }) => {
                                 aria-hidden='true'
                                 focusable='false'
                                 style={{
-                                    height: '10px',
-                                    width: '10px',
-                                    display: 'block',
+                                    height: "10px",
+                                    width: "10px",
+                                    display: "block",
                                 }}
                             >
                                 <path d='m10.8 16c-.4 0-.7-.1-.9-.4l-6.8-6.7c-.5-.5-.5-1.3 0-1.8l6.8-6.7c.5-.5 1.2-.5 1.7 0s .5 1.2 0 1.7l-5.8 5.9 5.8 5.9c.5.5.5 1.2 0 1.7-.2.3-.5.4-.8.4'></path>
                             </svg>
                         </button>
                         <div
-                            style={{ flex: '1', cursor: 'pointer', height: '50px' }}
+                            style={{ flex: "1", cursor: "pointer", height: "50px" }}
                             data-room-id={room.id}
                             onClick={() => {
                                 window.location.href = `room/${room.id}`;
                             }}
                         ></div>
                         <button
-                            className={'nextImgBtn'}
+                            className={"nextImgBtn"}
                             data-room-id={index + 1}
                             data-function-name='nextImage'
                             onClick={e => {
                                 e.preventDefault();
-                                changeImage($(e.currentTarget), 'room__image');
+                                changeImage($(e.currentTarget), "room__image");
                             }}
                         >
                             <span>
@@ -141,21 +142,11 @@ export const Room: FC<IRoomsProps> = ({ room, index }) => {
                     </button>
                 </div>
             </div>
-            <Link to={'room/' + room.id}>
-                <div className='normal-flex' style={{ padding: '15px 0 0 0' }}>
+            <Link to={"room/" + room.id}>
+                <div className='normal-flex' style={{ padding: "15px 0 0 0" }}>
                     <div className='room__name'>{room.name}</div>
                     <div className='room__price'>
-                        <NumberFormat
-                            value={room.price}
-                            prefix={room.currencySymbol}
-                            thousandSeparator={true}
-                            displayType={'text'}
-                            renderText={(formattedValue: any) => (
-                                <div>
-                                    {formattedValue}
-                                </div>
-                            )}
-                        />
+                        <MyNumberForMat price={room.price} />
                     </div>
                 </div>
             </Link>

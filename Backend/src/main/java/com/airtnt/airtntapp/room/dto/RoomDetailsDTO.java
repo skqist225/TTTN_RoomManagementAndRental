@@ -44,8 +44,6 @@ public class RoomDetailsDTO {
     private HostDTO host;
     private String location;
     private int guest;
-    private String currencySymbol;
-    private String currencyUnit;
     private Integer id;
     private int bathroom;
     private int accomodates;
@@ -59,7 +57,6 @@ public class RoomDetailsDTO {
     private Integer categoryId;
     private Integer privacyId;
     private Address address;
-    private Integer currencyId;
     private Integer state;
     private Integer country;
     private Integer cityId;
@@ -95,8 +92,6 @@ public class RoomDetailsDTO {
                 .bathroom(room.getBathroomCount())
                 .bedroom(room.getBedroomCount())
                 .price(room.getPrice())
-                .currencySymbol(room.getCurrency().getSymbol())
-                .currencyUnit(room.getCurrency().getUnit())
                 .longitude(room.getLongitude())
                 .latitude(room.getLatitude())
                 .averageRating(avgRatings)
@@ -108,7 +103,6 @@ public class RoomDetailsDTO {
                 .accomodates(room.getAccomodatesCount())
                 .categoryId(room.getCategory().getId())
                 .privacyId(room.getPrivacyType().getId())
-                .currencyId(room.getCurrency().getId())
                 .state(state.getId())
                 .country(country.getId())
                 .cityId(city.getId())

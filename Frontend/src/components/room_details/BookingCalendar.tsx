@@ -1,9 +1,9 @@
-import { FC } from 'react';
-import { seperateNumber } from '../../helpers';
-import { IRoomDetails } from '../../types/room/type_RoomDetails';
-import Calendar, { getElementsOfDate } from '../utils/Calendar';
+import { FC } from "react";
+import { seperateNumber } from "../../helpers";
+import { IRoomDetails } from "../../types/room/type_RoomDetails";
+import Calendar, { getElementsOfDate } from "../utils/Calendar";
 
-import $ from 'jquery';
+import $ from "jquery";
 
 interface IBookingCalendarProps {
     room: IRoomDetails;
@@ -11,22 +11,22 @@ interface IBookingCalendarProps {
 
 const BookingCalendar: FC<IBookingCalendarProps> = ({ room }) => {
     function displayStartDateAndEndDate(startDateArgs: string, endDateArgs: string) {
-        $('#fromDayToDayContainer').css('display', 'block');
-        $('#beforeEndDateContainer').css('display', 'none');
-        $('#fromDay').text(startDateArgs);
-        $('#toDay').text(endDateArgs);
+        $("#fromDayToDayContainer").css("display", "block");
+        $("#beforeEndDateContainer").css("display", "none");
+        $("#fromDay").text(startDateArgs);
+        $("#toDay").text(endDateArgs);
     }
 
     function setCheckInAndOutDate(startDateArgs: string, endDateArgs: string) {
-        $('#checkinDate').text(startDateArgs);
-        $('#checkoutDate').text(endDateArgs);
+        $("#checkinDate").text(startDateArgs);
+        $("#checkoutDate").text(endDateArgs);
     }
 
     function displayNumberOfDays(manyDays: number) {
-        $('#numberOfDaysContainer').css('display', 'block');
-        $('#numberOfDaysContainer').siblings('div').css('display', 'none');
-        $('#daysAtHere').text(manyDays + 2);
-        $('#numberOfNight').text(manyDays + 2);
+        $("#numberOfDaysContainer").css("display", "block");
+        $("#numberOfDaysContainer").siblings("div").css("display", "none");
+        $("#daysAtHere").text(manyDays + 2);
+        $("#numberOfNight").text(manyDays + 2);
         displayPreviewLine();
         setTotalPrice(manyDays + 2, room!.price);
     }
@@ -37,14 +37,14 @@ const BookingCalendar: FC<IBookingCalendarProps> = ({ room }) => {
         const totalRoomPrice = roomPrice * manyDays;
         const siteFee = totalRoomPrice * 0.05;
 
-        $('#totalPrice').text(seperateNumber(manyDays * roomPrice));
-        $('#siteFee').text(seperateNumber(Math.ceil(siteFee)));
-        $('#finalTotalPrice').text(seperateNumber(Math.ceil(totalRoomPrice + siteFee)));
+        $("#totalPrice").text(seperateNumber(manyDays * roomPrice));
+        $("#siteFee").text(seperateNumber(Math.ceil(siteFee)));
+        $("#finalTotalPrice").text(seperateNumber(Math.ceil(totalRoomPrice + siteFee)));
     }
 
     function displayPreviewLine() {
-        $('.previewPrice-line').addClass('active');
-        $('.previewPrice-line').last().css('border-bottom', '1px solid rgb(211,211,211)');
+        $(".previewPrice-line").addClass("active");
+        $(".previewPrice-line").last().css("border-bottom", "1px solid rgb(211,211,211)");
     }
 
     function lockBookedDatesInCalendar() {
@@ -59,9 +59,9 @@ const BookingCalendar: FC<IBookingCalendarProps> = ({ room }) => {
         const [startDateDate, startDateMonth, startDateYear] = getElementsOfDate(startDateArgs);
         const [endDateDate, endDateMonth, endDateYear] = getElementsOfDate(endDateArgs);
 
-        $('.dayInWeek.false').each(function () {
+        $(".dayInWeek.false").each(function () {
             const [currDate, currMonth, currYear] = getElementsOfDate(
-                $(this).text() + '/' + $(this).data('month') + '/' + $(this).data('year')
+                $(this).text() + "/" + $(this).data("month") + "/" + $(this).data("year")
             );
 
             if (currMonth === startDateMonth && currMonth === endDateMonth) {
@@ -95,8 +95,8 @@ const BookingCalendar: FC<IBookingCalendarProps> = ({ room }) => {
     }
 
     function addBlockClassAndRemoveClick(self: JQuery<HTMLElement>) {
-        self.addClass('block__date');
-        self.removeClass('false');
+        self.addClass("block__date");
+        self.removeClass("false");
     }
 
     return (
@@ -108,16 +108,16 @@ const BookingCalendar: FC<IBookingCalendarProps> = ({ room }) => {
                 <div className='rdt__body--calendar__chooseEndDateTitle' id='numberOfDaysContainer'>
                     <span id='daysAtHere'>1</span> đêm tại
                     <span> </span>
-                    {room!.cityName}
+                    {room!.address.city.name}
                 </div>
             </div>
-            <div style={{ color: '#717171' }}>
+            <div style={{ color: "#717171" }}>
                 <div id='beforeEndDateContainer'>
                     <span id='beforeChooseDay' className='fs-14'>
                         Thêm ngày đi để biết giá chính xác
                     </span>
                 </div>
-                <div style={{ display: 'none' }} id='fromDayToDayContainer'>
+                <div style={{ display: "none" }} id='fromDayToDayContainer'>
                     <span id='fromDay'>Từ ngày</span> -<span id='toDay'>đến ngày</span>
                 </div>
             </div>

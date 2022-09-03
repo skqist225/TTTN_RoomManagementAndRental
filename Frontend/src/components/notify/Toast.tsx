@@ -1,15 +1,14 @@
-import {FC} from 'react';
-import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { FC } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-interface IToastProps {
-}
+interface IToastProps {}
 
 const Toast: FC<IToastProps> = () => {
     return (
         <ToastContainer
             position='top-center'
-            autoClose={5000}
+            autoClose={3000}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick

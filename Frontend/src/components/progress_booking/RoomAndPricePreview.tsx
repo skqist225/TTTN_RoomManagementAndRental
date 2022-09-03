@@ -87,13 +87,7 @@ const RoomAndPricePreview: FC<IRoomAndPricePreviewProps> = ({ room, numberOfNigh
                                         style={{ color: "rgb(32, 32, 32)" }}
                                         className='fs-16 fw-400 normal-flex'
                                     >
-                                        <MyNumberForMat
-                                            isPrefix
-                                            removeStayType
-                                            currency={room!.currencySymbol}
-                                            price={room!.price}
-                                            priceFontSize='16px'
-                                        />
+                                        <MyNumberForMat price={room!.price} priceFontSize='16px' />
                                         <div>
                                             &nbsp;
                                             <span>x</span>&nbsp;
@@ -104,9 +98,6 @@ const RoomAndPricePreview: FC<IRoomAndPricePreviewProps> = ({ room, numberOfNigh
                                 </div>
                                 <div className='fs-16 fw-400'>
                                     <MyNumberForMat
-                                        isPrefix
-                                        removeStayType
-                                        currency={room!.currencySymbol}
                                         price={room!.price * numberOfNights}
                                         priceFontSize='16px'
                                     />
@@ -127,13 +118,7 @@ const RoomAndPricePreview: FC<IRoomAndPricePreviewProps> = ({ room, numberOfNigh
                                     </div>
                                 </div>
                                 <div className='fs-16 fw-400'>
-                                    <MyNumberForMat
-                                        isPrefix
-                                        removeStayType
-                                        currency={room!.currencySymbol}
-                                        price={room.cleanFee}
-                                        priceFontSize='16px'
-                                    />
+                                    <MyNumberForMat price={room.cleanFee} priceFontSize='16px' />
                                 </div>
                             </div>
                         </div>
@@ -151,13 +136,7 @@ const RoomAndPricePreview: FC<IRoomAndPricePreviewProps> = ({ room, numberOfNigh
                                     </div>
                                 </div>
                                 <div className='fs-16 fw-400'>
-                                    <MyNumberForMat
-                                        isPrefix
-                                        removeStayType
-                                        currency={room!.currencySymbol}
-                                        price={room.siteFee}
-                                        priceFontSize='16px'
-                                    />
+                                    <MyNumberForMat price={room.siteFee} priceFontSize='16px' />
                                 </div>
                             </div>
                         </div>
@@ -166,9 +145,6 @@ const RoomAndPricePreview: FC<IRoomAndPricePreviewProps> = ({ room, numberOfNigh
                         <div className='fs-16 fw-600'>Tổng &nbsp;</div>
                         <div>
                             <MyNumberForMat
-                                isPrefix
-                                removeStayType
-                                currency={"đ"}
                                 price={room.totalFee}
                                 priceFontSize='16px'
                                 priceFontWeight='600'

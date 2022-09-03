@@ -65,6 +65,5 @@ export interface IPostAddRoom {
     name: string;
     description: string;
     price: number;
-    currency: number;
     host: number;
 }

@@ -35,112 +35,109 @@ import java.util.Map;
 @RequestMapping("/api/progress/")
 public class ProgressRestController {
 
-	@Autowired
-	private RoomService roomService;
+    @Autowired
+    private RoomService roomService;
 
-	@Autowired
-	private BookingService bookingService;
-	
-	@Autowired
-	private BookingDetailService bookingDetailService;
+    @Autowired
+    private BookingService bookingService;
 
-	@Autowired
-	private ReviewService reviewService;
+    @Autowired
+    private BookingDetailService bookingDetailService;
 
-	@GetMapping(value = "earnings")
-	public ResponseEntity<StandardJSONResponse<ProgressEarningsDTO>> earnings(
-			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @Param("year") Integer year) throws ParseException {
+    @Autowired
+    private ReviewService reviewService;
 
-		if (year == null) {
-			return null;
-		}
+    @GetMapping(value = "earnings")
+    public ResponseEntity<StandardJSONResponse<ProgressEarningsDTO>> earnings(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @Param("year") Integer year) throws ParseException {
 
-		User host = userDetailsImpl.getUser();
-		List<Room> rooms = roomService.getRoomsByHost(host);
-		Integer[] roomIds = new Integer[rooms.size()];
+        if (year == null) {
+            return null;
+        }
 
-		for (int i = 0; i < rooms.size(); i++) {
-			roomIds[i] = rooms.get(i).getId();
-		}
+        User host = userDetailsImpl.getUser();
+        List<Room> rooms = roomService.getRoomsByHost(host);
+        Integer[] roomIds = new Integer[rooms.size()];
 
-		LocalDateTime startDate = LocalDateTime.of(year, 1, 1, 0, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(year, 12, 31, 0, 0, 0);
+        for (int i = 0; i < rooms.size(); i++) {
+            roomIds[i] = rooms.get(i).getId();
+        }
 
-		List<BookingDetail> bookings = bookingDetailService.getBookingDetailsByRooms(roomIds, startDate, endDate);
+        LocalDateTime startDate = LocalDateTime.of(year, 1, 1, 0, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(year, 12, 31, 0, 0, 0);
 
-		float totalFee = 0;
-		Map<Integer, Float> feesInMonth = new HashMap<>();
-		Map<Integer, Integer> numberOfBookingsInMonth = new HashMap<>();
-		List<BookingDetailProgressEarningDTO> bookingsDTO = new ArrayList<>();
-		for (BookingDetail booking : bookings) {
-			float totalBookingFee = booking.getTotalFee();
+        List<BookingDetail> bookings = bookingDetailService.getBookingDetailsByRooms(roomIds, startDate, endDate);
 
-			BookingDetailProgressEarningDTO bookingDTO = BookingDetailProgressEarningDTO.build(booking);
-			bookingsDTO.add(bookingDTO);
-			if (booking.getRoom().getCurrency().getSymbol().equals("$")) {
-				totalFee += totalBookingFee * 22705;
-			} else {
-				totalFee += totalBookingFee;
-			}
+        float totalFee = 0;
+        Map<Integer, Float> feesInMonth = new HashMap<>();
+        Map<Integer, Integer> numberOfBookingsInMonth = new HashMap<>();
+        List<BookingDetailProgressEarningDTO> bookingsDTO = new ArrayList<>();
+        for (BookingDetail booking : bookings) {
+            float totalBookingFee = booking.getTotalFee();
 
-			Integer monthValue = booking.getBooking().getBookingDate().getMonthValue();
+            BookingDetailProgressEarningDTO bookingDTO = BookingDetailProgressEarningDTO.build(booking);
+            bookingsDTO.add(bookingDTO);
 
-			if (feesInMonth.containsKey(monthValue))
-				feesInMonth.put(monthValue, totalBookingFee + feesInMonth.get(monthValue));
-			else
-				feesInMonth.put(monthValue, totalBookingFee);
+            totalFee += totalBookingFee;
 
-			if (numberOfBookingsInMonth.containsKey(monthValue))
-				numberOfBookingsInMonth.put(monthValue, 1 + numberOfBookingsInMonth.get(monthValue));
-			else
-				numberOfBookingsInMonth.put(monthValue, 1);
-		}
+            Integer monthValue = booking.getBooking().getBookingDate().getMonthValue();
 
-		feesInMonth.entrySet().stream().sorted(Map.Entry.comparingByKey());
-		numberOfBookingsInMonth.entrySet().stream().sorted(Map.Entry.comparingByKey());
+            if (feesInMonth.containsKey(monthValue))
+                feesInMonth.put(monthValue, totalBookingFee + feesInMonth.get(monthValue));
+            else
+                feesInMonth.put(monthValue, totalBookingFee);
 
-		return new OkResponse<ProgressEarningsDTO>(
-				new ProgressEarningsDTO(bookingsDTO, feesInMonth, numberOfBookingsInMonth, totalFee)).response();
+            if (numberOfBookingsInMonth.containsKey(monthValue))
+                numberOfBookingsInMonth.put(monthValue, 1 + numberOfBookingsInMonth.get(monthValue));
+            else
+                numberOfBookingsInMonth.put(monthValue, 1);
+        }
 
-	}
+        feesInMonth.entrySet().stream().sorted(Map.Entry.comparingByKey());
+        numberOfBookingsInMonth.entrySet().stream().sorted(Map.Entry.comparingByKey());
 
-	@GetMapping(value = "reviews")
-	public ResponseEntity<StandardJSONResponse<ProgressReviewsDTO>> reviews(
-			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-			@RequestParam(name = "numberOfStars", required = false, defaultValue = "0") String numberOfStars) {
+        return new OkResponse<ProgressEarningsDTO>(
+                new ProgressEarningsDTO(bookingsDTO, feesInMonth, numberOfBookingsInMonth, totalFee)).response();
 
-		User host = userDetailsImpl.getUser();
-		List<Room> rooms = roomService.getRoomsByHost(host);
-		Integer[] roomIds = new Integer[rooms.size()];
+    }
 
-		for (int i = 0; i < rooms.size(); i++) {
-			roomIds[i] = rooms.get(i).getId();
-		}
+    @GetMapping(value = "reviews")
+    public ResponseEntity<StandardJSONResponse<ProgressReviewsDTO>> reviews(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+            @RequestParam(name = "numberOfStars", required = false, defaultValue = "0") String numberOfStars) {
 
-		List<BookingDetail> bookings = bookingDetailService.getBookingDetailsByRooms(roomIds);
-		Integer[] bookingIds = new Integer[bookings.size()];
-		for (int i = 0; i < bookings.size(); i++) {
-			bookingIds[i] = bookings.get(i).getId();
-		}
+        User host = userDetailsImpl.getUser();
+        List<Room> rooms = roomService.getRoomsByHost(host);
+        Integer[] roomIds = new Integer[rooms.size()];
 
-		float finalRatings = 0;
-		List<Review> reviews = reviewService.getReviewsByBookings(bookingIds, (double) Double.parseDouble(numberOfStars));
-		
-		if (reviews.isEmpty()) {
-			finalRatings = 0;
-		} else {
-			for (Review r : reviews) {
-				finalRatings += r.getFinalRating();
-			}
+        for (int i = 0; i < rooms.size(); i++) {
+            roomIds[i] = rooms.get(i).getId();
+        }
 
-			if (reviews.size() > 0) {
-				finalRatings = finalRatings / reviews.size();
-			}
-		}
+        List<BookingDetail> bookings = bookingDetailService.getBookingDetailsByRooms(roomIds);
+        Integer[] bookingIds = new Integer[bookings.size()];
+        for (int i = 0; i < bookings.size(); i++) {
+            bookingIds[i] = bookings.get(i).getId();
+        }
 
-		List<ReviewDTO> reviewsDTO = new ArrayList<>();
-		reviews.forEach(review -> reviewsDTO.add(ReviewDTO.build(review)));
+        float finalRatings = 0;
+        List<Review> reviews = reviewService.getReviewsByBookings(bookingIds, (double) Double.parseDouble(numberOfStars));
 
-		return new OkResponse<ProgressReviewsDTO>(new ProgressReviewsDTO(reviewsDTO, finalRatings)).response();
-	}
+        if (reviews.isEmpty()) {
+            finalRatings = 0;
+        } else {
+            for (Review r : reviews) {
+                finalRatings += r.getFinalRating();
+            }
+
+            if (reviews.size() > 0) {
+                finalRatings = finalRatings / reviews.size();
+            }
+        }
+
+        List<ReviewDTO> reviewsDTO = new ArrayList<>();
+        reviews.forEach(review -> reviewsDTO.add(ReviewDTO.build(review)));
+
+        return new OkResponse<ProgressReviewsDTO>(new ProgressReviewsDTO(reviewsDTO, finalRatings)).response();
+    }
 }

@@ -15,7 +15,6 @@ import {
     roomSlice,
     stateSlice,
     userSlice,
-    currencySlice,
     ruleSlice,
 } from "./features";
 
@@ -34,7 +33,6 @@ const rootReducer = combineReducers({
     auth: authSlice,
     cart: cartSlice,
     bookingDetail: bookingDetailSlice,
-    currency: currencySlice,
     rule: ruleSlice,
 });
 

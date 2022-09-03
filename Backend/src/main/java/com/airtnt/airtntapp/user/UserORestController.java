@@ -5,29 +5,23 @@ import com.airtnt.airtntapp.address.AddressService;
 import com.airtnt.airtntapp.booking.BookingService;
 import com.airtnt.airtntapp.common.GetResource;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
-import com.airtnt.airtntapp.exception.UserNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.error.BadResponse;
 import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.airtntapp.room.RoomService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
 import com.airtnt.airtntapp.user.dto.BookedRoomDTO;
-import com.airtnt.airtntapp.user.dto.CreateHostReviewDTO;
-import com.airtnt.airtntapp.user.dto.CreateHostReviewDTOTest;
 import com.airtnt.airtntapp.user.dto.PostUpdateUserDTO;
 import com.airtnt.airtntapp.user.dto.UpdateUserDTO;
 import com.airtnt.airtntapp.user.dto.UserSexDTO;
 import com.airtnt.airtntapp.user.dto.WishlistsDTO;
-import com.airtnt.airtntapp.userReview.UserReviewService;
 import com.airtnt.entity.Address;
 import com.airtnt.entity.Booking;
-import com.airtnt.entity.Chat;
 import com.airtnt.entity.City;
 import com.airtnt.entity.Image;
 import com.airtnt.entity.Room;
 import com.airtnt.entity.Sex;
 import com.airtnt.entity.User;
-import com.airtnt.entity.UserReview;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -39,7 +33,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,10 +76,6 @@ public class UserORestController {
 
     @Value("${env}")
     private String environment;
-
-    @Autowired
-    private UserReviewService UserReviewService;
-
 
     @Autowired
     private AddressService addressService;
@@ -334,9 +323,9 @@ public class UserORestController {
         return new BadResponse<User>("Please add image").response();
     }
 
-    @PutMapping("add-to-favoritelists/{roomid}")
+    @PutMapping("add-to-favoritelists/{roomId}")
     public ResponseEntity<StandardJSONResponse<String>> addToWishLists(
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("roomid") Integer roomid) {
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("roomId") Integer roomid) {
         User user = userDetailsImpl.getUser();
 
         try {
@@ -368,43 +357,6 @@ public class UserORestController {
         return new BadResponse<String>("can not sync user data into database").response();
     }
 
-    @PostMapping("create-host-review")
-    public ResponseEntity<StandardJSONResponse<UserReview>> createHostReview(
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-            @RequestBody CreateHostReviewDTO createHostReviewDTO) {
-        User reviewer = userDetailsImpl.getUser();
-        User host;
-        try {
-            host = userService.findById(createHostReviewDTO.getHostId());
-
-            UserReview userReview = new UserReview(host, reviewer, createHostReviewDTO.getReview());
-
-            UserReview savedUserReview = UserReviewService.save(userReview);
-
-            return new OkResponse<UserReview>(savedUserReview).response();
-        } catch (UserNotFoundException e) {
-            return new BadResponse<UserReview>(e.getMessage()).response();
-        }
-    }
-
-    @PostMapping("create-host-review-test")
-    public ResponseEntity<StandardJSONResponse<UserReview>> createHostReview(
-            @RequestBody CreateHostReviewDTOTest createHostReviewDTO) {
-        User host, reviewer;
-        try {
-            reviewer = userService.findById(createHostReviewDTO.getReviewerId());
-            host = userService.findById(createHostReviewDTO.getHostId());
-
-            UserReview userReview = new UserReview(host, reviewer, createHostReviewDTO.getReview());
-
-            UserReview savedUserReview = UserReviewService.save(userReview);
-
-            return new OkResponse<UserReview>(savedUserReview).response();
-        } catch (UserNotFoundException e) {
-            return new BadResponse<UserReview>(e.getMessage()).response();
-        }
-    }
-
     @GetMapping("booked-rooms")
     public ResponseEntity<StandardJSONResponse<List<BookedRoomDTO>>> getUserBookedRooms(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
@@ -413,6 +365,8 @@ public class UserORestController {
 
         List<Booking> bookings = bookingService.getBookingsByUser(user.getId(), query);
 
+//        bookings.stream().forEach();
+
         List<BookedRoomDTO> bookedRoomDetails = new ArrayList<>();
 
         for (Booking booking : bookings) {
@@ -420,21 +374,12 @@ public class UserORestController {
             bookedRoomDetails.addAll(bookedRoomDetails);
         }
 
-        return new OkResponse<List<BookedRoomDTO>>(bookedRoomDetails).response();
-    }
-
-    @GetMapping("inbox")
-    public ResponseEntity<StandardJSONResponse<List<Chat>>> getUserChats(
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
-        User user = userDetailsImpl.getUser();
-        // return new OkResponse<List<Chat>>(user.getSender()).response();
-
-        return null;
+        return new OkResponse<>(bookedRoomDetails).response();
     }
 
     @GetMapping("info")
     public ResponseEntity<StandardJSONResponse<User>> getUserInfo(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
-        return new OkResponse<User>(userDetailsImpl.getUser()).response();
+        return new OkResponse<>(userDetailsImpl.getUser()).response();
     }
 }

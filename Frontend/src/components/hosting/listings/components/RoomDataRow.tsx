@@ -69,14 +69,7 @@ export const RoomDataRow: FC<IRoomDataRowProps> = ({ room, email }) => {
             </td>
             <td>
                 <div>
-                    <MyNumberForMat
-                        price={room.price}
-                        currency={room.currency}
-                        isPrefix
-                        removeStayType
-                        priceFontWeight='500'
-                        priceFontSize='16px'
-                    />
+                    <MyNumberForMat price={room.price} priceFontWeight='500' priceFontSize='16px' />
                 </div>
             </td>
             <td>

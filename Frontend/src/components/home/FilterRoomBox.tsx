@@ -37,7 +37,7 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
     }
 
     const [minPrice, setMinPrice] = useState(0);
-    const [maxPrice, setMaxPrice] = useState(10000000);
+    const [maxPrice, setMaxPrice] = useState(100000000);
 
     function onChange(event: CheckboxChangeEvent) {
         if (event.target.checked) {
@@ -158,20 +158,17 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
                             <div className='index__filter-block'>
                                 <div className='index__box-filter-title'>Khoảng giá</div>
                                 <div>
-                                    <div className='normal-flex'>
-                                        Giá trung bình hàng đêm là
-                                        <span> </span>
+                                    {/* <div className='normal-flex'>
+                                        Giá trung bình hàng đêm là &nbsp;
                                         <MyNumberForMat
-                                            isPrefix
                                             price={parseInt(averageRoomPriceByType.toFixed(2))}
-                                            currency={"đ"}
                                         />
-                                    </div>
+                                    </div> */}
                                     <Div className='flex-center' height='50px'>
                                         <Slider
-                                            defaultValue={[0, 10000000]}
+                                            defaultValue={[0, 100000000]}
                                             min={0}
-                                            max={10000000}
+                                            max={100000000}
                                             step={500000}
                                             range={{ draggableTrack: true }}
                                             style={{ width: "400px" }}

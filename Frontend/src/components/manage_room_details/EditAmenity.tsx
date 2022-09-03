@@ -46,7 +46,7 @@ const EditAmenity: FC<IEditAmenityProps> = ({ amenities, room }) => {
                     </div>
                     <RoomAmenities amentities={amenities} />
                 </div>
-                <BoxFooter sectionKey='amentities' idInput='' hideEditBox={hideEditBox} />
+                <BoxFooter sectionKey='amenities' idInput='' hideEditBox={hideEditBox} />
             </div>
         </ManageYSContainer>
     );

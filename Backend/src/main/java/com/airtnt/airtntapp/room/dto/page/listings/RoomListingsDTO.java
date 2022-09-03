@@ -54,7 +54,6 @@ public class RoomListingsDTO implements Serializable {
                 .id(room.getId())
                 .name(room.getName())
                 .thumbnail(room.renderThumbnailImage())
-                .currency(room.getCurrency().getSymbol())
                 .category(room.getCategory().getName())
                 .price(room.getPrice())
                 .bedCount(room.getBedCount())
