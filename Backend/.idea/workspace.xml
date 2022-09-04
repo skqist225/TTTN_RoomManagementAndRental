@@ -5,41 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/user_images/71/pexels-kwnos-iv-13216693.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/cart/CartRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/cart/CartRestController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/cart/CartService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/cart/dto/PostUpsertCart.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/progress/ProgressRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/progress/ProgressRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomHomePageDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomHomePageDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/page/listings/RoomListingsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/page/listings/RoomListingsDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserORestController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Address.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Cart.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/buitansang@gmail.com/pexels-daria-shevtsova-892618.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/buitansang@gmail.com/pexels-laura-meinhardt-13248509.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RightPageContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RightPageContent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RoomPreviewMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RoomPreviewMainContent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/home/script/add_to_wishlists.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/home/script/add_to_wishlists.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/personal_info/components/AddressEdit.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/personal_info/components/AddressEdit.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/ManageRoomPhotosPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/ManageRoomPhotosPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/auth/RegisterPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/auth/RegisterPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/css/register.css" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/css/register.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ci/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/ci/Jenkinsfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,32 +51,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable": "ALL",
-    "last_opened_file_path": "/home/skqist225/TMA-workspace",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "build.tools",
-    "spring.configuration.checksum": "c94958ada0c81bb4e847abe659379e76"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable&quot;: &quot;ALL&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/skqist225/TMA-workspace&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;build.tools&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;c94958ada0c81bb4e847abe659379e76&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -162,6 +129,7 @@
       <workItem from="1662170027185" duration="19884000" />
       <workItem from="1662264571656" duration="11024000" />
       <workItem from="1662288932310" duration="1626000" />
+      <workItem from="1662291504292" duration="103000" />
     </task>
     <servers />
   </component>

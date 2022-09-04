@@ -52,9 +52,9 @@ pipeline {
                 //     input message: 'Approve PRODUCTION Deployment?'
                 // }
                     sshPublisher(
-                    publishers: [sshPublisherDesc(configName: 'ubuntu@54.255.165.245',
+                    publishers: [sshPublisherDesc(configName: 'ubuntu@3.1.102.184',
                     transfers: [sshTransfer(cleanRemote: false, excludes: '',
-                    execCommand: '~/airtnt-build.sh airj18-db-2.cvkwid3ehrok.ap-southeast-1.rds.amazonaws.com admin 12345678',
+                    execCommand: '~/airtnt-build.sh airj18.cvkwid3ehrok.ap-southeast-1.rds.amazonaws.com admin 12345678',
                     execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false,
                     patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '',
                     sourceFiles: '.')],
