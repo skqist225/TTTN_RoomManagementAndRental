@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.beans.Transient;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -28,8 +29,13 @@ public class RoomHomePageDTO {
     @Transient
     @JsonIgnore
     public static RoomHomePageDTO build(Room room, List<Integer> likedByUsers) {
+        List<String> images = new ArrayList<>();
+
+        images.add(room.renderThumbnailImage());
+        images.addAll(room.getImagesPath());
+
         return RoomHomePageDTO.builder().id(room.getId()).name(room.getName()).thumbnail(room.renderThumbnailImage())
-                .images(room.getImagesPath()).likedByUsers(likedByUsers).price(room.getPrice())
+                .images(images).likedByUsers(likedByUsers).price(room.getPrice())
                 .build();
     }
 }

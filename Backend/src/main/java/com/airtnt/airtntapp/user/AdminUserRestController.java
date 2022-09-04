@@ -121,7 +121,7 @@ public class AdminUserRestController {
             LocalDate birthd = LocalDate.parse(updateUserDTO.getBirthday());
             user.setBirthday(birthd);
 
-            new UserORestController().updateAvatar(user, updateUserDTO.getAvatar(), false,
+            new UserRestController().updateAvatar(user, updateUserDTO.getAvatar(), false,
                     environment);
 
 //            if (updateUserDTO.getCountry() != null) {

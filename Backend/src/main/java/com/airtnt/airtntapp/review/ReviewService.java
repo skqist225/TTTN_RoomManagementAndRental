@@ -1,11 +1,10 @@
 package com.airtnt.airtntapp.review;
 
-import java.util.List;
-
 import com.airtnt.entity.Review;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ReviewService {
@@ -17,7 +16,7 @@ public class ReviewService {
         return reviewRepository.getReviewsByBookings(bookingIds);
     }
 
-    public List<Review> getReviewsByBookings(Integer[] bookingIds, double numberOfStars) {
+    public List<Review> getReviewsByBookings(List<Integer> bookingIds, double numberOfStars) {
         return numberOfStars == 0 ? reviewRepository.getAllReviewsByBookings(bookingIds, numberOfStars)
                 : reviewRepository.getReviewsByBookingsAndNumberOfStars(bookingIds, numberOfStars);
     }

@@ -27,6 +27,8 @@ const schema = yup
         phoneNumber: yup
             .string()
             .required("Vui lòng nhập số điện thoại")
+            .min(10, "Số điện thoại ít nhất 10 chữ số")
+            .max(10, "Số điện thoại nhiều nhất 10 chữ số")
             .matches(
                 /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
                 "Số điện thoại không hợp lệ!"
@@ -56,6 +58,9 @@ const RegisterPage: FC<HomeProps> = () => {
             }
             if (error.phoneNumber) {
                 phoneNumberErrorFromServer = error.phoneNumber;
+            }
+            if (error.phoneNumberCharacter) {
+                phoneNumberErrorFromServer = error.phoneNumberCharacter;
             }
         });
     }
@@ -137,7 +142,9 @@ const RegisterPage: FC<HomeProps> = () => {
                             />
                             {errors?.birthday && <FormError message={errors.birthday.message} />}
                             {birthdayErrorFromServer && (
-                                <FormError message={"Tuổi của bạn không lớn hơn 18"} />
+                                <FormError
+                                    message={"Ứng dụng chỉ dành cho người dùng lớn hơn 18 tuổi"}
+                                />
                             )}
                             <DropDown
                                 label='Giới tính'

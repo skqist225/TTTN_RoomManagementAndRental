@@ -7,19 +7,25 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
     public Optional<User> findByEmail(String email);
 
     @Modifying
     @Query(value = "UPDATE User u SET u.phoneVerified = true WHERE u.id = ?1")
     public int verifyPhoneNumber(Integer userId);
+
+
+    @Modifying
+    @Query(value = "delete from users_favorite_rooms where user_id = :userId and room_id = :roomId",nativeQuery = true)
+    public void removeFromFavLists(Integer userId, Integer roomId);
 
     public Long countById(Integer id);
 

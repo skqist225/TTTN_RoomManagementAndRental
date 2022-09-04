@@ -5,6 +5,7 @@ import com.airtnt.airtntapp.amenity.dto.AmenityRoomDetailsDTO;
 import com.airtnt.airtntapp.booking.BookedDateDTO;
 import com.airtnt.airtntapp.booking.BookingService;
 import com.airtnt.airtntapp.calendar.CalendarClass;
+import com.airtnt.airtntapp.city.CityService;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
 import com.airtnt.airtntapp.exception.UserNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
@@ -21,7 +22,15 @@ import com.airtnt.airtntapp.room.response.RoomsOwnedByUserResponseEntity;
 import com.airtnt.airtntapp.rule.RuleService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
 import com.airtnt.airtntapp.user.UserService;
-import com.airtnt.entity.*;
+import com.airtnt.entity.Address;
+import com.airtnt.entity.Amentity;
+import com.airtnt.entity.City;
+import com.airtnt.entity.Image;
+import com.airtnt.entity.Review;
+import com.airtnt.entity.Role;
+import com.airtnt.entity.Room;
+import com.airtnt.entity.Rule;
+import com.airtnt.entity.User;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -29,7 +38,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,7 +56,16 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -67,6 +92,9 @@ public class RoomRestController {
 
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private CityService cityService;
 
     @Autowired
     private Environment env;
@@ -192,9 +220,13 @@ public class RoomRestController {
             images.add(new Image(payload.getImages()[i]));
         }
 
+
+        Address savedAddress = null;
         Address address = addressService.findByStreetAndCity(payload.getStreet(), new City(payload.getCity()));
         if (Objects.isNull(address)) {
-            address = addressService.save(address);
+            savedAddress = addressService.save(new Address(new City(payload.getCity()), payload.getStreet()));
+        } else {
+            savedAddress = address;
         }
 
         User user = userService.findById(payload.getHost());
@@ -203,7 +235,7 @@ public class RoomRestController {
 
         boolean status = user.isPhoneVerified();
 
-        Room room = Room.build(payload, images, amenities, address, rules, status);
+        Room room = Room.build(payload, images, amenities, savedAddress, rules, status);
         Room savedRoom = roomService.save(room);
 
         /* MOVE IMAGE TO FOLDER */

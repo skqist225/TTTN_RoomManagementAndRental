@@ -41,7 +41,10 @@ public interface BookingDetailRepository extends JpaRepository<BookingDetail, In
     public List<BookingDetail> getBookingDetailsByRooms(Integer[] roomIds, LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("SELECT b FROM BookingDetail b WHERE b.room.id IN (:roomIds)")
-    public List<BookingDetail> getBookingDetailsByRooms(Integer[] roomIds);
+    public List<BookingDetail> getBookingDetailsByRooms(List<Integer> roomIds);
+
+    @Query("SELECT b.id FROM BookingDetail b WHERE b.room.id IN (:roomIds)")
+    public List<Integer> getBookingDetailsIdByRooms(List<Integer> roomIds);
 
 //    @Query("SELECT b FROM BookingDetail b WHERE b.room.id IN (:roomIds) AND b.room.name LIKE %:query% AND b.booking.bookingDate <= :booking.bookingDate AND b.booking.bookingDate >= :BookingDetailDate2 AND b.booking.state IN (:states)")
 //    public Page<BookingDetail> getBookingDetailsByRooms(Integer[] roomIds, String query, List<State> states,

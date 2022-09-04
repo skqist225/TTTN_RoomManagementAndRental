@@ -89,7 +89,7 @@ const RoomPreviewMainContent: FC<IRoomPreviewMainContentProps> = () => {
                 `Thư giãn tại địa điểm nghỉ dưỡng ${description} này.`
             );
 
-            $("#room-preview__room-price").text(seperateNumber(price) + currencySymbol + "/ đêm");
+            $("#room-preview__room-price").text(seperateNumber(price) + "đ" + "/ đêm");
 
             $("#room-preview__room-location-txt").text(placeName);
         }

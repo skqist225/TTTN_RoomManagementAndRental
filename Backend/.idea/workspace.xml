@@ -5,61 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0352cd25-068a-45f8-a80d-20e676ca62e3" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/user_images/71/pexels-kwnos-iv-13216693.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/BookingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingDetailDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingDetailDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingUserOrderDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/booking/dto/BookingUserOrderDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/chat/ChatController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/chat/ChatId.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/chat/ChatRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/chat/ChatRestController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/chat/ChatService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/chat/dto/ChatReceiverDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/chat/dto/Message.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/currency/CurrencyRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/currency/CurrencyRestController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/manage_room/ManageRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/manage_room/ManageRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/auth/AuthRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/bookingDetail/BookingDetailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/cart/CartRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/cart/CartRestController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/cart/CartService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/cart/dto/PostUpsertCart.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/progress/ProgressRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/progress/ProgressRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/AdminRoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/AdminRoomRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/review/ReviewService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomRestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/RoomService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomDetailsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomDetailsDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomHomePageDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/RoomHomePageDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/page/listings/RoomListingsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/room/dto/page/listings/RoomListingsDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserORestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserORestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/BookedRoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/BookedRoomDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/UserListDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/dto/UserListDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/userReview/UserReviewRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/userReview/UserReviewService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Booking.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Booking.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/BookingDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/BookingDetail.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Chat.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Currency.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/AdminUserRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserORestController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/airtntapp/user/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Address.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Cart.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/Room.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/airtnt/entity/UserReview.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPriceMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/PropertyPriceMainContent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/buitansang@gmail.com/pexels-daria-shevtsova-892618.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/room_images/buitansang@gmail.com/pexels-laura-meinhardt-13248509.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RightPageContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RightPageContent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/booked_rooms/BookedRooms.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/booked_rooms/BookedRooms.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/home/FilterRoomBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/home/FilterRoomBox.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/home/Room.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/home/Room.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/hosting/listings/components/RoomDataRow.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/hosting/listings/components/RoomDataRow.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/progress_booking/RoomAndPricePreview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/progress_booking/RoomAndPricePreview.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/progress_booking/components/PaymentMethodOption.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/progress_booking/components/PaymentMethodOption.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/room/components/ReserveRoom.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/room/components/ReserveRoom.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/room_details/BookingCalendar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/room_details/BookingCalendar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/utils/MyNumberFormat.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/utils/MyNumberFormat.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/currency/currencySlice.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/features/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/features/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/BookedRoomsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/BookedRoomsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/CartPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/CartPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/HomePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/HomePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/ProgressBookingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/ProgressBookingPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/store.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Frontend/src/types/room/type_Room.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/types/room/type_Room.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RoomPreviewMainContent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/become_a_host/RoomPreviewMainContent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/home/script/add_to_wishlists.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/home/script/add_to_wishlists.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/components/personal_info/components/AddressEdit.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/components/personal_info/components/AddressEdit.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/ManageRoomPhotosPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/ManageRoomPhotosPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/auth/RegisterPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/auth/RegisterPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Frontend/src/pages/css/register.css" beforeDir="false" afterPath="$PROJECT_DIR$/../Frontend/src/pages/css/register.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +48,10 @@
   </component>
   <component name="CodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
+    <option name="PARALLEL_COMPILATION" value="false" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -100,31 +84,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable&quot;: &quot;ALL&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/skqist225/TMA-workspace&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Java&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;c94958ada0c81bb4e847abe659379e76&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "com.intellij.openapi.externalSystem.service.settings.ExternalSystemGroupConfigurable": "ALL",
+    "last_opened_file_path": "/home/skqist225/TMA-workspace",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "build.tools",
+    "spring.configuration.checksum": "c94958ada0c81bb4e847abe659379e76"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.airtnt.airtntapp.booking.dto" />
@@ -171,7 +159,9 @@
       <workItem from="1661960841282" duration="996000" />
       <workItem from="1661998754725" duration="22328000" />
       <workItem from="1662101547633" duration="5130000" />
-      <workItem from="1662170027185" duration="19761000" />
+      <workItem from="1662170027185" duration="19884000" />
+      <workItem from="1662264571656" duration="11024000" />
+      <workItem from="1662288932310" duration="1626000" />
     </task>
     <servers />
   </component>
@@ -188,6 +178,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

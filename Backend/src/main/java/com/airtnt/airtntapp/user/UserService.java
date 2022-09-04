@@ -90,6 +90,8 @@ public class UserService {
         return userRepository.verifyPhoneNumber(userId);
     }
 
+
+    @Transactional
     public User saveUser(User user) {
         return userRepository.save(user);
     }
@@ -127,6 +129,11 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         return user;
+    }
+
+    @Transactional
+    public void removeFromFavLists(Integer userId, Integer roomId) {
+        userRepository.removeFromFavLists(userId,roomId);
     }
 
     public Integer getNumberOfUser() {

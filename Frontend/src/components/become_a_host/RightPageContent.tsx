@@ -217,7 +217,6 @@ const RightPageContent: FC<IRightPageContentProps> = ({
 
                 setRoomAttrToLocalStorage({
                     price,
-                    currency: parseInt($("#room-currency").val()!.toString()),
                 });
 
                 break;

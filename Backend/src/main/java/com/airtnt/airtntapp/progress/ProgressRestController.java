@@ -107,21 +107,12 @@ public class ProgressRestController {
             @RequestParam(name = "numberOfStars", required = false, defaultValue = "0") String numberOfStars) {
 
         User host = userDetailsImpl.getUser();
-        List<Room> rooms = roomService.getRoomsByHost(host);
-        Integer[] roomIds = new Integer[rooms.size()];
+        List<Integer> roomIds = roomService.getRoomIdByHost(host);
 
-        for (int i = 0; i < rooms.size(); i++) {
-            roomIds[i] = rooms.get(i).getId();
-        }
-
-        List<BookingDetail> bookings = bookingDetailService.getBookingDetailsByRooms(roomIds);
-        Integer[] bookingIds = new Integer[bookings.size()];
-        for (int i = 0; i < bookings.size(); i++) {
-            bookingIds[i] = bookings.get(i).getId();
-        }
+        List<Integer> bookingDetailsIds = bookingDetailService.getBookingDetailsIdByRooms(roomIds);
 
         float finalRatings = 0;
-        List<Review> reviews = reviewService.getReviewsByBookings(bookingIds, (double) Double.parseDouble(numberOfStars));
+        List<Review> reviews = reviewService.getReviewsByBookings(bookingDetailsIds, (double) Double.parseDouble(numberOfStars));
 
         if (reviews.isEmpty()) {
             finalRatings = 0;
@@ -138,6 +129,6 @@ public class ProgressRestController {
         List<ReviewDTO> reviewsDTO = new ArrayList<>();
         reviews.forEach(review -> reviewsDTO.add(ReviewDTO.build(review)));
 
-        return new OkResponse<ProgressReviewsDTO>(new ProgressReviewsDTO(reviewsDTO, finalRatings)).response();
+        return new OkResponse<>(new ProgressReviewsDTO(reviewsDTO, finalRatings)).response();
     }
 }

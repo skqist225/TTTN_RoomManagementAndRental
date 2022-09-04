@@ -483,12 +483,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
     }
 
     function displayEditThumbnailBox() {
-        $(".radioThumbnail").each(function () {
-            if ($(this).val() === room?.thumbnail.split("/").pop()!) {
-                $(this).prop("checked", true);
-            } else $(this).prop("checked", false);
-        });
-
         $("#chooseRoomThumbnail").css("display", "block");
     }
 
@@ -525,12 +519,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
 
     let allRoomImages: string[] = [];
     function hideEditThumbnailBox() {
-        $(".radioThumbnail").each(function () {
-            if ($(this).val() === room?.thumbnail.split("/").pop()!) {
-                $(this).prop("checked", true);
-            } else $(this).prop("checked", false);
-        });
-
         allRoomImages.concat(room!.images).push(room!.thumbnail);
 
         $("#chooseRoomThumbnail").css("display", "none");
@@ -575,9 +563,22 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
             }
         );
 
-        if (data)
+        if (data) {
             window.location.href = `${window.location.origin}/manage-your-space/${room?.id}/details/photos`;
+        }
     }
+
+    const handleChange = (e: any) => {
+        const self = $(e.currentTarget);
+        if (self.prop("checked")) {
+            $(".radioThumbnail").each(function () {
+                if (!$(this).is(self)) {
+                    $(this).prop("checked", false);
+                }
+            });
+        } else {
+        }
+    };
 
     return (
         <Div className='p-relative' height='100vh'>
@@ -649,17 +650,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
                                                     {!room?.status ? "Đã hủy đăng" : "Đang đăng"}
                                                 </span>
                                             </span>
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <button className='manage-ys__transparent-btn'>
-                                            <span>
-                                                <Image
-                                                    src={getImage("/svg/thunder.svg")}
-                                                    size='10px'
-                                                />
-                                            </span>
-                                            <span>Chế độ đặt ngay đang bật</span>
                                         </button>
                                     </div>
                                 </div>
@@ -777,6 +767,7 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
                                                 value={
                                                     image.split("/")[image.split("/").length - 1]
                                                 }
+                                                onChange={handleChange}
                                             />
                                         </div>
                                     </div>

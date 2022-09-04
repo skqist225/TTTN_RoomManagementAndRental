@@ -129,6 +129,12 @@ public class AuthRestController {
             arrays.add(node);
         }
 
+        if (postUser.getPhoneNumber().length() != 10) {
+            ObjectNode node = objectMapper.createObjectNode();
+            node.put("phoneNumberCharacter", "Phone number must be 10 characters");
+            arrays.add(node);
+        }
+
         if (arrays.size() > 0) {
             return new BadResponse<User>(arrays.toString()).response();
         }

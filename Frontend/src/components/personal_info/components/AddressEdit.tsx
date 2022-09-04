@@ -17,16 +17,24 @@ interface IAddressEditProps {
 
 const AddressEdit: FC<IAddressEditProps> = ({ register, address }) => {
     const dispatch = useDispatch();
-
-    const { street, state, city } = address;
+    let street = null,
+        state: any = null,
+        city: any = null;
+    if (address) {
+        street = address.street;
+        state = address.state;
+        city = address.city;
+    }
 
     useEffect(() => {
         dispatch(fetchStatesByCountry({ countryId: 216 }));
     }, []);
 
     useEffect(() => {
-        if (state.id) {
+        if (state) {
             dispatch(fetchCitiesByState({ stateId: state.id }));
+        } else {
+            dispatch(fetchCitiesByState({ stateId: 120 }));
         }
     }, []);
 
@@ -64,7 +72,7 @@ const AddressEdit: FC<IAddressEditProps> = ({ register, address }) => {
                     fieldName='state'
                     label='Tỉnh/thành phố'
                     options={stateOptions}
-                    defaultValue={state.id.toString() || "0"}
+                    defaultValue={state ? state.id.toString() : "0"}
                 />
             </div>
             <div>
@@ -74,7 +82,7 @@ const AddressEdit: FC<IAddressEditProps> = ({ register, address }) => {
                     fieldName='city'
                     label='Quận/huyện'
                     options={cityOptions}
-                    defaultValue={city.id.toString() || "0"}
+                    defaultValue={city ? city.id.toString() : "0"}
                 />
             </div>
             <FormGroup

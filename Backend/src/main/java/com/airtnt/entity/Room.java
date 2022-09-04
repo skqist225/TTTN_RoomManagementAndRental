@@ -44,8 +44,6 @@ public class Room extends BaseEntity implements Comparable<Room> {
     @JoinColumn(name = "address_id")
     private Address address;
     private String thumbnail;
-    @Column(columnDefinition = "smallint")
-    private byte rating;
     @Column(nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
     private int bedroomCount;
     @Column(nullable = false, columnDefinition = "SMALLINT DEFAULT 0")
@@ -70,7 +68,7 @@ public class Room extends BaseEntity implements Comparable<Room> {
     @Column(nullable = false)
     private float price;
     @ManyToOne
-    @JoinColumn(name = "room_privacy_id")
+    @JoinColumn(name = "privacy_id")
     private RoomPrivacy privacyType;
     @JsonBackReference
     @ManyToOne
@@ -84,7 +82,7 @@ public class Room extends BaseEntity implements Comparable<Room> {
     private Set<Rule> rules = new HashSet<>();
 
     @Builder
-    public Room(Integer id, String name, Set<Image> images, String thumbnail, byte rating, Address address,
+    public Room(Integer id, String name, Set<Image> images, String thumbnail, Address address,
                 int bedroomCount, int bathroomCount, int accomodatesCount, int bedCount,
                 Category category, String description, Set<Amentity> amentities, float latitude, float longitude,
                 float price, RoomPrivacy privacyType, User host, Set<Rule> rules, boolean status) {
@@ -92,7 +90,6 @@ public class Room extends BaseEntity implements Comparable<Room> {
         this.name = name;
         this.images = images;
         this.thumbnail = thumbnail;
-        this.rating = rating;
         this.address = address;
         this.bedroomCount = bedroomCount;
         this.bathroomCount = bathroomCount;

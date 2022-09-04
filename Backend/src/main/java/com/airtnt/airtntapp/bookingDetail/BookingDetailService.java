@@ -108,8 +108,12 @@ public class BookingDetailService {
         return bookingDetailRepository.getBookingDetailsByRooms(rooms, startDate, endDate);
     }
 
-    public List<BookingDetail> getBookingDetailsByRooms(Integer[] roomIds) {
+    public List<BookingDetail> getBookingDetailsByRooms(List<Integer> roomIds) {
         return bookingDetailRepository.getBookingDetailsByRooms(roomIds);
+    }
+
+    public List<Integer> getBookingDetailsIdByRooms(List<Integer> roomIds) {
+        return bookingDetailRepository.getBookingDetailsIdByRooms(roomIds);
     }
 
     public List<BookingDetail> getBookingDetailsByUser(Integer customerId, String query) {

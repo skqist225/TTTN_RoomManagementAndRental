@@ -21,6 +21,10 @@ spring:
             enabled: true
     main:
         allow-bean-definition-overriding: true
+    web:
+        resources:
+            static-locations[0]: "file:src/main/resources/static/"
+            static-locations[1]: "classpath:/static/"
 
 jwt:
     secret: hjGIZoKeIYDnHA2xaN43acQoG10gzNybgy1X1zuKOPTiN0NZ9kzdSFv1IPzzKb2hvRmd3xN43acQoG10gzNybgy1X1zuKOPTiN0NZ9kzdSFv1IPzzKb2hvRm
