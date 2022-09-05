@@ -90,7 +90,7 @@ const PropertyRoomImagesMainContent: FC<IPropertyRoomImagesMainContentProps> = (
                     return;
                 }
                 const formData = new FormData();
-                formData.set("username", username);
+                formData.set("host", username);
                 images.forEach((image: string) => formData.append("roomImages", image));
 
                 const data = await axios.post(`/become-a-host/get-upload-photos`, formData, {

@@ -1,44 +1,89 @@
 package com.airtnt.airtntapp.host;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
 import com.airtnt.airtntapp.FileUploadUtil;
+import com.airtnt.airtntapp.common.GetResource;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
 import com.airtnt.airtntapp.room.RoomService;
 import com.airtnt.entity.Image;
 import com.airtnt.entity.Room;
-
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.json.JSONObject;
-import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/become-a-host/")
 public class HostRestController {
 
-    private final String STATIC_PATH = "src/main/resources/static/room_images/";
+    public final String PROD_STATIC_PATH = "/opt/tomcat/webapps/ROOT/WEB-INF/classes/static/room_images";
+    private final String DEV_STATIC_PATH = "src/main/resources/static/room_images";
     private final String STATIC_ICONS_PATH = "src/main/resources/static/";
-
     @Autowired
     private RoomService roomService;
 
+    @Value("${env}")
+    private String environment;
+
+    public String getUploadDir(String environment, PhotoDTO payload) throws IOException {
+        String uploadDir = "", filePath = "", shortFilePath = "";
+
+        if (environment.equals("development")) {
+            if (Objects.nonNull(payload.getRoomId())) {
+                uploadDir = String.format("%s/%s/%s/", DEV_STATIC_PATH, payload.getHost(), payload.getRoomId());
+                FileUploadUtil.cleanDir(uploadDir);
+            } else {
+                uploadDir = String.format("%s/%s/", DEV_STATIC_PATH, payload.getHost());
+            }
+        } else {
+            if (payload.getRoomId() != null) {
+                filePath = String.format("%s/%s/%s/", PROD_STATIC_PATH, payload.getHost(), payload.getRoomId());
+                FileUploadUtil.cleanDir(uploadDir);
+
+                shortFilePath = String.format("%s/%s/%s/", "static/room_images/", payload.getHost(), payload.getRoomId());
+            } else {
+                filePath = String.format("%s/%s/", PROD_STATIC_PATH, payload.getHost());
+                shortFilePath = String.format("%s/%s/", "static/room_images/", payload.getHost());
+            }
+
+            Path uploadPath = Paths.get(filePath);
+            if (!Files.exists(uploadPath)) {
+                Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxr--r--");
+                FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions
+                        .asFileAttribute(permissions);
+
+                Files.createDirectories(uploadPath, fileAttributes);
+            }
+            uploadDir = GetResource.getResourceAsFile(shortFilePath);
+        }
+
+        return uploadDir;
+    }
+
     @PostMapping("upload-room-photos")
     public String uploadRoomPhotos(@ModelAttribute PhotoDTO payload) throws IOException {
-        String uploadDir = "";
 
-        if (payload.getRoomId() != null) {
-            System.out.println("existed room triggered");
-            uploadDir = STATIC_PATH + payload.getHost() + "/" + payload.getRoomId();
-            FileUploadUtil.cleanDir(uploadDir);
-        } else
-            uploadDir = STATIC_PATH + payload.getHost();
+        String uploadDir = getUploadDir(environment, payload);
+        System.out.println(uploadDir);
 
         for (MultipartFile multipartFile : payload.getPhotos()) {
             if (!multipartFile.isEmpty()) {
@@ -57,8 +102,8 @@ public class HostRestController {
     @PostMapping("update/upload-room-photos")
     public String updatedUploadRoomPhotos(@ModelAttribute PhotoDTO payload) throws IOException, NumberFormatException, RoomNotFoundException {
         String uploadDir = !payload.getHost().equals("test@gmail.com")
-                ? STATIC_PATH + payload.getHost() + "/" + payload.getRoomId()
-                : STATIC_PATH + payload.getHost();
+                ? DEV_STATIC_PATH + "/" + payload.getHost() + "/" + payload.getRoomId()
+                : DEV_STATIC_PATH + "/" + payload.getHost();
         // FileUploadUtil.cleanDir(uploadDir);
 
         Set<Image> newImages = new HashSet<>();
@@ -86,23 +131,10 @@ public class HostRestController {
     }
 
     @PostMapping("get-upload-photos")
-    public String getUploadPhoto(@ModelAttribute GetPhoto payload)
+    public String getUploadPhoto(@ModelAttribute PhotoDTO payload)
             throws IOException {
-        String userName = payload.getUsername();
         String[] roomImages = payload.getRoomImages();
-        String uploadDir = "";
-
-        if (payload.getFolderno() != null && !userName.equals("test@gmail.com")) {
-            uploadDir = STATIC_PATH + userName + "/" + payload.getFolderno() + "/";
-        } else {
-            if (payload.getFolderno() != null) {
-                uploadDir = STATIC_PATH + userName + "/" + payload.getFolderno() + "/";
-            } else {
-                uploadDir = STATIC_PATH + userName;
-            }
-        }
-
-        System.out.println(uploadDir);
+        String uploadDir = getUploadDir(environment, payload);
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
 
@@ -110,18 +142,16 @@ public class HostRestController {
         Path path = Paths.get(uploadDir);
         for (String image : roomImages) {
             Path fullPath = path.resolve(image);
-            String originalFileName = image;
-            String fileName = image;
 
-            System.out.println(fileName);
+            System.out.println(image);
 
             byte[] content = null;
             try {
                 content = Files.readAllBytes(fullPath);
-                System.out.println(content);
-                MultipartFile result = new MockMultipartFile(fileName, originalFileName, contentType, content);
+
+                MultipartFile result = new MockMultipartFile(image, image, contentType, content);
                 multipartFiles.add(result);
-            } catch (final IOException e) {
+            } catch (final IOException ignored) {
             }
         }
         JSONObject object = new JSONObject();
@@ -145,18 +175,14 @@ public class HostRestController {
         String contentType = "text/plain";
         Path path = Paths.get(uploadDir);
         Path fullPath = path.resolve(iconName);
-        String originalFileName = iconName;
-        String fileName = iconName;
-
-        System.out.println(fileName);
 
         byte[] content = null;
         try {
             content = Files.readAllBytes(fullPath);
-            System.out.println(content);
-            MultipartFile result = new MockMultipartFile(fileName, originalFileName, contentType, content);
+
+            MultipartFile result = new MockMultipartFile(iconName, iconName, contentType, content);
             multipartFiles.add(result);
-        } catch (final IOException e) {
+        } catch (final IOException ignored) {
         }
 
         JSONObject object = new JSONObject();

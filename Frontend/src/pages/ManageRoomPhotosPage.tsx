@@ -75,8 +75,8 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
         }
 
         const formData = new FormData();
-        formData.set("username", username);
-        formData.set("folderno", room!.id + "");
+        formData.set("host", username);
+        formData.set("roomId", room!.id + "");
         roomImages.forEach((image: string) =>
             formData.append("roomImages", image.split("/")[image.split("/").length - 1])
         );
@@ -120,17 +120,11 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
             </button>
             <div class="photo-action__div-hidden">
                 <ul data-index="${modifier}">
-               
-
                     <li class="deleteImage">Xóa ảnh</li>
                 </ul>
             </div>
         </div>
     `);
-
-        //  <li class="moveImageBackward">Di chuyển về phía sau</li>
-        // <li class="moveImageForward">Di chuyển về phía trước</li>
-        // <li class="makeMainImage">Chọn làm ảnh chính</li>
 
         fileReader.onload = function (e: any) {
             if (!thumbnail) {
@@ -160,30 +154,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
                     .off("click")
                     .on("click", function () {
                         displayAction($(this));
-                    });
-            });
-
-            $(".moveImageBackward").each(function () {
-                $(this)
-                    .off("click")
-                    .on("click", function () {
-                        moveImageBackward(parseInt($(this).parent("ul").data("index")));
-                    });
-            });
-
-            $(".moveImageForward").each(function () {
-                $(this)
-                    .off("click")
-                    .on("click", function () {
-                        moveImageForward(parseInt($(this).parent("ul").data("index")));
-                    });
-            });
-
-            $(".makeMainImage").each(function () {
-                $(this)
-                    .off("click")
-                    .on("click", function () {
-                        makeMainImage(parseInt($(this).parent("ul").data("index")));
                     });
             });
 
@@ -428,26 +398,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
         swapPosition(0, index);
         changePreviewImage(0, index);
         closeAction(index);
-    }
-
-    function moveImageBackward(index: number) {
-        if (index === 1) {
-            makeMainImage(index);
-        } else {
-            swapPosition(index, index - 1);
-            changePreviewImage(index, index - 1);
-            closeAction(index);
-        }
-    }
-
-    function moveImageForward(index: number) {
-        if (index === 0) {
-            makeMainImage(index + 1);
-        } else {
-            swapPosition(index, index + 1);
-            changePreviewImage(index, index + 1);
-            closeAction(index);
-        }
     }
 
     function deleteImage(index: number) {

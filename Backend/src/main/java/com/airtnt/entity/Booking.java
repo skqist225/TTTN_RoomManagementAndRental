@@ -100,4 +100,14 @@ public class Booking extends BaseEntity {
 
         return this.getState();
     }
+
+
+    @Transient
+    public Float calculateRefundPaid() {
+        if(this.getRefundPaid() != null) {
+            return this.getRefundPaid();
+        }
+
+        return 0f;
+    }
 }

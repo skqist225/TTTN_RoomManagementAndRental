@@ -82,7 +82,7 @@ public class BookingDetailDTO {
                 .numberOfDays(bookingDetail.getNumberOfDays())
                 .siteFee(bookingDetail.getSiteFee())
                 .cleanFee(bookingDetail.getCleanFee())
-                .refundPaid(bookingDetail.getBooking().getRefundPaid())
+                .refundPaid(bookingDetail.getBooking().calculateRefundPaid())
                 .totalFee(bookingDetail.getTotalFee())
                 .customerAvatar(bookingDetail.getBooking().getCustomer().getAvatarPath())
                 .customerName(customer.getFullName())

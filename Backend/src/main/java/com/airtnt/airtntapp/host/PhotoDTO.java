@@ -15,5 +15,5 @@ public class PhotoDTO {
     private String host;
     private String roomId;
     private MultipartFile[] photos;
-
+    private String[] roomImages;
 }

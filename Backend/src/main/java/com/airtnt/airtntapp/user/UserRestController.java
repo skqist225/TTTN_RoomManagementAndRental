@@ -59,6 +59,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/user/")
 public class UserRestController {
 
+    public final String DEV_STATIC_PATH="src/main/resources/static/user_images/";
+    public final String PROD_STATIC_PATH="/opt/tomcat/webapps/ROOT/WEB-INF/classes/static/user_images/";
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -281,9 +284,9 @@ public class UserRestController {
             String fileName = StringUtils.cleanPath(newAvatar.getOriginalFilename());
             String uploadDir = "";
             if (environment.equals("development")) {
-                uploadDir = "src/main/resources/static/user_images/" + user.getId() + "/";
+                uploadDir = DEV_STATIC_PATH + user.getId() + "/";
             } else {
-                String filePath = "/opt/tomcat/webapps/ROOT/WEB-INF/classes/static/user_images/" + user.getId() + "/";
+                String filePath = PROD_STATIC_PATH + user.getId() + "/";
                 Path uploadPath = Paths.get(filePath);
                 if (!Files.exists(uploadPath)) {
                     Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxr--r--");

@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 class GetPhoto {
-    private String username;
-    private String folderno;
-    private String[] roomImages;
+    private String host;
+    private String roomId;
+
 }
