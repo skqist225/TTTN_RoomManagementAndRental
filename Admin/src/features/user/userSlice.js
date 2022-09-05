@@ -52,6 +52,40 @@ export const deleteUser = createAsyncThunk(
     }
 );
 
+export const disableUser = createAsyncThunk(
+    "user/disableUser",
+    async (id, { dispatch, rejectWithValue }) => {
+        try {
+            const { data } = await api.put(`/admin/users/${id}/disable`);
+
+            if (data) {
+                dispatch(fetchUsers(1));
+            }
+
+            return { data };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
+
+export const enableUser = createAsyncThunk(
+    "user/enableUser",
+    async (id, { dispatch, rejectWithValue }) => {
+        try {
+            const { data } = await api.put(`/admin/users/${id}/enable`);
+
+            if (data) {
+                dispatch(fetchUsers(1));
+            }
+
+            return { data };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
+
 export const updateUser = createAsyncThunk(
     "user/updateUser",
     async ({ id, formData }, { dispatch, rejectWithValue }) => {
@@ -74,6 +108,16 @@ export const fetchWishlistsIDsOfCurrentUser = createAsyncThunk(
     async (_, { dispatch, getState, rejectWithValue }) => {
         try {
             const { data } = await api.get(`/user/wishlists/ids`);
+            return { data };
+        } catch (error) {}
+    }
+);
+
+export const fetchRoles = createAsyncThunk(
+    "user/fetchRoles",
+    async (_, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const { data } = await api.get(`/admin/roles`);
             return { data };
         } catch (error) {}
     }
@@ -139,6 +183,9 @@ const initialState = {
         successMessage: null,
         errorMessage: null,
     },
+    fetchRolesAction: {
+        roles: [],
+    },
 };
 
 const userSlice = createSlice({
@@ -202,7 +249,7 @@ const userSlice = createSlice({
             })
             .addCase(addUser.rejected, (state, { payload }) => {
                 state.updateUserAction.loading = false;
-                state.addUserAction.errorMessage = payload;
+                state.addUserAction.errorMessage = JSON.parse(payload);
             })
             .addCase(updateUser.pending, (state, { payload }) => {
                 state.updateUserAction.loading = true;
@@ -217,10 +264,13 @@ const userSlice = createSlice({
             })
             .addCase(updateUser.rejected, (state, { payload }) => {
                 state.updateUserAction.loading = false;
-                state.updateUserAction.errorMessage = payload;
+                state.updateUserAction.errorMessage = JSON.parse(payload);
             })
             .addCase(fetchWishlistsIDsOfCurrentUser.pending, (state, { payload }) => {
                 state.wishlistsIDsFetching = true;
+            })
+            .addCase(fetchRoles.fulfilled, (state, { payload }) => {
+                state.fetchRolesAction.roles = payload.data;
             })
             .addCase(fetchWishlistsIDsOfCurrentUser.fulfilled, (state, { payload }) => {
                 state.wishlistsIDsFetching = false;

@@ -5,6 +5,7 @@ import com.airtnt.airtntapp.address.AddressService;
 import com.airtnt.airtntapp.booking.BookingService;
 import com.airtnt.airtntapp.common.GetResource;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
+import com.airtnt.airtntapp.exception.UserNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.error.BadResponse;
 import com.airtnt.airtntapp.response.success.OkResponse;
@@ -12,7 +13,6 @@ import com.airtnt.airtntapp.room.RoomService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
 import com.airtnt.airtntapp.user.dto.BookedRoomDTO;
 import com.airtnt.airtntapp.user.dto.PostUpdateUserDTO;
-import com.airtnt.airtntapp.user.dto.UpdateUserDTO;
 import com.airtnt.airtntapp.user.dto.UserSexDTO;
 import com.airtnt.airtntapp.user.dto.WishlistsDTO;
 import com.airtnt.entity.Address;
@@ -82,6 +82,17 @@ public class UserRestController {
 
     @Autowired
     private AddressService addressService;
+
+    @GetMapping("{id}")
+    public ResponseEntity<StandardJSONResponse<User>> getUser(@PathVariable(value = "id") Integer id) {
+        try {
+            User user = userService.findById(id);
+
+            return new OkResponse<>(user).response();
+        } catch (UserNotFoundException e) {
+            return new BadResponse<User>(e.getMessage()).response();
+        }
+    }
 
     @GetMapping("sex")
     public ResponseEntity<StandardJSONResponse<List<UserSexDTO>>> getSexs() {
@@ -243,39 +254,6 @@ public class UserRestController {
         }
 
         return new OkResponse<User>(savedUser).response();
-    }
-
-    @PutMapping("update")
-    public ResponseEntity<StandardJSONResponse<User>> updateUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @RequestBody UpdateUserDTO postUpdateUserDTO) {
-        User currentUser = userDetailsImpl.getUser();
-
-        if (postUpdateUserDTO.getFirstName() == null && postUpdateUserDTO.getLastName() == null) {
-            return new BadResponse<User>("First name or last name is required").response();
-        }
-        if (postUpdateUserDTO.getFirstName() != null) {
-            currentUser.setFirstName(postUpdateUserDTO.getFirstName());
-        }
-        if (postUpdateUserDTO.getLastName() != null) {
-            currentUser.setLastName(postUpdateUserDTO.getLastName());
-        }
-
-        if (postUpdateUserDTO.getSex() == null) {
-            return new BadResponse<User>("Gender is required").response();
-        }
-
-        String newSex = postUpdateUserDTO.getSex();
-        Sex sex = newSex.equals("MALE") ? Sex.MALE : newSex.equals("FEMALE") ? Sex.FEMALE : Sex.OTHER;
-        currentUser.setSex(sex);
-
-        if (postUpdateUserDTO.getBirthday() == null) {
-            return new BadResponse<User>("Birthday is required").response();
-        }
-
-        LocalDate birthd = LocalDate.parse(postUpdateUserDTO.getBirthday());
-        currentUser.setBirthday(birthd);
-
-        return new OkResponse<User>(userService.saveUser(currentUser)).response();
     }
 
     public User updateAvatar(User user, MultipartFile newAvatar, boolean isCallFromInternal, String environment)

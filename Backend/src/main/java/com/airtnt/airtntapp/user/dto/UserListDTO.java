@@ -23,6 +23,7 @@ public class UserListDTO {
     private boolean phoneVerified;
     private boolean identityVerified;
     private Integer numberOfReviews;
+    private boolean status;
 
     public static UserListDTO build(User user) {
         return UserListDTO.builder()
@@ -35,6 +36,7 @@ public class UserListDTO {
                 .emailVerified(user.isEmailVerified())
                 .phoneVerified(user.isPhoneVerified())
                 .identityVerified(false)
+                .status(user.isStatus())
                 .build();
     }
 }

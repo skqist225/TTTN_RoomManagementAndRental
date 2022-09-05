@@ -13,18 +13,29 @@ import com.airtnt.entity.Address;
 import com.airtnt.entity.City;
 import com.airtnt.entity.Sex;
 import com.airtnt.entity.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/admin/")
@@ -34,6 +45,9 @@ public class AdminUserRestController {
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Value("${env}")
     private String environment;
@@ -87,11 +101,24 @@ public class AdminUserRestController {
         }
     }
 
-    @DeleteMapping("users/{id}")
-    public ResponseEntity<StandardJSONResponse<String>> deleteUser(@PathVariable(value = "id") Integer id) {
+    @DeleteMapping("users/{userId}")
+    public ResponseEntity<StandardJSONResponse<String>> deleteUser(@PathVariable(value = "userId") Integer userId) {
         try {
-            return new OkResponse<String>(userService.deleteById(id)).response();
+            return new OkResponse<String>(userService.deleteById(userId)).response();
         } catch (UserNotFoundException | VerifiedUserException e) {
+            return new BadResponse<String>(e.getMessage()).response();
+        }
+    }
+
+    @PutMapping("users/{id}/{action}")
+    public ResponseEntity<StandardJSONResponse<String>> disableUser(@PathVariable(value = "id") Integer id, @PathVariable(value = "action") String action) {
+        try {
+            User user = userService.findById(id);
+            user.setStatus(action.equals("enable"));
+            userService.saveUser(user);
+
+            return new OkResponse<String>("Update User Successfully").response();
+        } catch (UserNotFoundException e) {
             return new BadResponse<String>(e.getMessage()).response();
         }
     }
@@ -102,6 +129,38 @@ public class AdminUserRestController {
         try {
             User user = userService.findById(userId);
 
+            ArrayNode arrays = objectMapper.createArrayNode();
+
+            if (userService.checkBirthday(LocalDate.parse(updateUserDTO.getBirthday()))) {
+                ObjectNode node = objectMapper.createObjectNode();
+                node.put("birthday", "Your age must be greater than 18");
+                arrays.add(node);
+            }
+
+            if (userService.checkPhoneNumber(updateUserDTO.getPhoneNumber(), true, userId)) {
+                ObjectNode node = objectMapper.createObjectNode();
+                node.put("phoneNumber", "Phone number has already been taken");
+                arrays.add(node);
+            }
+
+            if (updateUserDTO.getPhoneNumber().length() != 10) {
+                ObjectNode node = objectMapper.createObjectNode();
+                node.put("phoneNumberCharacter", "Phone number must be 10 characters");
+                arrays.add(node);
+            }
+
+            Pattern pattern = Pattern.compile("^\\d{10}$");
+            Matcher matcher = pattern.matcher(updateUserDTO.getPhoneNumber());
+            if (!matcher.matches()) {
+                ObjectNode node = objectMapper.createObjectNode();
+                node.put("phoneNumberString", "Phone number must be 10 characters");
+                arrays.add(node);
+            }
+
+            if (arrays.size() > 0) {
+                return new BadResponse<User>(arrays.toString()).response();
+            }
+
             user.setFirstName(updateUserDTO.getFirstName());
             user.setLastName(updateUserDTO.getLastName());
 
@@ -110,7 +169,6 @@ public class AdminUserRestController {
             user.setSex(sex);
 
             user.setPhoneNumber(updateUserDTO.getPhoneNumber());
-            user.setEmail(updateUserDTO.getEmail());
             user.setAbout(updateUserDTO.getAbout());
 
             if (updateUserDTO.getPassword() != null) {
@@ -118,42 +176,39 @@ public class AdminUserRestController {
                 userService.encodePassword(user);
             }
 
-            LocalDate birthd = LocalDate.parse(updateUserDTO.getBirthday());
-            user.setBirthday(birthd);
+            user.setBirthday(LocalDate.parse(updateUserDTO.getBirthday()));
 
             new UserRestController().updateAvatar(user, updateUserDTO.getAvatar(), false,
                     environment);
 
-//            if (updateUserDTO.getCountry() != null) {
-//                user.getAddress().setCountry(new Country(updateUserDTO.getCountry()));
-//            }
-//            if (updateUserDTO.getState() != null) {
-//                user.getAddress().setState(new State(updateUserDTO.getState()));
-//            }
 
-            Address address = null;
-            if (user.getAddress() != null) {
-                address = addressService.findById(user.getAddress().getId());
+            if (updateUserDTO.getCity() != null && updateUserDTO.getStreet() != null) {
+                Address address = null;
+                if (user.getAddress() != null) {
+                    address = addressService.findById(user.getAddress().getId());
+                }
+
+                if (address == null) {
+                    if (Objects.nonNull(updateUserDTO.getCity()) && Objects.nonNull(updateUserDTO.getStreet())) {
+                        address = new Address(new City(updateUserDTO.getCity()), updateUserDTO.getStreet());
+
+                        Address savedAddress = addressService.save(address);
+                        user.setAddress(savedAddress);
+                    }
+                } else {
+                    if (updateUserDTO.getCity() != null) {
+                        address.setCity(new City(updateUserDTO.getCity()));
+                    }
+                    if (updateUserDTO.getStreet() != null) {
+                        address.setStreet(updateUserDTO.getStreet());
+                    }
+
+                    addressService.save(address);
+                }
             }
 
-            if (address == null) {
-                if (Objects.nonNull(updateUserDTO.getCity()) && Objects.nonNull(updateUserDTO.getStreet())) {
-                    address = new Address(new City(updateUserDTO.getCity()), updateUserDTO.getStreet());
-                }
-            } else {
-                if (updateUserDTO.getCity() != null) {
-                    address.setCity(new City(updateUserDTO.getCity()));
-                }
-                if (updateUserDTO.getStreet() != null) {
-                    address.setStreet(updateUserDTO.getStreet());
-                }
-            }
 
-            if(address != null) {
-                addressService.save(address);
-            }
-
-            return new OkResponse<User>(userService.saveUser(user)).response();
+            return new OkResponse<>(userService.saveUser(user)).response();
         } catch (UserNotFoundException e) {
             return new BadResponse<User>(e.getMessage()).response();
         }

@@ -53,6 +53,30 @@ export const updateUserInfo = createAsyncThunk(
     }
 );
 
+export const refreshUserData = createAsyncThunk(
+    "user/refreshUserData",
+    async (userId: number, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const { data } = await api.get(`/user/${userId}`);
+
+            if (data) {
+                console.log(data);
+                const lsUser = localStorage.getItem("user");
+                if (lsUser) {
+                    const { token } = JSON.parse(lsUser);
+                    localStorage.removeItem("user");
+                    data.token = token;
+                    localStorage.setItem("user", JSON.stringify(data as IUser));
+                }
+            }
+
+            return { data };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
+
 export const updateUserPassword = createAsyncThunk(
     "user/updateUserPassword",
     async (updatedInfo: IUserUpdate, { dispatch, getState, rejectWithValue }) => {

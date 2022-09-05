@@ -40,6 +40,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -124,9 +125,16 @@ public class User extends BaseEntity {
         Sex sex = registerDTO.getSex().equals("MALE") ? Sex.MALE
                 : (registerDTO.getSex().equals("FEMALE") ? Sex.FEMALE : Sex.OTHER);
 
+
+        Role role = new Role(2);
+        if(Objects.nonNull(registerDTO.getRoleId())) {
+             role = new Role(registerDTO.getRoleId());
+        }
+
+
         return User.builder().firstName(registerDTO.getFirstName()).lastName(registerDTO.getLastName())
                 .email(registerDTO.getEmail()).password(registerDTO.getPassword()).sex(sex)
-                .birthday(registerDTO.getBirthday()).phoneNumber(registerDTO.getPhoneNumber()).role(new Role(1)).phoneVerified(false)
+                .birthday(registerDTO.getBirthday()).phoneNumber(registerDTO.getPhoneNumber()).role(role).phoneVerified(false)
                 .emailVerified(false)
                 .build();
     }

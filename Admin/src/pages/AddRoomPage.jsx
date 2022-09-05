@@ -30,7 +30,6 @@ import { categoryState, fetchCategories } from "../features/category/categorySli
 import { fetchPrivacies, privacyState } from "../features/privacy/privacySlice";
 import IncAndDecBtn from "../components/room/components/IncAndDecBtn";
 import { amenityState, fetchAmenities } from "../features/amenity/amenitySlice";
-import { currencyState, fetchCurrencies } from "../features/currency/currencySlice";
 import { addRoom, roomState } from "../features/room/roomSlice";
 import { useNavigate } from "react-router-dom";
 import { fetchRules, ruleState } from "../features/rule/ruleSlice";
@@ -63,7 +62,6 @@ const AddRoomPage = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState(0);
-    const [currency, setCurrency] = useState(0);
 
     const [info, setInfo] = useState({
         bedroomCount: 0,
@@ -98,10 +96,6 @@ const AddRoomPage = () => {
     const {
         listing: { privacies },
     } = useSelector(privacyState);
-
-    const {
-        listing: { currencies },
-    } = useSelector(currencyState);
 
     const {
         addRoomAction: { successMessage: araSuccessMessage },
@@ -148,7 +142,6 @@ const AddRoomPage = () => {
                 bathroomCount,
                 accomodatesCount,
                 bedCount,
-                currency,
                 category,
                 description,
                 latitude,
@@ -210,7 +203,6 @@ const AddRoomPage = () => {
             dispatch(fetchCategories());
             dispatch(fetchAmenities());
             dispatch(fetchRules(1));
-            dispatch(fetchCurrencies());
         }
     }, [activeStep]);
 
@@ -229,7 +221,7 @@ const AddRoomPage = () => {
                 setNextButtonDisbaled(true);
             }
         }
-    }, [category, privacyType, amenities, name, price, currency, rules]);
+    }, [category, privacyType, amenities, name, price, rules]);
 
     useEffect(() => {
         if (activeStep === 1) {
@@ -460,41 +452,7 @@ const AddRoomPage = () => {
                                                                     required
                                                                 />
                                                             </FormControl>
-                                                            <div className='my-5'>
-                                                                <FormControl fullWidth required>
-                                                                    <InputLabel>
-                                                                        Currencies
-                                                                    </InputLabel>
-                                                                    <Select
-                                                                        value={currency}
-                                                                        label='Currencies'
-                                                                        onChange={e => {
-                                                                            setCurrency(
-                                                                                e.target.value
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        {currencies.map(
-                                                                            currency => (
-                                                                                <MenuItem
-                                                                                    value={
-                                                                                        currency.id
-                                                                                    }
-                                                                                    id={
-                                                                                        currency.unit
-                                                                                    }
-                                                                                >
-                                                                                    {
-                                                                                        currency.symbol
-                                                                                    }{" "}
-                                                                                    ({currency.unit}
-                                                                                    )
-                                                                                </MenuItem>
-                                                                            )
-                                                                        )}
-                                                                    </Select>
-                                                                </FormControl>
-                                                            </div>
+
                                                             <div className='mb-5'>
                                                                 <FormControl fullWidth required>
                                                                     <InputLabel>Rules</InputLabel>

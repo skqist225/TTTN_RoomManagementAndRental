@@ -15,26 +15,29 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Divider, IconButton, InputAdornment, OutlinedInput, Typography } from "@mui/material";
 import Toast from "../components/notify/Toast";
-import { addUser, fetchUser, userState } from "../features/user/userSlice";
+import { addUser, fetchRoles, userState } from "../features/user/userSlice";
 import { callToast } from "../helpers";
 import $ from "jquery";
 
 const schema = yup
     .object({
-        password: yup.string().min(8, "Password at least 8 characters"),
+        password: yup.string().length(8, "Password at least 8 characters"),
         birthday: yup.string().required("Birthday is required"),
         phoneNumber: yup
             .string()
+            .required("Phone number is required")
+            .min(10, "Phone number must be 10 characters")
+            .max(10, "Phone number must be 10 characters")
             .matches(
-                /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4}$/,
-                "Phone number must be 10 numbers."
+                /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
+                "Invalid phone number"
             ),
-        email: yup.string().email("Invalid email"),
+        email: yup.string().email("Invalid email").required("Email is required"),
     })
     .required();
 
@@ -42,18 +45,34 @@ const AddUserPage = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [birthday, setBirthday] = useState(new Date());
     const [sex, setSex] = useState("MALE");
+    const [role, setRole] = useState(2);
     const [showPassword, setShowPassword] = useState(false);
-    const [myErrors, setMyErrors] = useState({
-        phoneNumber: "",
-        birthday: "",
-        email: "",
-    });
 
     const dispatch = useDispatch();
     const {
         addUserAction: { successMessage, errorMessage },
-        get: { user },
+        fetchRolesAction: { roles },
     } = useSelector(userState);
+
+    let birthdayErrorFromServer = null,
+        emailErrorFromServer = null,
+        phoneNumberErrorFromServer = null;
+    if (errorMessage && errorMessage.length > 0) {
+        errorMessage.forEach(error => {
+            if (error.birthday) {
+                birthdayErrorFromServer = error.birthday;
+            }
+            if (error.email) {
+                emailErrorFromServer = error.email;
+            }
+            if (error.phoneNumber) {
+                phoneNumberErrorFromServer = error.phoneNumber;
+            }
+            if (error.phoneNumberCharacter) {
+                phoneNumberErrorFromServer = error.phoneNumberCharacter;
+            }
+        });
+    }
 
     const {
         register,
@@ -63,17 +82,22 @@ const AddUserPage = () => {
         resolver: yupResolver(schema),
     });
 
-    console.log(errors);
-
     const onSubmit = (data, e) => {
-        setMyErrors({
-            phoneNumber: "",
-            birthday: "",
-            email: "",
-        });
+        let monthOfBirthDay = "0",
+            dateOfBirthday = "0";
+        if (birthday.getMonth() + 1 < 10) {
+            monthOfBirthDay += birthday.getMonth() + 1;
+        } else {
+            monthOfBirthDay = birthday.getMonth() + 1;
+        }
 
-        let userBirthday = data.birthday.split("/");
-        userBirthday = `${userBirthday[2]}-${userBirthday[0]}-${userBirthday[1]}`;
+        if (birthday.getDate() < 10) {
+            dateOfBirthday += birthday.getDate();
+        } else {
+            dateOfBirthday = birthday.getDate();
+        }
+
+        let userBirthday = `${birthday.getFullYear()}-${monthOfBirthDay}-${dateOfBirthday}`;
 
         dispatch(addUser({ ...data, birthday: userBirthday, sex }));
     };
@@ -94,29 +118,15 @@ const AddUserPage = () => {
         if (successMessage) {
             callToast("success", successMessage);
             clearFields();
+            setBirthday(new Date());
+            setSex("MALE");
+            setRole(2);
         }
     }, [successMessage]);
 
     useEffect(() => {
-        if (errorMessage) {
-            if (errorMessage.includes("Email")) {
-                setMyErrors({
-                    ...myErrors,
-                    email: errorMessage,
-                });
-            } else if (errorMessage.includes("Phone number")) {
-                setMyErrors({
-                    ...myErrors,
-                    phoneNumber: errorMessage,
-                });
-            } else {
-                setMyErrors({
-                    ...myErrors,
-                    birthday: errorMessage,
-                });
-            }
-        }
-    }, [errorMessage]);
+        dispatch(fetchRoles());
+    }, []);
 
     return (
         <>
@@ -169,14 +179,16 @@ const AddUserPage = () => {
                                                 label={"Phone Number"}
                                                 {...register("phoneNumber")}
                                                 error={
-                                                    errors?.phoneNumber
+                                                    phoneNumberErrorFromServer
                                                         ? true
-                                                        : !!myErrors.phoneNumber
+                                                        : !!errors?.phoneNumber
                                                 }
                                                 helperText={
-                                                    errors?.phoneNumber
+                                                    phoneNumberErrorFromServer
+                                                        ? phoneNumberErrorFromServer
+                                                        : errors?.phoneNumber
                                                         ? errors?.phoneNumber.message
-                                                        : myErrors.phoneNumber
+                                                        : ""
                                                 }
                                                 defaultValue=''
                                                 required
@@ -189,11 +201,13 @@ const AddUserPage = () => {
                                             <TextField
                                                 label={"Email"}
                                                 {...register("email")}
-                                                error={errors?.email ? true : !!myErrors.email}
+                                                error={emailErrorFromServer ? true : !!errors.email}
                                                 helperText={
-                                                    errors?.email
+                                                    emailErrorFromServer
+                                                        ? emailErrorFromServer
+                                                        : errors?.email
                                                         ? errors?.email.message
-                                                        : myErrors.email
+                                                        : ""
                                                 }
                                                 autoComplete='nope'
                                                 defaultValue=''
@@ -228,8 +242,10 @@ const AddUserPage = () => {
                                                 label='Password'
                                                 autoComplete='new-password'
                                                 {...register("password")}
+                                                error={!!errors?.password}
                                             />
                                         </FormControl>
+                                        <p>{errors?.password ? errors?.password.message : ""}</p>
                                     </div>
 
                                     <div className='mb-5'>
@@ -262,14 +278,14 @@ const AddUserPage = () => {
                                                             {...params}
                                                             {...register("birthday")}
                                                             error={
-                                                                errors?.birthday
+                                                                birthdayErrorFromServer
                                                                     ? true
-                                                                    : !!myErrors.birthday
+                                                                    : false
                                                             }
                                                             helperText={
-                                                                errors?.birthday
-                                                                    ? errors?.birthday.message
-                                                                    : myErrors.birthday
+                                                                birthdayErrorFromServer
+                                                                    ? birthdayErrorFromServer
+                                                                    : null
                                                             }
                                                         />
                                                     )}
@@ -277,6 +293,28 @@ const AddUserPage = () => {
                                             </LocalizationProvider>
                                         </FormControl>
                                     </div>
+
+                                    <div className='mb-5'>
+                                        {roles && roles.length && (
+                                            <FormControl fullWidth>
+                                                <InputLabel>Role</InputLabel>
+                                                <Select
+                                                    value={role}
+                                                    label='Sex'
+                                                    onChange={e => {
+                                                        setRole(e.target.value);
+                                                    }}
+                                                >
+                                                    {roles.map(role => (
+                                                        <MenuItem value={role.id} key={role.id}>
+                                                            {role.name}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        )}
+                                    </div>
+
                                     <div>
                                         <FormControl fullWidth>
                                             <Button

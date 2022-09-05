@@ -56,9 +56,15 @@ const Header: FC<IHeaderProps> = ({ includeMiddle, excludeBecomeHostAndNavigatio
 
     useEffect(() => {
         jQuerycode();
-        dispatch(getCartNumber());
+
         dispatch(dispatch(clearLASuccessMessage()));
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            dispatch(getCartNumber());
+        }
+    }, [user]);
 
     const handleLogout = () => {
         navigate("/auth/login");

@@ -87,6 +87,9 @@ const store = configureStore({
                 successMessage: null,
                 errorMessage: null,
             },
+            fetchRolesAction: {
+                roles: [],
+            },
         },
     },
 });

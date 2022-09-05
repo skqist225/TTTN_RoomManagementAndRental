@@ -37,13 +37,7 @@ const PropertyLocationMainContent = ({
     const [localStreet, setLocalStreet] = useState(values.street);
     const [localCity, setLocalCity] = useState(values.city);
     const [localState, setLocalState] = useState(values.state);
-    const [localCountry, setLocalCountry] = useState(values.country);
-    const [isCityLoading, setIsCityLoading] = useState(true);
-    const [firstLoad, setFirstLoad] = useState(true);
 
-    const {
-        listing: { countries, loading: countriesLoading },
-    } = useSelector(countryState);
     const { states, loading: statesLoading } = useSelector(stateState);
     const { cities, loading: citiesLoading } = useSelector(cityState);
 
@@ -285,7 +279,6 @@ const PropertyLocationMainContent = ({
     }, []);
 
     useEffect(() => {
-        dispatch(fetchCountries());
         dispatch(fetchStatesByCountry({ countryId: 216 }));
         dispatch(fetchCitiesByState({ stateId: 120 }));
     }, []);
@@ -395,7 +388,7 @@ const PropertyLocationMainContent = ({
                                     </FormControl>
                                 }
                             </div>
-                            <div className='mb-5'>
+                            {/* <div className='mb-5'>
                                 <FormControl fullWidth required>
                                     <InputLabel>Country</InputLabel>
                                     <Select
@@ -419,7 +412,7 @@ const PropertyLocationMainContent = ({
                                             ))}
                                     </Select>
                                 </FormControl>
-                            </div>
+                            </div> */}
                             <div>
                                 <FormControl fullWidth>
                                     <MyButton
@@ -430,7 +423,7 @@ const PropertyLocationMainContent = ({
                                 </FormControl>
                             </div>
                         </div>
-                        <div className='mt-5 w-full'>
+                        {/* <div className='mt-5 w-full'>
                             <FormControl fullWidth>
                                 <MyButton
                                     onClick={e => {
@@ -442,7 +435,7 @@ const PropertyLocationMainContent = ({
                                     label={"Use Current Location"}
                                 />
                             </FormControl>
-                        </div>
+                        </div> */}
                     </Div>
                 </div>
                 <Divider orientation='vertical' flexItem />

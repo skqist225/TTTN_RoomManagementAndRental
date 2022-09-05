@@ -1,6 +1,5 @@
 import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { UserInfo } from "../components/personal_info/UserInfo";
 import { getImage, formatDate, getUserSex, callToast } from "../helpers";
@@ -10,11 +9,12 @@ import Toast from "../components/notify/Toast";
 
 import "./css/personal_info.css";
 import { Image } from "../globalStyle";
-import { userState } from "../features/user/userSlice";
+import { refreshUserData, userState } from "../features/user/userSlice";
 
 type IPersonalInfoPageProps = {};
 
 const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
+    const dispatch = useDispatch();
     const {
         user,
         update: { loading, successMessage, errorMessage },
@@ -22,6 +22,9 @@ const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
 
     useEffect(() => {
         jqueryCode();
+        if (user?.id) {
+            dispatch(refreshUserData(user.id));
+        }
     }, []);
 
     useEffect(() => {

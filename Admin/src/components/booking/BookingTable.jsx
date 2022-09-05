@@ -13,7 +13,6 @@ import { callToast, getImage } from "../../helpers";
 import { Image } from "../../globalStyle";
 import { BookingStatus, MyButton } from "../common";
 import MyNumberForMat from "../../utils/MyNumberFormat";
-import { Link } from "react-router-dom";
 import {
     approveBooking,
     bookingState,
@@ -35,10 +34,6 @@ function BookingTable({ type }) {
         cancelBookingAction: { successMessage: cbaSuccessMessage, errorMessage: cbaErrorMessage },
         approveBookingAction: { successMessage: abaSuccessMessage, errorMessage: abaErrorMessage },
     } = useSelector(bookingState);
-
-    const handleDelete = bookingid => {
-        dispatch(deleteBooking({ bookingid }));
-    };
 
     const handleApprove = bookingid => {
         dispatch(approveBooking({ bookingid }));
@@ -106,9 +101,6 @@ function BookingTable({ type }) {
             render: rowData => (
                 <div>
                     <Stack spacing={2} direction='row'>
-                        <Link to={`/bookings/${rowData.bookingId}`}>
-                            <MyButton label='Booking' type='view' />
-                        </Link>
                         <MyButton
                             label='Booking'
                             type='approve'
@@ -123,14 +115,6 @@ function BookingTable({ type }) {
                                 console.log("abc");
                                 handleDeny(rowData.bookingId);
                             }}
-                        />
-                        <MyButton
-                            label='Booking'
-                            type='delete'
-                            onClick={() => {
-                                handleDelete(rowData.bookingId);
-                            }}
-                            disabled={rowData.bookingDetails && rowData.bookingDetails.length > 0}
                         />
                     </Stack>
                 </div>

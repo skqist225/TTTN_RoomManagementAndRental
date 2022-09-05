@@ -6,6 +6,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import CheckIcon from "@mui/icons-material/Check";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DoNotTouchIcon from "@mui/icons-material/DoNotTouch";
 
 function MyButton(props) {
     let { type, label, disabled } = props;
@@ -26,6 +27,18 @@ function MyButton(props) {
             // label = `Delete ${label}`;
             buttonClassName = "bg-rose-500 hover:bg-rose-500";
             buttonDisableClassName = "bg-rose-200 hover:bg-rose-200";
+            break;
+        }
+        case "disable": {
+            // label = `Delete ${label}`;
+            buttonClassName = "bg-rose-500 hover:bg-rose-500";
+            buttonDisableClassName = "bg-rose-200 hover:bg-rose-200";
+            break;
+        }
+        case "enable": {
+            // label = `Delete ${label}`;
+            buttonClassName = "bg-green-500 hover:bg-green-500";
+            buttonDisableClassName = "bg-green-200 hover:bg-green-200";
             break;
         }
         case "deny": {
@@ -88,6 +101,8 @@ function MyButton(props) {
                 </svg>
             )}
             {type === "delete" && <DeleteIcon />}
+            {type === "disable" && <DoNotTouchIcon />}
+            {type === "enable" && <CheckIcon />}
             {type === "currentPosition" && <>{label}</>}
             {type === "lookGood" && <>{label}</>}
             {type === "edit" && <EditIcon />}

@@ -6,8 +6,13 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { clearUserState, deleteUser, fetchUsers, userState } from "../features/user/userSlice";
-import { Image } from "../globalStyle";
+import {
+    clearUserState,
+    disableUser,
+    enableUser,
+    fetchUsers,
+    userState,
+} from "../features/user/userSlice";
 import { MyButton } from "../components/common";
 import Toast from "../components/notify/Toast";
 
@@ -22,8 +27,12 @@ const UsersPage = () => {
         deleteUserAction: { successMessage, errorMessage },
     } = useSelector(userState);
 
-    const handleDelete = id => {
-        dispatch(deleteUser(id));
+    const handleDisableUser = id => {
+        dispatch(disableUser(id));
+    };
+
+    const handleEnableUser = id => {
+        dispatch(enableUser(id));
     };
 
     const handlePageChange = (e, pn) => {
@@ -65,6 +74,13 @@ const UsersPage = () => {
             ),
         },
         {
+            title: "Status",
+            field: "status",
+            render: rowData => (
+                <div style={{ maxWidth: "20px" }}>{rowData.status ? "Enable" : "Disabled"}</div>
+            ),
+        },
+        {
             title: "Sex",
             field: "sex",
         },
@@ -77,39 +93,32 @@ const UsersPage = () => {
             field: "role",
         },
         {
-            title: "Identity Verified",
-            field: "identityVerified",
-            render: rowData => (
-                <div>
-                    {rowData.identityVerified ? (
-                        <Image src={getImage("/svg/identity_verified.svg")} size='20px' />
-                    ) : (
-                        <Image src={getImage("/svg/close2.svg")} size='20px' />
-                    )}
-                </div>
-            ),
-        },
-        {
             title: "Action",
             field: "action",
             render: rowData => (
                 <div>
                     <Stack spacing={2} direction='row'>
-                        <Link to={`/users/${rowData.id}`}>
-                            <MyButton label='User' type='view' />
-                        </Link>
                         <Link to={`/edit/user/${rowData.id}`}>
                             <MyButton label='User' type='edit' />
                         </Link>
 
-                        <MyButton
-                            label='User'
-                            type='delete'
-                            onClick={() => {
-                                handleDelete(rowData.id);
-                            }}
-                            disabled={rowData.identityVerified}
-                        />
+                        {rowData.status ? (
+                            <MyButton
+                                label='User'
+                                type='disable'
+                                onClick={() => {
+                                    handleDisableUser(rowData.id);
+                                }}
+                            />
+                        ) : (
+                            <MyButton
+                                label='User'
+                                type='enable'
+                                onClick={() => {
+                                    handleEnableUser(rowData.id);
+                                }}
+                            />
+                        )}
                     </Stack>
                 </div>
             ),

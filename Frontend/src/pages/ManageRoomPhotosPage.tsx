@@ -51,12 +51,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
         }
     }, [user, room]);
 
-    // useEffect(() => {
-    //     if (user && room) {
-    //         initComp(user, room);
-    //     }
-    // }, [user, room]);
-
     async function restoreRoomImages(uploadPhotos: JQuery<HTMLInputElement>) {
         let username: string = "",
             roomImages: string[] = [];
@@ -472,23 +466,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
         allRoomImages.concat(room!.images).push(room!.thumbnail);
 
         $("#chooseRoomThumbnail").css("display", "none");
-    }
-
-    function dropHandler(e: React.DragEvent<HTMLDivElement>) {
-        e.stopPropagation();
-        e.preventDefault();
-
-        // FileList object.
-        var files = e.dataTransfer.files;
-        const uploadPhotos: JQuery<HTMLInputElement> = $("#uploadPhotos");
-        readURL(files, uploadPhotos);
-    }
-
-    function dragoverHandler(e: React.DragEvent<HTMLDivElement>) {
-        e.stopPropagation();
-        e.preventDefault();
-        // Explicitly show this is a copy.
-        e.dataTransfer.dropEffect = "copy";
     }
 
     function previewRoom() {

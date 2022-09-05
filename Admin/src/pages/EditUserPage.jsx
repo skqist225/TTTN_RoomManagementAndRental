@@ -15,6 +15,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Form } from "react-bootstrap";
 import {
     Divider,
     IconButton,
@@ -24,27 +25,22 @@ import {
     Typography,
 } from "@mui/material";
 import Toast from "../components/notify/Toast";
-import { fetchUser, updateUser, userState } from "../features/user/userSlice";
+import { fetchRoles, fetchUser, updateUser, userState } from "../features/user/userSlice";
 import { callToast, getImage } from "../helpers";
 import $ from "jquery";
 import { useParams } from "react-router-dom";
 import { Image } from "../globalStyle";
-import { authState, checkPhoneNumber, checkEmail } from "../features/auth/authSlice";
-import { AddressEdit } from "../components";
+import { fetchStatesByCountry, stateState } from "../features/address/stateSlice";
+import { cityState, fetchCitiesByState } from "../features/address/citySlice";
 
 const AddUserPage = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [endSetting, setEndSetting] = useState(false);
-    const [country, setCountry] = useState("");
-    const [state, setState] = useState("");
-    const [city, setCity] = useState("");
+    const [state, setState] = useState(0);
+    const [city, setCity] = useState(0);
     const [street, setStreet] = useState("");
-    const [myErrors, setMyErrors] = useState({
-        phoneNumber: "",
-        birthday: "",
-        email: "",
-    });
+    const [role, setRole] = useState(2);
+
     const [fieldValues, setFieldValues] = useState({
         firstName: "",
         lastName: "",
@@ -59,26 +55,62 @@ const AddUserPage = () => {
 
     const dispatch = useDispatch();
     const {
-        addUserAction: { successMessage, errorMessage },
         get: { user },
-        updateUserAction: { successMessage: uuSuccessMessage, errorMessage: uuErrorMessage },
+        updateUserAction: { successMessage, errorMessage },
+        fetchRolesAction: { roles },
     } = useSelector(userState);
 
-    const {
-        checkPhoneNumberAction: {
-            successMessage: cpnSuccessMessage,
-            errorMessage: cpnErrorMessage,
-        },
-        checkEmailAction: { successMessage: ceSuccessMessage, errorMessage: ceErrorMessage },
-    } = useSelector(authState);
+    let birthdayErrorFromServer = null,
+        phoneNumberErrorFromServer = null;
+    if (errorMessage && errorMessage.length > 0) {
+        errorMessage.forEach(error => {
+            if (error.birthday) {
+                birthdayErrorFromServer = error.birthday;
+            }
+            if (error.phoneNumber) {
+                phoneNumberErrorFromServer = error.phoneNumber;
+            }
+            if (error.phoneNumberCharacter) {
+                phoneNumberErrorFromServer = error.phoneNumberCharacter;
+            }
+            if (error.phoneNumberString) {
+                phoneNumberErrorFromServer = error.phoneNumberString;
+            }
+        });
+    }
 
-    const { userid } = useParams();
+    const { userId } = useParams();
 
     useEffect(() => {
-        if (userid) {
-            dispatch(fetchUser(userid));
+        if (userId) {
+            dispatch(fetchUser(userId));
         }
-    }, [userid]);
+    }, [userId]);
+
+    useEffect(() => {
+        dispatch(fetchStatesByCountry({ countryId: 216 }));
+        dispatch(fetchCitiesByState({ stateId: 120 }));
+        dispatch(fetchRoles());
+    }, []);
+
+    useEffect(() => {
+        if (state) {
+            dispatch(fetchCitiesByState({ stateId: state }));
+        }
+    }, [state]);
+
+    const { states } = useSelector(stateState);
+    const { cities } = useSelector(cityState);
+
+    const stateOptions = states.map(state => ({
+        value: state.id.toString(),
+        displayText: state.name,
+    }));
+
+    const cityOptions = cities.map(city => ({
+        value: city.id.toString(),
+        displayText: city.name,
+    }));
 
     useEffect(() => {
         if (user) {
@@ -92,12 +124,12 @@ const AddUserPage = () => {
             });
             setSex(user.sex);
             setBirthday(new Date(user.birthday));
+            if (user.role && user.role.id) {
+                setRole(user.role.id);
+            }
 
             const address = user.addressDetails;
             if (address) {
-                if (address.country) {
-                    setCountry(address.country.id);
-                }
                 if (address.state) {
                     setState(address.state.id);
                 }
@@ -108,82 +140,39 @@ const AddUserPage = () => {
                     setStreet(address.street);
                 }
             }
-
-            setEndSetting(true);
         }
     }, [user]);
 
-    useEffect(() => {
-        if (uuErrorMessage) {
+    function processUserBirthday() {
+        let monthOfBirthDay = "0",
+            dateOfBirthday = "0";
+        if (birthday.getMonth() + 1 < 10) {
+            monthOfBirthDay += birthday.getMonth() + 1;
+        } else {
+            monthOfBirthDay = birthday.getMonth() + 1;
         }
-    }, [uuErrorMessage]);
 
-    useEffect(() => {
-        if (uuSuccessMessage) {
-            callToast("success", uuSuccessMessage);
+        if (birthday.getDate() < 10) {
+            dateOfBirthday += birthday.getDate();
+        } else {
+            dateOfBirthday = birthday.getDate();
         }
-    }, [uuSuccessMessage]);
 
-    useEffect(() => {
-        if (cpnErrorMessage) {
-            setMyErrors({
-                ...myErrors,
-                phoneNumber: cpnErrorMessage,
-            });
-        }
-    }, [cpnErrorMessage]);
-
-    useEffect(() => {
-        if (cpnSuccessMessage) {
-            setMyErrors({
-                ...myErrors,
-                phoneNumber: "",
-            });
-        }
-    }, [cpnSuccessMessage]);
-
-    useEffect(() => {
-        if (ceErrorMessage) {
-            setMyErrors({
-                ...myErrors,
-                email: ceErrorMessage,
-            });
-        }
-    }, [ceErrorMessage]);
-
-    useEffect(() => {
-        if (ceSuccessMessage) {
-            setMyErrors({
-                ...myErrors,
-                email: "",
-            });
-        }
-    }, [ceSuccessMessage]);
-
-    function processUserBirthday(birthday) {
-        const date = new Date(birthday);
-        const userBirthday = `${date.getFullYear()}-${
-            (date.getMonth() + 1).toString().length === 2
-                ? date.getMonth() + 1
-                : `0${date.getMonth() + 1}`
-        }-${date.getDate().toString().length === 2 ? date.getDate() : `0${date.getDate()}`}`;
+        let userBirthday = `${birthday.getFullYear()}-${monthOfBirthDay}-${dateOfBirthday}`;
         return userBirthday;
     }
 
     const onSubmit = e => {
         e.preventDefault();
 
-        setMyErrors({
-            phoneNumber: "",
-            birthday: "",
-            email: "",
-        });
+        console.log(processUserBirthday(birthday));
 
         const updateObject = {
             ...fieldValues,
             sex,
             birthday: processUserBirthday(birthday),
         };
+
         delete updateObject["password"];
         if (fieldValues.password) {
             updateObject["password"] = fieldValues.password;
@@ -191,16 +180,8 @@ const AddUserPage = () => {
         if (avatar) {
             updateObject["avatar"] = avatar;
         }
-        if (country) {
-            updateObject["country"] = parseInt(country);
-        }
-        if (state) {
-            updateObject["state"] = parseInt(state);
-        }
-        if (city) {
-            updateObject["city"] = parseInt(city);
-        }
-        if (street) {
+        if (state && city && street) {
+            updateObject["city"] = city;
             updateObject["street"] = street;
         }
 
@@ -210,10 +191,9 @@ const AddUserPage = () => {
             formData.set(key, updateObject[key]);
         }
 
-        console.log(formData);
         dispatch(
             updateUser({
-                id: userid,
+                id: userId,
                 formData,
             })
         );
@@ -227,14 +207,13 @@ const AddUserPage = () => {
         event.preventDefault();
     };
 
-    const clearFields = () => {
-        $("#addUserForm")[0].reset();
-    };
-
     useEffect(() => {
         if (successMessage) {
             callToast("success", successMessage);
-            // clearFields();
+            setFieldValues({
+                ...fieldValues,
+                password: "",
+            });
         }
     }, [successMessage]);
 
@@ -247,18 +226,6 @@ const AddUserPage = () => {
             ...fieldValues,
             [name]: value,
         });
-
-        if (name === "phoneNumber" && value.length === 10) {
-            dispatch(
-                checkPhoneNumber({
-                    phoneNumber: value,
-                    userId: userid,
-                    edit: true,
-                })
-            );
-        } else if (name === "email" && user.email !== value) {
-            dispatch(checkEmail(value));
-        }
     };
 
     return (
@@ -335,8 +302,12 @@ const AddUserPage = () => {
                                                 <TextField
                                                     label={"Phone Number"}
                                                     name='phoneNumber'
-                                                    error={!!myErrors.phoneNumber}
-                                                    helperText={myErrors.phoneNumber}
+                                                    error={!!phoneNumberErrorFromServer}
+                                                    helperText={
+                                                        phoneNumberErrorFromServer
+                                                            ? phoneNumberErrorFromServer
+                                                            : ""
+                                                    }
                                                     value={fieldValues.phoneNumber}
                                                     onChange={handleChange}
                                                     defaultValue=''
@@ -350,13 +321,9 @@ const AddUserPage = () => {
                                                 <TextField
                                                     label={"Email"}
                                                     name='email'
-                                                    error={!!myErrors.email}
-                                                    helperText={myErrors.email}
                                                     autoComplete='nope'
-                                                    value={fieldValues.email}
-                                                    onChange={handleChange}
                                                     type='email'
-                                                    defaultValue=''
+                                                    value={fieldValues.email}
                                                     required
                                                     disabled
                                                 />
@@ -425,8 +392,12 @@ const AddUserPage = () => {
                                                         onChange={newValue => {
                                                             setBirthday(newValue);
                                                         }}
-                                                        error={!!myErrors.birthday}
-                                                        helperText={myErrors.birthday}
+                                                        error={!!birthdayErrorFromServer}
+                                                        helperText={
+                                                            birthdayErrorFromServer
+                                                                ? birthdayErrorFromServer
+                                                                : ""
+                                                        }
                                                         renderInput={params => (
                                                             <TextField {...params} />
                                                         )}
@@ -434,33 +405,99 @@ const AddUserPage = () => {
                                                 </LocalizationProvider>
                                             </FormControl>
                                         </div>
-                                        <>
-                                            <div className='mb-5'>
+                                        <div className='mb-5'>
+                                            <FormControl fullWidth>
+                                                <TextareaAutosize
+                                                    minRows={3}
+                                                    placeholder='About'
+                                                    name='about'
+                                                    style={{ width: "100%" }}
+                                                    defaultValue=''
+                                                    value={fieldValues.about}
+                                                    onChange={handleChange}
+                                                />
+                                            </FormControl>
+                                        </div>
+
+                                        <div className='mb-5'>
+                                            {roles && roles.length && (
                                                 <FormControl fullWidth>
-                                                    <TextareaAutosize
-                                                        minRows={3}
-                                                        placeholder='About'
-                                                        name='about'
-                                                        style={{ width: "100%" }}
-                                                        defaultValue=''
-                                                        value={fieldValues.about}
-                                                        onChange={handleChange}
-                                                    />
+                                                    <InputLabel>Role</InputLabel>
+                                                    <Select
+                                                        value={role}
+                                                        label='Sex'
+                                                        onChange={e => {
+                                                            setRole(e.target.value);
+                                                        }}
+                                                    >
+                                                        {roles.map(role => (
+                                                            <MenuItem value={role.id} key={role.id}>
+                                                                {role.name}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
                                                 </FormControl>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <div>
+                                                <div style={{ marginBottom: "10px" }}>
+                                                    Tỉnh/thành phố: &nbsp;
+                                                </div>
+                                                {stateOptions.length && (
+                                                    <Form.Select
+                                                        value={state}
+                                                        onChange={e => {
+                                                            setState(e.target.value);
+                                                        }}
+                                                        id='stateSelect'
+                                                        style={{ width: "100%" }}
+                                                    >
+                                                        {stateOptions.map(
+                                                            ({ value, displayText }) => (
+                                                                <option value={value} key={value}>
+                                                                    {displayText}
+                                                                </option>
+                                                            )
+                                                        )}
+                                                    </Form.Select>
+                                                )}
                                             </div>
-                                        </>
-                                        {endSetting && (
-                                            <AddressEdit
-                                                country={country}
-                                                state={state}
-                                                city={city}
-                                                street={street}
-                                                setCountry={setCountry}
-                                                setState={setState}
-                                                setCity={setCity}
-                                                setStreet={setStreet}
-                                            />
-                                        )}
+                                            <div>
+                                                <div style={{ margin: "10px 0" }}>Quận/huyện:</div>
+                                                {cityOptions.length && (
+                                                    <Form.Select
+                                                        value={city}
+                                                        onChange={e => {
+                                                            setCity(e.target.value);
+                                                        }}
+                                                        id='citySelect'
+                                                        style={{ width: "100%" }}
+                                                    >
+                                                        {cityOptions.map(
+                                                            ({ value, displayText }) => (
+                                                                <option value={value} key={value}>
+                                                                    {displayText}
+                                                                </option>
+                                                            )
+                                                        )}
+                                                    </Form.Select>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div style={{ margin: "10px 0" }}>
+                                                    Địa chỉ đường/phố:
+                                                </div>
+                                                <Form.Control
+                                                    style={{ width: "100%" }}
+                                                    type='text'
+                                                    value={street}
+                                                    onChange={e => {
+                                                        setStreet(e.target.value);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
                                         <div>
                                             <FormControl fullWidth>
                                                 <Button
