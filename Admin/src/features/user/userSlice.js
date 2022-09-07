@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
 import api from "../../axios";
 import { setUserToLocalStorage } from "../common";
+import { fetchRooms } from "../room/roomSlice";
 
 export const fetchUsers = createAsyncThunk(
     "user/fetchUsers",
@@ -60,6 +61,48 @@ export const disableUser = createAsyncThunk(
 
             if (data) {
                 dispatch(fetchUsers(1));
+            }
+
+            return { data };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
+
+export const disableRoom = createAsyncThunk(
+    "user/disableRoom",
+    async ({ id, roomFilter }, { dispatch, rejectWithValue }) => {
+        try {
+            const { data } = await api.put(`/admin/rooms/${id}/disable`);
+
+            if (data) {
+                dispatch(
+                    fetchRooms({
+                        ...roomFilter,
+                    })
+                );
+            }
+
+            return { data };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
+
+export const enableRoom = createAsyncThunk(
+    "user/enableRoom",
+    async ({ id, roomFilter }, { dispatch, rejectWithValue }) => {
+        try {
+            const { data } = await api.put(`/admin/rooms/${id}/enable`);
+
+            if (data) {
+                dispatch(
+                    fetchRooms({
+                        ...roomFilter,
+                    })
+                );
             }
 
             return { data };

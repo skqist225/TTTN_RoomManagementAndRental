@@ -2,7 +2,6 @@ package com.airtnt.airtntapp.room;
 
 import com.airtnt.airtntapp.FileUploadUtil;
 import com.airtnt.airtntapp.address.AddressService;
-import com.airtnt.airtntapp.amenity.AmentityService;
 import com.airtnt.airtntapp.dashboard.dto.CountCreatedRoomDTO;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
 import com.airtnt.airtntapp.privacy.PrivacyTypeRepository;
@@ -52,8 +51,7 @@ import java.util.Set;
 @Transactional
 public class RoomService {
     public static final int MAX_ROOM_PER_FETCH = 40;
-    public static final int MAX_ROOM_PER_FETCH_BY_HOST = 100;
-    public static final int ROOMS_PER_PAGE = 15;
+    public static final int ROOMS_PER_PAGE = 20;
 
     @Autowired
     private RoomRepository roomRepository;
@@ -69,9 +67,6 @@ public class RoomService {
 
     @Autowired
     private EntityManager entityManager;
-
-    @Autowired
-    private AmentityService amentityService;
 
     public Room save(Room room) {
         return roomRepository.save(room);
@@ -408,35 +403,6 @@ public class RoomService {
         return roomRepository.findAll(pageable);
     }
 
-    public Page<Room> getAllRooms(int pageNum, String keyword) {
-        Pageable pageable = PageRequest.of(pageNum - 1, ROOMS_PER_PAGE);
-
-        if (keyword != null) {
-            return roomRepository.findAll(keyword, pageable);
-        }
-
-        return roomRepository.findAllOrderByCreatedDate(pageable);
-    }
-
-    public boolean isNameUnique(Integer id, String name) {
-        Room room = roomRepository.findByName(name);
-
-        if (room == null)
-            return true;
-
-        boolean isCreatingNew = (id == null);
-
-        if (isCreatingNew) {
-            return room == null;
-        } else {
-            if (room.getId() != id) {
-                return true;
-            }
-        }
-
-        return true;
-    }
-
     public void updateRoomEnabledStatus(Integer id, Boolean status) {
         roomRepository.updateStatus(id, status);
     }
@@ -546,6 +512,66 @@ public class RoomService {
         criteriaQuery.orderBy(QueryUtils.toOrders(pageable.getSort(), root, criteriaBuilder));
         TypedQuery<Room> query2 = entityManager.createQuery(criteriaQuery);
         int totalRows = query2.getResultList().size();
+        query2.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        query2.setMaxResults(pageable.getPageSize());
+
+        Page<Room> result = new PageImpl<Room>(query2.getResultList(), pageable, totalRows);
+
+        return result;
+    }
+
+    public Page<Room> fetchAllRoomsByAdmin(Integer pageNumber, Map<String, Object> filters) {
+        String query = (String) filters.get("query");
+        Integer price = (Integer) filters.get("price");
+        String roomStatus = (String) filters.get("roomStatus");
+
+        String[] roomStatusStrArr = roomStatus.split(",");
+        List<Boolean> roomStatusBoolArr = new ArrayList<>();
+        for (String status : roomStatusStrArr) {
+            if (status.equals("1")) {
+                roomStatusBoolArr.add(true);
+            } else {
+                roomStatusBoolArr.add(false);
+            }
+        }
+
+        Sort sort = Sort.by("id").descending();
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10, sort);
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Room> criteriaQuery = criteriaBuilder.createQuery(Room.class);
+        Root<Room> root = criteriaQuery.from(Room.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        Expression<String> roomName = root.get("name");
+        Expression<String> hostFirstName = root.get("host").get("firstName");
+        Expression<String> hostLastName = root.get("host").get("lastName");
+
+        if (!StringUtils.isEmpty(query)) {
+
+            System.out.println(query);
+
+            Expression<String> wantedQueryField = criteriaBuilder.concat(root.get("id"), " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, hostFirstName);
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, hostLastName);
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, roomName);
+
+            predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + query + "%")));
+        }
+
+        predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), price)));
+
+        predicates.add(criteriaBuilder.and(root.get("status").in(roomStatusBoolArr)));
+
+        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]))).orderBy(QueryUtils.toOrders(pageable.getSort(), root, criteriaBuilder));
+
+        TypedQuery<Room> query2 = entityManager.createQuery(criteriaQuery);
+        int totalRows = query2.getResultList().size();
+
         query2.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         query2.setMaxResults(pageable.getPageSize());
 

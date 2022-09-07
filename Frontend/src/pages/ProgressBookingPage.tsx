@@ -149,7 +149,7 @@ const ProgressBookingPage: FC<IProgressBookingPageProps> = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <ContactHost id={booking.id} />
+                                            {/* <ContactHost id={booking.id} /> */}
                                             {booking.bookingDetails.map(bookingDetail => {
                                                 const fromDateToDate =
                                                     getFormattedCheckinAndCheckoutDate(

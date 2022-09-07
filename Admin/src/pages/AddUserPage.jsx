@@ -26,7 +26,7 @@ import $ from "jquery";
 
 const schema = yup
     .object({
-        password: yup.string().length(8, "Password at least 8 characters"),
+        password: yup.string().min(8, "Password at least 8 characters"),
         birthday: yup.string().required("Birthday is required"),
         phoneNumber: yup
             .string()

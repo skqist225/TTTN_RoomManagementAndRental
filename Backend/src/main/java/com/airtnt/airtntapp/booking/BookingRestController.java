@@ -1,9 +1,23 @@
 package com.airtnt.airtntapp.booking;
 
-import com.airtnt.airtntapp.booking.dto.*;
+import com.airtnt.airtntapp.booking.dto.BookingDTO;
+import com.airtnt.airtntapp.booking.dto.BookingListDTO;
+import com.airtnt.airtntapp.booking.dto.BookingUserOrderDTO;
+import com.airtnt.airtntapp.booking.dto.CreateBookingDTO;
+import com.airtnt.airtntapp.booking.dto.CreateReviewDTO;
+import com.airtnt.airtntapp.booking.dto.TransferToPendingBookingDTO;
+import com.airtnt.airtntapp.booking.dto.TransferToPendingBookingElementDTO;
 import com.airtnt.airtntapp.bookingDetail.BookingDetailService;
 import com.airtnt.airtntapp.email.SendEmail;
-import com.airtnt.airtntapp.exception.*;
+import com.airtnt.airtntapp.exception.AlreadyCancelException;
+import com.airtnt.airtntapp.exception.BookingDetailNotFoundException;
+import com.airtnt.airtntapp.exception.BookingNotFoundException;
+import com.airtnt.airtntapp.exception.CancelDateGreaterThanCheckinDateException;
+import com.airtnt.airtntapp.exception.ForbiddenException;
+import com.airtnt.airtntapp.exception.ReserveDateInThePastException;
+import com.airtnt.airtntapp.exception.RoomHasBeenBookedException;
+import com.airtnt.airtntapp.exception.RoomNotFoundException;
+import com.airtnt.airtntapp.exception.UserHasBeenBookedThisRoomException;
 import com.airtnt.airtntapp.firebase.FirebaseInitialize;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.error.BadResponse;
@@ -13,16 +27,31 @@ import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.airtntapp.review.ReviewService;
 import com.airtnt.airtntapp.room.RoomService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
-import com.airtnt.airtntapp.user.UserRepository;
-import com.airtnt.entity.*;
+import com.airtnt.entity.Booking;
+import com.airtnt.entity.BookingDetail;
+import com.airtnt.entity.Review;
+import com.airtnt.entity.Status;
+import com.airtnt.entity.SubRating;
+import com.airtnt.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,9 +63,6 @@ public class BookingRestController {
 
     @Autowired
     private BookingService bookingService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private FirebaseInitialize firebaseInitialize;
@@ -66,7 +92,17 @@ public class BookingRestController {
     }
 
     @GetMapping(value = "/listings/{page}")
-    public ResponseEntity<StandardJSONResponse<BookingListDTO>> listings(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @PathVariable("page") Integer page, @RequestParam(name = "booking_date_month", required = false, defaultValue = "") String bookingDateMonth, @RequestParam(name = "booking_date_year", required = false, defaultValue = "") String bookingDateYear, @RequestParam(name = "total_fee", required = false, defaultValue = "0") String totalFee, @RequestParam(name = "query", required = false, defaultValue = "") String query, @RequestParam(name = "sort_dir", required = false, defaultValue = "desc") String sortDir, @RequestParam(name = "sort_field", required = false, defaultValue = "bookingDate") String sortField, @RequestParam(name = "booking_date", required = false, defaultValue = "") String bookingDate, @RequestParam(name = "is_complete", required = false, defaultValue = "") String isComplete) throws ParseException {
+    public ResponseEntity<StandardJSONResponse<BookingListDTO>> listings(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+            @PathVariable("page") Integer page,
+            @RequestParam(name = "booking_date_month", required = false, defaultValue = "") String bookingDateMonth,
+            @RequestParam(name = "booking_date_year", required = false, defaultValue = "") String bookingDateYear,
+            @RequestParam(name = "total_fee", required = false, defaultValue = "0") String totalFee,
+            @RequestParam(name = "query", required = false, defaultValue = "") String query,
+            @RequestParam(name = "sort_dir", required = false, defaultValue = "desc") String sortDir,
+            @RequestParam(name = "sort_field", required = false, defaultValue = "bookingDate") String sortField,
+            @RequestParam(name = "booking_date", required = false, defaultValue = "") String bookingDate,
+            @RequestParam(name = "is_complete", required = false, defaultValue = "") String isComplete) throws ParseException {
         User host = userDetailsImpl.getUser();
 
         List<Integer> roomIds = roomService.getRoomIdByHost(host);
@@ -83,7 +119,7 @@ public class BookingRestController {
 
         BookingListDTO bookings = bookingService.getBookingListByRooms(roomIds, filters, page, host.getId());
 
-        return new OkResponse<BookingListDTO>(bookings).response();
+        return new OkResponse<>(bookings).response();
 
     }
 
@@ -196,9 +232,9 @@ public class BookingRestController {
     }
 
     @GetMapping(value = "/user/orders/booked")
-    public ResponseEntity<StandardJSONResponse<List<BookingUserOrderDTO>>> fetchUserBookedOrders(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+    public ResponseEntity<StandardJSONResponse<List<BookingUserOrderDTO>>> fetchUserBookedOrders(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl, @RequestParam(value = "query", required = false, defaultValue = "") String query) {
         User customer = userDetailsImpl.getUser();
-        List<BookingUserOrderDTO> bookings = bookingService.findByCustomerAndBookedStatus(customer).stream().map(BookingUserOrderDTO::build).collect(Collectors.toList());
+        List<BookingUserOrderDTO> bookings = bookingService.findByCustomerAndBookedStatus(customer, query).stream().map(BookingUserOrderDTO::build).collect(Collectors.toList());
 
         return new OkResponse<>(bookings).response();
     }

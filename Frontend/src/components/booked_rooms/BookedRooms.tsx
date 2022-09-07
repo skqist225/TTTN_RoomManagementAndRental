@@ -6,7 +6,7 @@ import { callToast, getImage } from "../../helpers";
 import { IBookedRoom, IRatingLabel } from "../../types/user/type_User";
 import { MyNumberForMat } from "../utils";
 import { addClickEventForLoveButton } from "../home/script/add_to_wishlists";
-import { userState } from "../../features/user/userSlice";
+import { fetchBookedRooms, userState } from "../../features/user/userSlice";
 import initComp from "./script";
 import Toast from "../notify/Toast";
 
@@ -300,19 +300,6 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
         });
     }
 
-    useEffect(() => {
-        // initComp(
-        //     setCleanlinessRating,
-        //     setAccuracyRating,
-        //     setContactRating,
-        //     setLocationRating,
-        //     setCheckinRating,
-        //     setValueRating,
-        //     setRatingComment,
-        //     ratingComment
-        // );
-    }, []);
-
     function userCancelBooking(event: any) {
         console.log($(event.currentTarget).data("booking-id"));
         dispatch(cancelUserBooking($(event.currentTarget).data("booking-id")));
@@ -447,10 +434,7 @@ const BookedRoom: FC<IBookedRoomProps> = ({ booking }) => {
                                                 className='booking-status'
                                                 style={{ color: "#222" }}
                                             >
-                                                {" "}
-                                                {today.getTime() >= checkinDate.getTime()
-                                                    ? "Quá thời hạn phê duyệt"
-                                                    : " Đang phê duyệt"}
+                                                Đang phê duyệt
                                             </span>
                                         </div>
                                     )}

@@ -107,7 +107,7 @@ public class User extends BaseEntity {
     private String about;
     @Builder.Default
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.MERGE, CascadeType.PERSIST,CascadeType.REFRESH})
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_favorite_rooms", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "room_id"))
     private Set<Room> favRooms = new HashSet<>();
     @JsonIgnore
@@ -219,7 +219,6 @@ public class User extends BaseEntity {
     public void addToWishLists(Room room) {
         this.favRooms.add(room);
     }
-
 
     @Transient
     public void removeFromWishLists(Room room) {

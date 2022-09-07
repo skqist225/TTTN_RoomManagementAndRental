@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
@@ -74,9 +73,6 @@ public class UserRestController {
     @Autowired
     private RoomService roomService;
 
-    @Autowired
-    private Environment env;
-
     @Value("${env}")
     private String environment;
 
@@ -96,14 +92,14 @@ public class UserRestController {
 
     @GetMapping("sex")
     public ResponseEntity<StandardJSONResponse<List<UserSexDTO>>> getSexs() {
-        List<UserSexDTO> sexs = new ArrayList<UserSexDTO>();
+        List<UserSexDTO> sexs = new ArrayList<>();
 
         for (Sex sex : Sex.values()) {
             sexs.add(new UserSexDTO(sex.toString(),
                     sex.toString().equals("MALE") ? "Nam" : sex.toString().equals("FEMALE") ? "Nữ" : "Khác"));
         }
 
-        return new OkResponse<List<UserSexDTO>>(sexs).response();
+        return new OkResponse<>(sexs).response();
     }
 
     @GetMapping("wishlists/ids")
@@ -111,7 +107,7 @@ public class UserRestController {
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
         User user = userDetailsImpl.getUser();
 
-        return new OkResponse<List<Integer>>(
+        return new OkResponse<>(
                 user.getFavRooms().stream().map(favRoom -> favRoom.getId()).collect(Collectors.toList())).response();
     }
 
@@ -332,7 +328,7 @@ public class UserRestController {
 
         User savedUser = userService.saveUser(user);
         if (savedUser != null) {
-            return new OkResponse<String>("remove from wishlists successfully").response();
+            return new OkResponse<>("remove from wishlists successfully").response();
         }
 
         return new BadResponse<String>("can not sync user data into database").response();
@@ -343,6 +339,7 @@ public class UserRestController {
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
             @RequestParam(value = "query", required = false, defaultValue = "") String query) {
         User user = userDetailsImpl.getUser();
+
 
         List<Booking> bookings = bookingService.getBookingsByUser(user.getId(), query);
 

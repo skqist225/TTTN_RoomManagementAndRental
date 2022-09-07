@@ -52,7 +52,6 @@ const AddRoomPage = () => {
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [nextButtonDisbaled, setNextButtonDisbaled] = useState(true);
-    const [isPhotosChanged, setIsPhotosChanged] = useState(false);
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
     const [category, setCategory] = useState(0);
@@ -66,20 +65,15 @@ const AddRoomPage = () => {
     const [info, setInfo] = useState({
         bedroomCount: 0,
         bathroomCount: 0,
-        accomodatesCount: 0,
+        guestCount: 0,
         bedCount: 0,
     });
     const [values, setValues] = useState({
-        country: "",
-        state: "",
-        city: "",
+        city: 0,
         street: "",
     });
 
-    const {
-        addUserAction: { successMessage, errorMessage },
-        user,
-    } = useSelector(userState);
+    const { user } = useSelector(userState);
 
     const {
         listing: { categories, loading },
@@ -105,13 +99,6 @@ const AddRoomPage = () => {
         $("#addUserForm")[0].reset();
     };
 
-    useEffect(() => {
-        if (successMessage) {
-            callToast("success", successMessage);
-            clearFields();
-        }
-    }, [successMessage]);
-
     const [activeStep, setActiveStep] = React.useState(0);
 
     const handleNext = () => {
@@ -119,7 +106,7 @@ const AddRoomPage = () => {
             setInfo({
                 bedroomCount: parseInt($("#bedNumber").text()),
                 bathroomCount: parseInt($("#bathRoomNumber").text()),
-                accomodatesCount: parseInt($("#guestNumber").text()),
+                guestCount: parseInt($("#guestNumber").text()),
                 bedCount: parseInt($("#bedRoomNumber").text()),
             });
         }
@@ -127,29 +114,28 @@ const AddRoomPage = () => {
         if (activeStep === 2) {
             const formData = new FormData();
 
-            const { roomImages } = JSON.parse(localStorage.getItem("room"));
-            const { bedroomCount, bathroomCount, accomodatesCount, bedCount } = info;
-            const { country, state, city, street } = values;
+            const { roomImages } = JSON.parse(localStorage.getItem("roomAdmin"));
+            const { bedroomCount, bathroomCount, guestCount, bedCount } = info;
+            const { city, street } = values;
 
             const roomEntity = {
-                name,
-                amentities: amenities,
-                images: roomImages,
-                city,
-                street,
-                state,
-                bedroomCount,
-                bathroomCount,
-                accomodatesCount,
-                bedCount,
                 category,
-                description,
+                privacy: privacyType,
+                street,
+                city,
                 latitude,
                 longitude,
+                bedroomCount,
+                bathroomCount,
+                guestCount,
+                bedCount,
+                amenities,
+                images: roomImages,
+                name,
+                description,
                 rules,
                 price: parseInt(price),
                 host: user?.id,
-                privacyType,
             };
 
             console.log(roomEntity);
@@ -225,24 +211,13 @@ const AddRoomPage = () => {
 
     useEffect(() => {
         if (activeStep === 1) {
-            if (values.city && values.street) {
+            if (values.city !== 0 && values.street !== "") {
                 setNextButtonDisbaled(false);
             } else {
                 setNextButtonDisbaled(true);
             }
         }
-    }, [values.country, values.state, values.city, values.street]);
-
-    useEffect(() => {
-        if (activeStep === 2 && isPhotosChanged) {
-            const room = JSON.parse(localStorage.getItem("room"));
-            if (room.roomImages && room.roomImages.length >= 5) {
-                setNextButtonDisbaled(false);
-            } else {
-                disableNextButton();
-            }
-        }
-    }, [isPhotosChanged]);
+    }, [values.city, values.street]);
 
     useEffect(() => {
         if (araSuccessMessage) {
@@ -453,7 +428,7 @@ const AddRoomPage = () => {
                                                                 />
                                                             </FormControl>
 
-                                                            <div className='mb-5'>
+                                                            <div className='my-5'>
                                                                 <FormControl fullWidth required>
                                                                     <InputLabel>Rules</InputLabel>
                                                                     <Select
@@ -510,7 +485,7 @@ const AddRoomPage = () => {
 
                                 {activeStep === 2 && (
                                     <div className='flex justify-center'>
-                                        <AddRoomImages setIsPhotosChanged={setIsPhotosChanged} />
+                                        <AddRoomImages />
                                     </div>
                                 )}
 

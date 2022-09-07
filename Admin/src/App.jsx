@@ -38,7 +38,6 @@ function App() {
                 <Route path='/add/room' element={<AddRoomPage />} />
 
                 <Route path='/bookings' element={<Dashboard />} />
-                <Route path='/bookings/overview' element={<Dashboard />} />
                 <Route path='/bookings/details' element={<Dashboard />} />
                 <Route path='/users' element={<Dashboard />} />
                 <Route path='/users/:userid' element={<UserDetailsPage />} />

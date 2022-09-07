@@ -3,11 +3,16 @@ import api from "../../axios";
 
 export const fetchRooms = createAsyncThunk(
     "room/fetchRooms",
-    async (page, { dispatch, getState, rejectWithValue }) => {
+    async (
+        { page = 1, query = "", price = 0, roomStatus = "0,1" },
+        { dispatch, getState, rejectWithValue }
+    ) => {
         try {
             const {
                 data: { rooms, totalRecords, totalPages },
-            } = await api.get(`/admin/rooms?page=${page}`);
+            } = await api.get(
+                `/admin/rooms?page=${page}&query=${query}&price=${price}&roomStatus=${roomStatus}`
+            );
 
             return { rooms, totalRecords, totalPages };
         } catch (error) {}
@@ -31,7 +36,7 @@ export const addRoom = createAsyncThunk(
         try {
             const data = await api.post(`/admin/room/save`, formData);
 
-            if (data) localStorage.removeItem("room");
+            if (data) localStorage.removeItem("roomAdmin");
 
             return { data };
         } catch (error) {}

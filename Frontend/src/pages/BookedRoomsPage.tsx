@@ -101,7 +101,7 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                 <div>
                     <div id='user-bookings__container'>
                         <div style={{ textAlign: "center" }}></div>
-                        <div className='normal-flex f1' id='user-bookings__search-container'>
+                        {/* <div className='normal-flex f1' id='user-bookings__search-container'>
                             <div
                                 style={{ cursor: "pointer", marginRight: "10px" }}
                                 onClick={filterBookings}
@@ -111,11 +111,10 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                             <input
                                 type='text'
                                 className='w-100'
-                                placeholder='Tìm kiếm theo tên phòng, tên chủ nhà'
+                                placeholder='Tìm kiếm theo tên phòng, trạng thái'
                                 id='user-bookings__search-input'
                             />
                             <div>
-                                {/* <Link to={'/user/bookings'}> */}
                                 <button
                                     style={{ width: "100px" }}
                                     className='fs-14 fw-600 transparent__btn'
@@ -123,9 +122,8 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                 >
                                     Xóa tìm kiếm
                                 </button>
-                                {/* </Link> */}
                             </div>
-                        </div>
+                        </div> */}
                         {bookings.map(booking => {
                             const hostAvatar = booking.bookingDetails[0].roomHostAvatar;
                             const hostName = booking.bookingDetails[0].roomHostName;
@@ -192,7 +190,7 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                                     style={{
                                                         padding: "1px 6px",
                                                         borderRadius: "4px",
-                                                        backgroundColor: "#ffcc00",
+                                                        backgroundColor: "rgb(203 213 225)",
                                                     }}
                                                 >
                                                     <span style={{ color: "white" }}>
@@ -216,6 +214,7 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                                             ></path>
                                                         </svg>
                                                     </span>
+                                                    &nbsp;
                                                     <span
                                                         className='booking-status'
                                                         style={{ color: "#222" }}
@@ -229,7 +228,7 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                                     style={{
                                                         padding: "1px 6px",
                                                         borderRadius: "4px",
-                                                        backgroundColor: "#ffcc00",
+                                                        backgroundColor: "rgb(139 92 246)",
                                                     }}
                                                 >
                                                     <span style={{ color: "white" }}>
@@ -245,7 +244,7 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                                             width='12'
                                                             viewBox='0 0 16 16'
                                                             xmlns='http://www.w3.org/2000/svg'
-                                                            style={{ fill: "#222" }}
+                                                            style={{ fill: "#fff" }}
                                                         >
                                                             <path
                                                                 d='M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16zm1-8.577V4a1 1 0 1 0-2 0v4a1 1 0 0 0 .517.876l2.581 1.49a1 1 0 0 0 1-1.732z'
@@ -253,9 +252,10 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
                                                             ></path>
                                                         </svg>
                                                     </span>
+                                                    &nbsp;
                                                     <span
                                                         className='booking-status'
-                                                        style={{ color: "#222" }}
+                                                        style={{ color: "#fff" }}
                                                     >
                                                         Quá thời hạn phê duyệt
                                                     </span>

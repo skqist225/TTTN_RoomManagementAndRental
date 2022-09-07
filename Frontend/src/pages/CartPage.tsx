@@ -60,12 +60,8 @@ export const CheckboxInput = styled.input.attrs(() => ({
 `;
 
 const CartPage: FC<ICartPageProps> = () => {
-    const [showModal, setShowModal] = useState({ anchor: null });
-    const [showNotifyModal, setShowNotifyModal] = useState({ anchor: null });
     const [allBookings, setAllBookings] = useState(false);
-    const [singleBooking, setSingleBooking] = useState(false);
     const [finalPrice, setFinalPrice] = useState(0);
-    const [quantity, setQuantity] = useState(0);
 
     const dispatch = useDispatch();
 
@@ -254,7 +250,7 @@ const CartPage: FC<ICartPageProps> = () => {
                                                             data-booking-id={booking.id}
                                                         />
                                                         <span>{booking.hostFullName}</span>
-                                                        <MessageIcon />
+                                                        {/* <MessageIcon /> */}
                                                     </ShopName>
                                                 </td>
                                                 <td></td>

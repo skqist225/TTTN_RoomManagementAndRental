@@ -10,17 +10,31 @@ import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.airtntapp.room.dto.PostAddRoomDTO;
 import com.airtnt.airtntapp.room.dto.page.listings.RoomListingsDTO;
 import com.airtnt.airtntapp.room.response.RoomsOwnedByUserResponseEntity;
-import com.airtnt.airtntapp.rule.RuleService;
 import com.airtnt.airtntapp.security.UserDetailsImpl;
-import com.airtnt.airtntapp.state.StateService;
 import com.airtnt.airtntapp.user.UserService;
-import com.airtnt.entity.*;
+import com.airtnt.entity.Address;
+import com.airtnt.entity.Amentity;
+import com.airtnt.entity.Category;
+import com.airtnt.entity.City;
+import com.airtnt.entity.Image;
+import com.airtnt.entity.Role;
+import com.airtnt.entity.Room;
+import com.airtnt.entity.RoomPrivacy;
+import com.airtnt.entity.Rule;
+import com.airtnt.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,7 +44,14 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/")
@@ -44,59 +65,49 @@ public class AdminRoomRestController {
     private UserService userService;
 
     @Autowired
-    private RuleService ruleService;
-
-    @Autowired
     private AddressService addressService;
 
     @Autowired
     private CityService cityService;
 
     @Autowired
-    private StateService stateService;
-
-    @Autowired
     private Environment env;
 
-
     @GetMapping("rooms")
-    public ResponseEntity<StandardJSONResponse<RoomsOwnedByUserResponseEntity>> fetchUserOwnedRooms(
-            @RequestParam("page") int page,
-            @RequestParam(value = "keyword", required = false) String keyword) {
-        Page<Room> roomsPage = roomService.getAllRooms(page, keyword);
+    public ResponseEntity<StandardJSONResponse<RoomsOwnedByUserResponseEntity>> fetchAllRoomsByCondition(
+            @RequestParam("page") Integer pageNumber,
+            @RequestParam(name = "query", required = false, defaultValue = "") String query,
+            @RequestParam(name = "price", required = false, defaultValue = "0") Integer price,
+            @RequestParam(name = "roomStatus", required = false, defaultValue = "1,0") String roomStatus
+    ) {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("query", query);
+        filters.put("price", price);
+        filters.put("roomStatus", roomStatus);
 
-        List<RoomListingsDTO> roomListingsDTOs = new ArrayList<>();
         RoomsOwnedByUserResponseEntity roomsOwnedByUserResponseEntity = new RoomsOwnedByUserResponseEntity();
 
-        for (Room room : roomsPage.getContent()) {
-            roomListingsDTOs.add(RoomListingsDTO.buildRoomListingsDTO(room));
-            // redisTemplate.opsForHash().put("ROOM", room.getId().toString(),
-            // RoomListingsDTO.buildRoomListingsDTO(room));
-        }
-
-        // if (redisTemplate.opsForHash().get("TOTAL_PAGES", "TOTAL_PAGES") != null) {
-        // roomListingsDTOs = redisTemplate.opsForHash().values("ROOM");
-
-        // roomsOwnedByUserResponseEntity.setRooms(roomListingsDTOs);
-        // roomsOwnedByUserResponseEntity
-        // .setTotalPages((int) redisTemplate.opsForHash().get("TOTAL_PAGES",
-        // "TOTAL_PAGES"));
-        // roomsOwnedByUserResponseEntity
-        // .setTotalRecords((long) redisTemplate.opsForHash().get("TOTAL_ELS",
-        // "TOTAL_ELS"));
-        // } else {
-
-        // redisTemplate.opsForHash().put("TOTAL_PAGES", "TOTAL_PAGES", (Integer)
-        // roomsPage.getTotalPages());
-        // redisTemplate.opsForHash().put("TOTAL_ELS", "TOTAL_ELS", (Long)
-        // roomsPage.getTotalElements());
+        Page<Room> roomsPage = roomService.fetchAllRoomsByAdmin(pageNumber, filters);
+        List<RoomListingsDTO> roomListingsDTOs = roomsPage.getContent().stream().map(RoomListingsDTO::build).collect(Collectors.toList());
 
         roomsOwnedByUserResponseEntity.setRooms(roomListingsDTOs);
         roomsOwnedByUserResponseEntity.setTotalPages(roomsPage.getTotalPages());
         roomsOwnedByUserResponseEntity.setTotalRecords(roomsPage.getTotalElements());
 
-        return new OkResponse<RoomsOwnedByUserResponseEntity>(roomsOwnedByUserResponseEntity).response();
+        return new OkResponse<>(roomsOwnedByUserResponseEntity).response();
+    }
 
+    @PutMapping("rooms/{id}/{action}")
+    public ResponseEntity<StandardJSONResponse<String>> disableRoom(@PathVariable(value = "id") Integer id, @PathVariable(value = "action") String action) {
+        try {
+            Room room = roomService.findById(id);
+            room.setStatus(action.equals("enable"));
+            roomService.save(room);
+
+            return new OkResponse<String>("Update Room Successfully").response();
+        } catch (RoomNotFoundException e) {
+            return new BadResponse<String>(e.getMessage()).response();
+        }
     }
 
     @PostMapping("room/save")

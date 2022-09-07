@@ -1,121 +1,37 @@
 import NumberFormat from "react-number-format";
 
-export default function MyNumberForMat({
-    price,
-    currency,
-    stayTypeFontSize,
-    priceFontSize,
-    priceFontWeight,
-    isPrefix = true,
-    isSuffix = false,
-    color,
-    removeStayType = false,
-}) {
+const MyNumberForMat = ({ price, priceFontSize, priceFontWeight, color }) => {
     return (
         <>
-            {" "}
-            {isPrefix ? (
-                <NumberFormat
-                    value={Math.floor(price)}
-                    prefix={currency}
-                    thousandSeparator={true}
-                    displayType={"text"}
-                    renderText={(formattedValue) => (
-                        <div>
-                            {priceFontSize !== null ? (
-                                <>
-                                    <span
-                                        style={{
-                                            fontSize: priceFontSize,
-                                            color,
-                                            fontWeight: priceFontWeight,
-                                        }}
-                                    >
-                                        {formattedValue}{" "}
-                                    </span>
-                                    {!removeStayType && (
-                                        <span style={{ fontSize: stayTypeFontSize, color }}>
-                                            / đêm
-                                        </span>
-                                    )}
-                                </>
-                            ) : (
-                                <>
-                                    <span className='rdt__price'>{formattedValue}</span>
-                                    {!removeStayType && <span className='fs-16'>đêm</span>}
-                                </>
-                            )}
-                        </div>
-                    )}
-                />
-            ) : isSuffix ? (
-                <NumberFormat
-                    value={price}
-                    suffix={currency}
-                    thousandSeparator={true}
-                    displayType={"text"}
-                    renderText={(formattedValue) => (
-                        <div>
-                            {priceFontSize !== null ? (
-                                <>
-                                    <span
-                                        style={{
-                                            fontSize: priceFontSize,
-                                            color,
-                                            fontWeight: priceFontWeight,
-                                        }}
-                                    >
-                                        {formattedValue}{" "}
-                                    </span>
-                                    {!removeStayType && (
-                                        <span style={{ fontSize: stayTypeFontSize, color }}>
-                                            / đêm
-                                        </span>
-                                    )}
-                                </>
-                            ) : (
-                                <>
-                                    <span className='rdt__price'>{formattedValue} </span>
-                                    {!removeStayType && <span className='fs-16'>đêm</span>}
-                                </>
-                            )}
-                        </div>
-                    )}
-                />
-            ) : (
-                <NumberFormat
-                    value={price}
-                    thousandSeparator={true}
-                    displayType={"text"}
-                    renderText={(formattedValue) => (
-                        <div>
-                            {priceFontSize !== null ? (
-                                <>
-                                    <span
-                                        style={{
-                                            fontSize: priceFontSize,
-                                            color,
-                                            fontWeight: priceFontWeight,
-                                        }}
-                                    >
-                                        {formattedValue}{" "}
-                                    </span>
-                                    {!removeStayType && (
-                                        <span style={{ fontSize: stayTypeFontSize, color }}>
-                                            / đêm
-                                        </span>
-                                    )}
-                                </>
-                            ) : (
-                                <>
-                                    <span className='rdt__price'>{formattedValue} </span>
-                                    {!removeStayType && <span className='fs-16'>đêm</span>}
-                                </>
-                            )}
-                        </div>
-                    )}
-                />
-            )}
+            <NumberFormat
+                value={Math.floor(price)}
+                suffix={"₫"}
+                thousandSeparator={true}
+                displayType={"text"}
+                renderText={formattedValue => (
+                    <div>
+                        {priceFontSize !== null ? (
+                            <>
+                                <span
+                                    style={{
+                                        fontSize: priceFontSize,
+                                        color,
+                                        fontWeight: priceFontWeight,
+                                    }}
+                                >
+                                    {formattedValue}{" "}
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <span className='rdt__price'>{formattedValue}</span>
+                            </>
+                        )}
+                    </div>
+                )}
+            />
         </>
     );
-}
+};
+
+export default MyNumberForMat;

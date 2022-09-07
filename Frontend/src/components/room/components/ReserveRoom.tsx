@@ -162,8 +162,25 @@ const ReserveRoom: FC<IReserveRoomProps> = ({ room }) => {
                             </div>
                         </div>
                         <div className='fs-16'>
-                            {room!.currencySymbol}
-                            <span id='totalPrice'></span>
+                            <span id='totalPrice'></span>₫
+                        </div>
+                    </div>
+                </RDTBookingPreviewPriceLine>
+                <RDTBookingPreviewPriceLine>
+                    <div className='flex-space'>
+                        <div>
+                            <div
+                                style={{
+                                    color: "rgb(32, 32, 32)",
+                                    fontSize: "16px",
+                                    textDecoration: "underline",
+                                }}
+                            >
+                                Phí dọn dẹp
+                            </div>
+                        </div>
+                        <div className='fs-16'>
+                            <span id='cleanFee'></span>₫
                         </div>
                     </div>
                 </RDTBookingPreviewPriceLine>
@@ -181,16 +198,14 @@ const ReserveRoom: FC<IReserveRoomProps> = ({ room }) => {
                             </div>
                         </div>
                         <div className='fs-16'>
-                            {room!.currencySymbol}
-                            <span id='siteFee'></span>
+                            <span id='siteFee'></span>₫
                         </div>
                     </div>
                 </RDTBookingPreviewPriceLine>
                 <div className='flex' style={{ paddingTop: "16px" }}>
                     <div className='totalPriceTitle'>Tổng</div>
                     <div className='totalPriceTitle'>
-                        {room!.currencySymbol}
-                        <span id='finalTotalPrice'>0</span>
+                        <span id='finalTotalPrice'>0</span>₫
                     </div>
                 </div>
             </div>

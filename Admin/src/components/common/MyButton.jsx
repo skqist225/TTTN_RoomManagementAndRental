@@ -7,6 +7,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DoNotTouchIcon from "@mui/icons-material/DoNotTouch";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 
 function MyButton(props) {
     let { type, label, disabled } = props;
@@ -86,6 +88,14 @@ function MyButton(props) {
             else buttonClassName = "bg-blue-500 hover:bg-blue-500";
             break;
         }
+        case "search": {
+            buttonClassName = "bg-blue-500 hover:bg-blue-500";
+            break;
+        }
+        case "clearFilter": {
+            buttonClassName = "bg-violet-400 hover:bg-violet-400";
+            break;
+        }
     }
 
     return (
@@ -123,6 +133,18 @@ function MyButton(props) {
             )}
             {type === "approve" && <CheckIcon />}
             {type === "deny" && <DoDisturbIcon />}
+            {type === "search" && (
+                <>
+                    <SearchIcon />
+                    Search
+                </>
+            )}
+            {type === "clearFilter" && (
+                <>
+                    <ClearIcon />
+                    Clear filter
+                </>
+            )}
             {type === "cancel" && <>Cancel</>}
         </button>
     );

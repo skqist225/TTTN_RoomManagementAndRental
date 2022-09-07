@@ -81,6 +81,8 @@ public class BookingDetail extends BaseEntity implements Serializable {
         LocalDate startDate = LocalDate.parse(checkinDateStr, sdf);
         LocalDate endDate = LocalDate.parse(checkoutDateStr, sdf);
 
+        System.out.println(ChronoUnit.DAYS.between(startDate, endDate));
+
         return ChronoUnit.DAYS.between(startDate, endDate);
     }
 
@@ -91,7 +93,7 @@ public class BookingDetail extends BaseEntity implements Serializable {
 
     @Transient
     public float getTotalFee() {
-        return this.getPricePerDay() * this.getNumberOfDays() + this.getSiteFee() + this.getCleanFee();
+        return this.getPricePerDay() * this.getNumberOfDays() + this.calculateSiteFee() + this.calculateCleanFee();
     }
 
     @Transient

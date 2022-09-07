@@ -44,20 +44,24 @@ public class HostRestController {
     @Value("${env}")
     private String environment;
 
-    public String getUploadDir(String environment, PhotoDTO payload) throws IOException {
+    public String getUploadDir(String environment, PhotoDTO payload, boolean isUpload) throws IOException {
         String uploadDir = "", filePath = "", shortFilePath = "";
 
         if (environment.equals("development")) {
             if (Objects.nonNull(payload.getRoomId())) {
                 uploadDir = String.format("%s/%s/%s/", DEV_STATIC_PATH, payload.getHost(), payload.getRoomId());
-                FileUploadUtil.cleanDir(uploadDir);
+                if (isUpload) {
+                    FileUploadUtil.cleanDir(uploadDir);
+                }
             } else {
                 uploadDir = String.format("%s/%s/", DEV_STATIC_PATH, payload.getHost());
             }
         } else {
             if (payload.getRoomId() != null) {
                 filePath = String.format("%s/%s/%s/", PROD_STATIC_PATH, payload.getHost(), payload.getRoomId());
-                FileUploadUtil.cleanDir(uploadDir);
+                if (isUpload) {
+                    FileUploadUtil.cleanDir(uploadDir);
+                }
 
                 shortFilePath = String.format("%s/%s/%s/", "static/room_images/", payload.getHost(), payload.getRoomId());
             } else {
@@ -82,7 +86,7 @@ public class HostRestController {
     @PostMapping("upload-room-photos")
     public String uploadRoomPhotos(@ModelAttribute PhotoDTO payload) throws IOException {
 
-        String uploadDir = getUploadDir(environment, payload);
+        String uploadDir = getUploadDir(environment, payload, true);
         System.out.println(uploadDir);
 
         for (MultipartFile multipartFile : payload.getPhotos()) {
@@ -134,7 +138,7 @@ public class HostRestController {
     public String getUploadPhoto(@ModelAttribute PhotoDTO payload)
             throws IOException {
         String[] roomImages = payload.getRoomImages();
-        String uploadDir = getUploadDir(environment, payload);
+        String uploadDir = getUploadDir(environment, payload,false);
 
         List<MultipartFile> multipartFiles = new ArrayList<>();
 

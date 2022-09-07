@@ -57,7 +57,7 @@ export const fetchUserBookings = createAsyncThunk(
             //     fetchUrl += `&booking_date=${bookingDate || fetchData.bookingDate}`;
             //     dispatch(setBookingDate(bookingDate || fetchData.bookingDate));
             // }
-
+            console.log();
             if (isComplete || fetchData.isComplete) {
                 fetchUrl += `&is_complete=${isComplete || fetchData.isComplete}`;
                 dispatch(setIsComplete(isComplete || fetchData.isComplete));
@@ -339,7 +339,7 @@ const initialState: BookingState = {
         page: 1,
         bookingDateMonth: "",
         bookingDateYear: "",
-        isComplete: "0,1,2",
+        isComplete: "APPROVED,PENDING,CANCELLED",
         totalFee: 0,
         sortField: "bookingDate",
         sortDir: "desc",
@@ -418,7 +418,7 @@ const bookingSlice = createSlice({
             state.fetchData.bookingDate = "";
             state.fetchData.bookingDateMonth = "";
             state.fetchData.bookingDateYear = "";
-            state.fetchData.isComplete = "0,1,2";
+            state.fetchData.isComplete = "APPROVED,PENDING,CANCELLED";
             state.fetchData.totalFee = 0;
             state.fetchData.sortField = "bookingDate";
             state.fetchData.sortDir = "desc";

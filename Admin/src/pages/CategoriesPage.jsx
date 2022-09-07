@@ -202,6 +202,7 @@ const CategoriesPage = () => {
                     <img src={getImage(rowData.icon)} className='image' />
                 </div>
             ),
+            sortable: false,
         },
         {
             title: "",

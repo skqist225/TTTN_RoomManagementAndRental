@@ -8,13 +8,15 @@ import { addEmptyImage } from "./script/manage_photos";
 import { userState } from "../../features/user/userSlice";
 import "./css/room_images_main_content.css";
 import $ from "jquery";
+import { useParams } from "react-router-dom";
 
 let photos = [];
-let isUploaded = false;
 
-const AddRoomImages = ({ setIsPhotosChanged }) => {
+const AddRoomImages = () => {
     const { user } = useSelector(userState);
     const [loading, setLoading] = useState(true);
+
+    const { roomid } = useParams();
 
     useEffect(() => {
         const uploadPhotos = $("#uploadPhotos");
@@ -31,17 +33,14 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
     }, []);
 
     async function restoreRoomImages(uploadPhotos) {
-        if (localStorage.getItem("room")) {
-            const { roomImages, username, folderno } = JSON.parse(localStorage.getItem("room"));
-            if (roomImages && roomImages.length >= 5) {
-                isUploaded = true;
-            }
+        if (localStorage.getItem("roomAdmin")) {
+            const { roomImages, host, roomId } = JSON.parse(localStorage.getItem("roomAdmin"));
 
             if (roomImages) {
                 const formData = new FormData();
-                formData.set("username", username);
-                if (folderno) {
-                    formData.set("folderno", folderno);
+                formData.set("host", host);
+                if (roomId) {
+                    formData.set("roomId", roomId);
                 }
                 roomImages.forEach(image => formData.append("roomImages", image));
 
@@ -350,10 +349,6 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
 
         photos = photos.filter(image => image.name !== imageName);
 
-        // if (photos.length < 5) {
-        //     isUploaded = false;
-        // }
-
         // // Remove preview image
         const lastElement = $("#subImages").children(".photo-cover").last();
         lastElement.remove();
@@ -371,14 +366,16 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
     }
 
     async function uploadImagesToFolder() {
-        // if ($("img.photo").length < 5) {
-        //     callToast("warning", "Please choose at least 5 images");
-        //     return;
-        // }
+        if ($("img.photo").length === 0) {
+            callToast("warning", "Please choose at least 1 image");
+            return;
+        }
 
         const formData = new FormData();
         formData.set("host", user.email);
-        console.log(photos);
+        if (roomid) {
+            formData.set("roomId", roomid);
+        }
         photos.forEach(photo => formData.append("photos", photo));
 
         const data = await axios.post(`/become-a-host/upload-room-photos`, formData, {
@@ -387,27 +384,25 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
             },
         });
         if (data.status === "success") {
-            isUploaded = true;
             callToast("success", "Upload successfully");
             const username2 = data.username;
             let room = {};
-            if (!localStorage.getItem("room")) {
+            if (!localStorage.getItem("roomAdmin")) {
                 room = {
                     roomImages: photos.map(({ name }) => name),
                     thumbnail: photos[0].name,
-                    username: username2,
+                    host: username2,
                 };
             } else {
-                room = JSON.parse(localStorage.getItem("room"));
+                room = JSON.parse(localStorage.getItem("roomAdmin"));
                 room = {
                     ...room,
                     roomImages: photos.map(({ name }) => name),
                     thumbnail: photos[0].name,
-                    username: username2,
+                    host: username2,
                 };
             }
-            localStorage.setItem("room", JSON.stringify(room));
-            setIsPhotosChanged(true);
+            localStorage.setItem("roomAdmin", JSON.stringify(room));
         }
     }
 
@@ -467,7 +462,6 @@ const AddRoomImages = ({ setIsPhotosChanged }) => {
                     <Image src={getImage("/amentity_images/photos.svg")} size='64px' />
                 </div>
                 <div className='photos__drag-title'>Drag your images</div>
-                <div id=''>Choose at least 5 images</div>
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                     <button className='photos__btn__load-images' id='triggerUploadPhotosInput'>
                         Upload from your device

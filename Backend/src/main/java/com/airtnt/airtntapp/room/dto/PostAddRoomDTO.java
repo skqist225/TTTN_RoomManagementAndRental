@@ -36,7 +36,6 @@ public class PostAddRoomDTO {
     private Integer[] rules;
 
     private Long price;
-    private Integer currency;
 
     private Integer host;
     private String thumbnail;

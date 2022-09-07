@@ -44,7 +44,7 @@ public class RoomListingsDTO implements Serializable {
     private Date updatedDate;
 
     @JsonIgnore
-    public static RoomListingsDTO buildRoomListingsDTO(Room room) {
+    public static RoomListingsDTO build(Room room) {
         Address address = room.getAddress();
         City city = address.getCity();
         State state = ((City) city).getState();

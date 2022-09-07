@@ -20,89 +20,25 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
     @Query("SELECT b FROM Booking b WHERE b.state = :type")
     public Page<Booking> findAll(@Param("type") Status type, Pageable pageable);
 
-
-
     @Query(value = "SELECT count(temp.id) as numberOfBookings FROM (SELECT bs.* FROM airtn.bookings as bs" +
             " LEFT JOIN booking_details as bds on bs.id = bds.booking_id" +
             " WHERE bds.room_id in (select id from rooms as r where r.host_id = :hostId)" +
             " group by bs.id) as temp",nativeQuery = true)
     public Integer getNumberOfBookingsOfHost(Integer hostId);
 
-//    public static interface RevenueByYear {
-//
-//        Long getNumber();
-//
-//    }
-    // @Query("SELECT b FROM Booking b WHERE b.checkinDate = :checkinDate AND
-    // b.checkoutDate = :checkoutDate" +
-    // " AND b.room.id = :roomId AND b.customer.id = :customerId")
-    // public List<Booking> isBookedByUser(Date checkinDate, Date checkoutDate,
-    // Integer roomId, Integer customerId);
-
-    // public List<Booking> findByRoom(Room room);
-
-
     public List<Booking> findByCustomerAndState(User customer, Status state);
 
     @Query("SELECT b FROM Booking b WHERE b.customer = :customer AND b.state = com.airtnt.entity.Status.CART OR b.state = com.airtnt.entity.Status.CARTSELECTED")
     public List<Booking> findByCustomerAndCartStatus(User customer);
 
-    @Query("SELECT b FROM Booking b WHERE b.customer = :customer AND b.state IN (com.airtnt.entity.Status.PENDING, com.airtnt.entity.Status.APPROVED, com.airtnt.entity.Status.CANCELLED, com.airtnt.entity.Status.OUTOFDATE, com.airtnt.entity.Status.REJECTED) ORDER BY b.createdDate DESC")
-    public List<Booking> findByCustomerAndBookedStatus(User customer);
+    @Query("SELECT b FROM Booking b WHERE b.customer = :customer AND b.state IN (com.airtnt.entity.Status.PENDING, com.airtnt.entity.Status.APPROVED, com.airtnt.entity.Status.CANCELLED, com.airtnt.entity.Status.OUTOFDATE, com.airtnt.entity.Status.REJECTED) AND CONCAT(b.customer.firstName, ' ', b.customer.lastName, ' ', b.state) LIKE %:query% ORDER BY b.createdDate DESC")
+    public List<Booking> findByCustomerAndBookedStatus(User customer, String query);
 
     @Query("SELECT b FROM Booking b WHERE b.customer.id = :customerId AND CONCAT(b.customer.firstName, ' ', b.customer.lastName) LIKE %:query% ORDER BY b.bookingDate DESC")
     public List<Booking> getByCustomer(Integer customerId, String query);
 
     @Query("SELECT b FROM Booking b WHERE b.customer.id = :customerId")
     public List<Booking> getBookedRoomsByUser(Integer customerId);
-
-    // @Query("SELECT b FROM Booking b WHERE b.room.id IN (:roomIds) AND
-    // b.bookingDate >= :startDate AND b.bookingDate <= :endDate")
-    // public List<Booking> getBookingsByRooms(Integer[] roomIds, LocalDateTime
-    // startDate, LocalDateTime endDate);
-
-    // @Query("SELECT b FROM Booking b WHERE b.room.id IN (:roomIds)")
-    // public List<Booking> getBookingsByRooms(Integer[] roomIds);
-
-    // @Query("SELECT b FROM Booking b WHERE b.room.id IN (:roomIds) AND b.room.name
-    // LIKE %:query% AND year(b.bookingDate)=:year AND month(b.bookingDate)=:month
-    // AND b.state IN (:states) ORDER BY b.bookingDate ASC")
-    // public Page<Booking> getBookingsByRooms(Integer[] roomIds, String query,
-    // List<Status> states, Integer year,
-    // Integer month,
-    // Pageable pageable);
-
-    // @Query("SELECT b FROM Booking b WHERE b.room.id IN (:roomIds) AND b.room.name
-    // LIKE %:query% AND b.state = :state")
-    // public Page<Booking> getBookingsByRooms(Integer[] roomIds, String query,
-    // Status state,
-    // Pageable pageable);
-
-    // @Query("SELECT b"
-    // + " FROM Booking b WHERE b.room.id IN (:roomIds) AND b.room.name LIKE
-    // %:query% AND b.state = :state ORDER BY b.bookingDate DESC")
-    // public Page<Booking> getBookingListByRooms(List<Integer> roomIds, String
-    // query, Status state,
-    // Pageable pageable);
-
-    // @Query("SELECT b FROM Booking b WHERE b.room.id IN (:roomIds) AND b.id =
-    // :bookingId")
-    // public Page<Booking> getBookingsByRooms(Integer[] roomIds, Integer bookingId,
-    // Pageable pageable);
-    //
-    // @Query("SELECT b FROM Booking b WHERE b.room.id IN (:roomIds) AND b.id =
-    // :bookingId ORDER BY b.bookingDate DESC")
-    // public Page<Booking> getBookingListByRooms(List<Integer> roomIds, Integer
-    // bookingId, Pageable pageable);
-    //
-    // @Query("SELECT b.id FROM Booking b WHERE b.room = :room")
-    // public List<Integer> getBookingIdsByRoom(Room room);
-
-    // admin -----------------------------
-
-    // @Query("SELECT b FROM Booking b WHERE CONCAT(b.customer.firstName,
-    // '',b.customer.lastName, '' , b.room.name) LIKE %?1%")
-    // public Page<Booking> findAllAdmin(String keyword, Pageable pageable);
 
     @Query("SELECT count(*) FROM Booking b WHERE b.state = :stateStatus")
     public Integer countBookingByState(Status stateStatus);

@@ -25,21 +25,23 @@ const BookingCalendar: FC<IBookingCalendarProps> = ({ room }) => {
     function displayNumberOfDays(manyDays: number) {
         $("#numberOfDaysContainer").css("display", "block");
         $("#numberOfDaysContainer").siblings("div").css("display", "none");
-        $("#daysAtHere").text(manyDays + 2);
-        $("#numberOfNight").text(manyDays + 2);
+        $("#daysAtHere").text(manyDays + 1);
+        $("#numberOfNight").text(manyDays + 1);
         displayPreviewLine();
-        setTotalPrice(manyDays + 2, room!.price);
+        setTotalPrice(manyDays + 1, room!.price);
     }
 
     function setTotalPrice(manyDays: any, roomPrice: number) {
         manyDays = parseInt(manyDays);
 
         const totalRoomPrice = roomPrice * manyDays;
-        const siteFee = totalRoomPrice * 0.05;
+        const siteFee = (roomPrice * 2) / 100;
+        const cleanFee = (roomPrice * 3) / 100;
 
         $("#totalPrice").text(seperateNumber(manyDays * roomPrice));
+        $("#cleanFee").text(seperateNumber(Math.ceil(cleanFee)));
         $("#siteFee").text(seperateNumber(Math.ceil(siteFee)));
-        $("#finalTotalPrice").text(seperateNumber(Math.ceil(totalRoomPrice + siteFee)));
+        $("#finalTotalPrice").text(seperateNumber(Math.ceil(totalRoomPrice + siteFee + cleanFee)));
     }
 
     function displayPreviewLine() {

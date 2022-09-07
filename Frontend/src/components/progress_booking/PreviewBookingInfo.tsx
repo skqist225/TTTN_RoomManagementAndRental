@@ -80,21 +80,12 @@ const PreviewBookingInfo: FC<IPreviewBookingInfoProps> = ({ title, text, compone
 
     return (
         <>
-            {" "}
             <div className='flex-space' style={{ padding: "12px 0" }}>
                 <div className='col-flex'>
                     <div className='fs-16 fw-600'>{title}</div>
                     <div className='fs-16' style={{ marginTop: "4px", color: "#222" }}>
                         {text}
                     </div>
-                </div>
-                <div>
-                    <button
-                        className='progress--booking__transparentBtn'
-                        onClick={showTriggeredComponent}
-                    >
-                        Chỉnh sửa
-                    </button>
                 </div>
             </div>
             {componentName === "calendar" && show ? (

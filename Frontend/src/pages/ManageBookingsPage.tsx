@@ -354,7 +354,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                     />
                 </div>
                 <div>
-                    <FilterButton
+                    {/* <FilterButton
                         dataDropDown='listings__filter-totalFee'
                         title='Tổng phí'
                         width='300px'
@@ -388,7 +388,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                             </>
                         }
                         footerOf='totalFee'
-                    />
+                    /> */}
                 </div>
                 <div>
                     <FilterButton
@@ -511,7 +511,30 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                                                                                         bookingDetail.checkoutDate
                                                                                     }
                                                                                 </TableCell>
-                                                                                <TableCell></TableCell>
+                                                                                <TableCell>
+                                                                                    {bookingDetail.review && (
+                                                                                        <span>
+                                                                                            {
+                                                                                                bookingDetail
+                                                                                                    .review
+                                                                                                    .comment
+                                                                                            }
+                                                                                            &nbsp; (
+                                                                                            {Math.floor(
+                                                                                                bookingDetail
+                                                                                                    .review
+                                                                                                    .finalRating
+                                                                                            )}
+                                                                                            <Image
+                                                                                                src={getImage(
+                                                                                                    "/svg/yellowstar.svg"
+                                                                                                )}
+                                                                                                size='20px'
+                                                                                            />
+                                                                                            )
+                                                                                        </span>
+                                                                                    )}
+                                                                                </TableCell>
                                                                             </TableRow>
                                                                         );
                                                                     }
@@ -531,6 +554,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                                     <TablePagination
                                         onChangePage={handlePageChange}
                                         rowsPerPage={10}
+                                        rowsPerPageOptions={[]}
                                         page={page}
                                         count={totalElements}
                                     />

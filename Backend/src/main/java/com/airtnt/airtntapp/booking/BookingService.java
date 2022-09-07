@@ -28,12 +28,14 @@ import com.airtnt.entity.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -52,7 +54,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -74,6 +75,9 @@ public class BookingService {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     public Booking findById(Integer bookingId) throws BookingNotFoundException {
 
@@ -97,8 +101,8 @@ public class BookingService {
         return bookingRepository.findByCustomerAndCartStatus(customer);
     }
 
-    public List<Booking> findByCustomerAndBookedStatus(User customer) {
-        return bookingRepository.findByCustomerAndBookedStatus(customer);
+    public List<Booking> findByCustomerAndBookedStatus(User customer, String query) {
+        return bookingRepository.findByCustomerAndBookedStatus(customer, query);
     }
 
 
@@ -152,7 +156,6 @@ public class BookingService {
     public Long getCurrentMonthSale() {
         return bookingRepository.getCurrentMonthSale();
     }
-
 
     public Booking createBooking(CreateBookingDTO createBookingDTO, User customerUser
     ) throws ParseException, RoomHasBeenBookedException, UserHasBeenBookedThisRoomException, RoomNotFoundException, ReserveDateInThePastException {
@@ -225,36 +228,8 @@ public class BookingService {
         return bookedDates;
     }
 
-    public List<Booking> getBookingsByRoom(Room room) {
-//		List<Booking> bookings = bookingRepository.findByRoom(room);
-        return null;
-    }
-
-    public List<Booking> getBookingsByRooms(Integer[] rooms, LocalDateTime startDate, LocalDateTime endDate) {
-//		return  bookingRepository.getBookingsByRooms(rooms, startDate, endDate);
-        return null;
-    }
-
-
-    public List<Booking> getBookingsByRooms(Integer[] roomIds) {
-//		return bookingRepository.getBookingsByRooms(roomIds);
-        return null;
-    }
-
-
     public List<Booking> getBookingsByUser(Integer customerId, String query) {
         return bookingRepository.getByCustomer(customerId, query);
-    }
-
-    public List<Booking> getBookedRoomsByUser(Integer customerId, String query) {
-        List<Booking> bookings = bookingRepository.getBookedRoomsByUser(customerId);
-//		List<BookedRoomDTO> bookedRoomDTOs = new ArrayList<>();
-//		for (Booking booking : bookings) {
-//			return booking.getBookingDetails().stream().map(b -> {
-//
-//			}
-//		}
-        return bookings;
     }
 
     @Transactional
@@ -325,88 +300,56 @@ public class BookingService {
 
     public BookingListDTO getBookingListByRooms(List<Integer> roomIds, Map<String, String> filters, int page, Integer hostId) {
         String query = filters.get("query");
-        String bookingDateStr = filters.get("bookingDate");
         String isCompleteStr = filters.get("isComplete");
         String bookingDateYear = filters.get("bookingDateYear");
         String bookingDateMonth = filters.get("bookingDateMonth");
-        String sortField = filters.get("sortField");
-        String sortDir = filters.get("sortDir");
         Float totalFee = Float.parseFloat(filters.get("totalFee"));
 
-        Sort sort = Sort.by(sortField);
-        if (sortField.equals("room-name")) {
-            sort = Sort.by("room.name");
+        Sort sort = Sort.by("id").descending();
+        Pageable pageable = PageRequest.of(page - 1, MAX_BOOKING_PER_FETCH_BY_HOST, sort);
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Booking> criteriaQuery = criteriaBuilder.createQuery(Booking.class);
+        Root<Booking> root = criteriaQuery.from(Booking.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        Expression<String> bookingId = root.get("id");
+        Expression<String> customerFirstName = root.get("customer").get("firstName");
+        Expression<String> customerLastName = root.get("customer").get("lastName");
+        Expression<String> bookingDate = root.get("bookingDate");
+        Expression<Status> state = root.get("state");
+        Join<Booking, BookingDetail> joinOptions = root.join("bookingDetails", JoinType.LEFT);
+
+        predicates.add(criteriaBuilder.and(joinOptions.get("room").get("id").in(roomIds)));
+
+        if (!StringUtils.isEmpty(query)) {
+            Expression<String> wantedQueryField = criteriaBuilder.concat(bookingId, " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, customerFirstName);
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, customerLastName);
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, bookingDate);
+
+            predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + query + "%")));
         }
-        if (sortField.equals("customer-fullName")) {
-            Sort sortByCustomerFirstName = Sort.by("customer.firstName");
-            Sort sortByCustomerLastName = Sort.by("customer.lastName");
-            sort = sortByCustomerFirstName.and(sortByCustomerLastName);
+
+        List<Status> bookingStatuses = new ArrayList<>();
+        if (isCompleteStr.split(",").length > 0) {
+            for (String status : isCompleteStr.split(",")) {
+                if (Objects.equals(status, "APPROVED")) {
+                    bookingStatuses.add(Status.APPROVED);
+                } else if (Objects.equals(status, "PENDING")) {
+                    bookingStatuses.add(Status.PENDING);
+                } else {
+                    bookingStatuses.add(Status.CANCELLED);
+                }
+            }
         }
 
-        sort = sortDir.equals("ASC") ? sort.ascending() : sort.descending();
-        Pageable pageable = PageRequest.of(page - 1, MAX_BOOKING_PER_FETCH_BY_HOST);
-
-        Page<Booking> bookingPage = bookingRepository.findAll(new Specification<Booking>() {
-            @Override
-            public Predicate toPredicate(Root<Booking> root, CriteriaQuery<?> criteriaQuery,
-                                         CriteriaBuilder criteriaBuilder) {
-                List<Predicate> predicates = new ArrayList<>();
-
-                Expression<String> bookingId = root.get("id");
-                Expression<String> customerFirstName = root.get("customer").get("firstName");
-                Expression<String> customerLastName = root.get("customer").get("lastName");
-                Expression<LocalDateTime> bookingDate = root.get("bookingDate");
-//                Expression<User> roomId = root.get("room").get("id");
-//                Expression<Float> cleanFee = root.get("cleanFee");
-//                Expression<Float> siteFee = root.get("siteFee");
-                Expression<Status> state = root.get("state");
-                Join<Booking, BookingDetail> joinOptions = root.join("bookingDetails", JoinType.LEFT);
-
-                predicates.add(criteriaBuilder.and(joinOptions.get("room").get("id").in(roomIds)));
-
-
-                if (!StringUtils.isEmpty(query)) {
-                    Expression<String> wantedQueryField = criteriaBuilder.concat(bookingId, " ");
-                    wantedQueryField =criteriaBuilder.concat(wantedQueryField, customerFirstName);
-                    wantedQueryField =criteriaBuilder.concat(wantedQueryField, " ");
-//                    Expression<String> wantedQueryField2 = criteriaBuilder.concat(" ", customerLastName);
-                    wantedQueryField =criteriaBuilder.concat(wantedQueryField, customerLastName);
-                    predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + query + "%")));
-                }
-
-//                if (!StringUtils.isEmpty(bookingDateStr)) {
-//                    try {
-//                        LocalDateTime bkDate = new SimpleDateFormat("yyyy-MM-dd").parse(bookingDateStr).toInstant()
-//                                .atZone(ZoneId.systemDefault()).toLocalDateTime();
-//                        LocalDateTime startOfBookingDate = bkDate.withHour(0).withMinute(0).withSecond(0);
-//                        LocalDateTime endOfBookingDate = bkDate.withHour(23).withMinute(0).withSecond(0);
-//
-//                        predicates.add(
-//                                criteriaBuilder.and(criteriaBuilder.lessThanOrEqualTo(bookingdDate, endOfBookingDate)));
-//                        predicates.add(criteriaBuilder
-//                                .and(criteriaBuilder.greaterThanOrEqualTo(bookingdDate, startOfBookingDate)));
-//                    } catch (ParseException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-
-                List<Status> bookingStatuses = new ArrayList<>();
-                if (isCompleteStr.split(",").length > 0) {
-                    for (String status : isCompleteStr.split(",")) {
-                        if (Objects.equals(status, "APPROVED")) {
-                            bookingStatuses.add(Status.APPROVED);
-                        } else if (Objects.equals(status, "PENDING")) {
-                            bookingStatuses.add(Status.PENDING);
-                        } else {
-                            bookingStatuses.add(Status.CANCELLED);
-                        }
-                    }
-                }
-
-                if (bookingStatuses.size() > 0) {
-                    predicates.add(criteriaBuilder.and(state.in(bookingStatuses)));
-                }
+        if (bookingStatuses.size() > 0) {
+            predicates.add(criteriaBuilder.and(state.in(bookingStatuses)));
+        }
 
 
 //                if (!StringUtils.isEmpty(bookingDateMonth) && !StringUtils.isEmpty(bookingDateYear)) {
@@ -424,28 +367,61 @@ public class BookingService {
 //                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
 //                            criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
 //                            bookingDateYear)));
-//                }
 
-//                Expression<String> second = new UnitExpression(null, String.class, "SECOND");
+
 //
-//                Expression<Float> numberOfDays = criteriaBuilder.function("timestampdiff", Integer.class, second,
-//                        root.get("checkinDate"), root.get("checkoutDate")).as(Float.class);
-//                Expression<Float> roomFee = criteriaBuilder.prod(numberOfDays, root.get("room").get("price"));
-//                Expression<Float> summ = criteriaBuilder.sum(criteriaBuilder.sum(roomFee, siteFee), cleanFee);
 
-                criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id"))).groupBy(joinOptions.get("booking"));
+//        CriteriaBuilder bdCriteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<BookingDetail> bdCriteriaQuery = bdCriteriaBuilder.createQuery(BookingDetail.class);
+//        Root<BookingDetail> bdRoot = bdCriteriaQuery.from(BookingDetail.class);
+//
+//        Expression<Float> roomPrice = bdRoot.get("room").get("price");
+//        Expression<Float> cleanFee = bdRoot.get("cleanFee");
+//        Expression<Float> siteFee = bdRoot.get("siteFee");
+//
+//        Expression<String> second = new UnitExpression(null, String.class, "SECOND");
+//        Expression<Float> numberOfDays = bdCriteriaBuilder.function("timestampdiff", Integer.class, second,
+//                bdRoot.get("checkinDate"), bdRoot.get("checkoutDate")).as(Float.class);
+//        Expression<Float> roomFee = bdCriteriaBuilder.prod(numberOfDays, roomPrice);
+//        Expression<Float> totalPrice = bdCriteriaBuilder.sum(bdCriteriaBuilder.sum(roomFee, siteFee), cleanFee);
 
+//        bdCriteriaQuery.select(bdCriteriaBuilder.construct(BookingDetailSum.class,
+//                bdRoot.get("booking").get("id"),
+//                bdCriteriaBuilder.sum(bdRoot.get("siteFee")),
+//                bdCriteriaBuilder.sum(bdRoot.get("cleanFee")),
+//                bdCriteriaBuilder.sum(totalPrice)
+//                )
+//        );
 
-                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
-            }
-        }, pageable);
+//        Expression<Float> roomPrice = joinOptions.get("room").get("price");
+//        Expression<Float> cleanFee = joinOptions.get("cleanFee");
+//        Expression<Float> siteFee = joinOptions.get("siteFee");
+//
+//        Expression<String> second = new UnitExpression(null, String.class, "SECOND");
+//        Expression<Float> numberOfDays = criteriaBuilder.function("datediff", Integer.class, second,
+//                joinOptions.get("checkoutDate"), joinOptions.get("checkinDate")).as(Float.class);
+//        Expression<Float> roomFee = criteriaBuilder.prod(numberOfDays, roomPrice);
+//        Expression<Float> totalPrice = criteriaBuilder.sum(criteriaBuilder.sum(roomFee, siteFee), cleanFee);
+
+//        predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(totalPrice, totalFee)));
+        criteriaQuery
+                .where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])))
+                .orderBy(criteriaBuilder.desc(root.get("id")))
+                .groupBy(joinOptions.get("booking").get("id"));
+
+        TypedQuery<Booking> query2 = entityManager.createQuery(criteriaQuery);
+        int totalRows = query2.getResultList().size();
+        query2.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        query2.setMaxResults(pageable.getPageSize());
+
+        Page<Booking> result = new PageImpl<>(query2.getResultList(), pageable, totalRows);
 
         List<BookingUserOrderDTO> bookingListDTOs = new ArrayList<>();
-        for (Booking b : bookingPage.toList()) {
+        for (Booking b : result.getContent()) {
             bookingListDTOs.add(BookingUserOrderDTO.build(b));
         }
 
-        return new BookingListDTO(bookingListDTOs, bookingRepository.getNumberOfBookingsOfHost(hostId), bookingPage.getTotalPages());
+        return new BookingListDTO(bookingListDTOs, result.getTotalElements(), result.getTotalPages());
     }
 
     @Transactional
@@ -467,78 +443,10 @@ public class BookingService {
         }
     }
 
-    public Page<Booking> listByPage(int pageNum, String sortField, String sortDir, String keyword) {
-        Sort sort = Sort.by(sortField);
-
-        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
-
-        Pageable pageable = PageRequest.of(pageNum - 1, BOOKINGS_PER_PAGE, sort);
-
-        if (keyword != null) {
-//			return bookingRepository.findAllAdmin(keyword, pageable);
-        }
-
-        return bookingRepository.findAll(pageable);
-    }
-
-    public Booking getById(int id) throws BookingNotFoundException {
-        try {
-            return bookingRepository.getById(id);
-        } catch (NoSuchElementException ex) {
-            throw new BookingNotFoundException("could not find booking with id: " + id);
-        }
-    }
-
     public List<Integer> getBookingIdsByRoom(Room room) {
 //		return bookingRepository.getBookingIdsByRoom(room);
         List<Integer> a = new ArrayList<>();
         a.add(0);
         return a;
-    }
-
-    public Integer getNumberOfBooking() {
-//		return bookingRepository.getNumberOfBooking();
-        return 0;
-    }
-
-    // public Integer getTotalRevenue() {
-    // return bookingRepository.getTotalRevenue();
-    // }
-
-    public Integer getNumberOfBookingInLastMonth() {
-        return bookingRepository.getNumberOfBookingInLastMonth();
-    }
-
-    public Integer getTotalRevenueOfBookingInLastMonth() {
-        return bookingRepository.getTotalRevenueOfBookingInLastMonth();
-    }
-
-
-    // public Integer getRevenueInSpecificMonthYear(Integer month, Integer year) {
-    // return bookingRepository.getRevenueInSpecificMonthYear(month, year);
-    // }
-
-    // public Integer getRevenueInSpecificYear(Integer year) {
-    // return bookingRepository.getRevenueInSpecificYear(year);
-    // }
-
-    // public Integer getNumberOfBookingComplete() {
-    // return bookingRepository.getNumberOfBookingComplete();
-    // }
-
-    // public Integer getNumberOfBookingNotComplete() {
-    // return bookingRepository.getNumberOfBookingNotComplete();
-    // }
-
-    // public Integer getNumberOfBookingRefund() {
-    // return bookingRepository.getNumberOfBookingRefund();
-    // }
-
-    public List<BookingStatsPerDayDTO> getBookingStatsPerDay(Integer month, Integer year) {
-        return bookingRepository.getBookingStatsPerDay(month, year);
-    }
-
-    public List<BookingStatsPerDayDTO> getBookingStatsPerMonth(Integer year) {
-        return bookingRepository.getBookingStatsPerMonth(year);
     }
 }

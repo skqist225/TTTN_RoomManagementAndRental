@@ -20,7 +20,6 @@ import {
     AmenitiesPage,
     AmenityCategoriesPage,
     BookingDetailsPage,
-    BookingOverviewPage,
     BookingsPage,
     CategoriesPage,
     PrivaciesPage,
@@ -121,8 +120,6 @@ function Dashboard() {
         }
     });
 
-    console.log(lcdataSet1);
-
     useEffect(() => {
         switch (pathname) {
             case "/": {
@@ -134,7 +131,11 @@ function Dashboard() {
                 break;
             }
             case "/rooms": {
-                dispatch(fetchRooms(1));
+                dispatch(
+                    fetchRooms({
+                        page: 1,
+                    })
+                );
                 break;
             }
             case "/categories": {
@@ -257,11 +258,6 @@ function Dashboard() {
                                 <PrivaciesPage />
                             </>
                         )}
-                        {pathname === "/bookings/overview" && (
-                            <>
-                                <BookingOverviewPage />
-                            </>
-                        )}
                         {pathname === "/" && (
                             <>
                                 {/* Welcome banner */}
@@ -297,7 +293,7 @@ function Dashboard() {
                                             number={totalSales}
                                         />
                                         <SimpleStatNumber
-                                            label='Total Orders'
+                                            label='Total Bookings'
                                             type='Approved'
                                             backgroundColor={`bg-rose-500`}
                                             number={totalBookings}
@@ -358,6 +354,34 @@ function Dashboard() {
                                                 label='Sales Over Time (all bookings)'
                                             />
                                         )}
+                                    </div>
+                                    <div>
+                                        <div className='flex items-center justify-evenly'>
+                                            <SimpleStatNumber
+                                                label='All Booking Order'
+                                                type='All'
+                                                backgroundColor={`bg-violet-500`}
+                                                number={numberOfAllBookings}
+                                            />
+                                            <SimpleStatNumber
+                                                label='Approved Booking Order'
+                                                type='Approved'
+                                                backgroundColor={`bg-green-500`}
+                                                number={numberOfApproved}
+                                            />
+                                            <SimpleStatNumber
+                                                label='Pending Booking Order'
+                                                type='Pending'
+                                                backgroundColor={`bg-blue-500`}
+                                                number={numberOfPending}
+                                            />
+                                            <SimpleStatNumber
+                                                label='Cancelled Booking Order'
+                                                type='Cancelled'
+                                                backgroundColor={`bg-rose-500`}
+                                                number={numberOfCancelled}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </>

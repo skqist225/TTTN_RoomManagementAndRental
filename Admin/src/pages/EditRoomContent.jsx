@@ -28,7 +28,6 @@ import { fetchPrivacies, privacyState } from "../features/privacy/privacySlice";
 import { fetchRules, ruleState } from "../features/rule/ruleSlice";
 import IncAndDecBtn from "../components/room/components/IncAndDecBtn";
 import { amenityState, fetchAmenities } from "../features/amenity/amenitySlice";
-import { currencyState, fetchCurrencies } from "../features/currency/currencySlice";
 import { roomState, updateRoom } from "../features/room/roomSlice";
 import { useNavigate } from "react-router-dom";
 import Toast from "../components/notify/Toast";
@@ -64,7 +63,6 @@ const EditRoomContent = ({ room }) => {
         name: rName,
         price: rPrice,
         images,
-        currencyId,
         rules: rRules,
         thumbnail,
         address,
@@ -76,24 +74,23 @@ const EditRoomContent = ({ room }) => {
     const amenitiesIds = rAmenities.map(({ id }) => id);
     const rulesIds = rRules.map(({ id }) => id);
 
+    let fullImages = images.map(el => el);
+    fullImages.unshift(room.thumbnail);
+
     useEffect(() => {
-        if (images && images.length) {
+        if (fullImages && fullImages.length) {
             const rroom = {
-                roomImages: images.map(image => image.split("/").pop()),
-                username: user.email,
-                folderno: room.id,
+                roomImages: fullImages.map(image => image.split("/").pop()),
+                host: user.email,
+                roomId: room.id,
             };
 
-            rroom.roomImages.unshift(thumbnail.split("/").pop());
-
-            localStorage.removeItem("room");
-            localStorage.setItem("room", JSON.stringify(rroom));
+            localStorage.removeItem("roomAdmin");
+            localStorage.setItem("roomAdmin", JSON.stringify(rroom));
         }
     }, []);
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [nextButtonDisbaled, setNextButtonDisbaled] = useState(true);
-    const [isPhotosChanged, setIsPhotosChanged] = useState(false);
     const [latitude, setUserLat] = useState(rLatitude);
     const [longitude, setUserLng] = useState(rLongitude);
     const [category, setCategory] = useState(categoryId);
@@ -103,7 +100,6 @@ const EditRoomContent = ({ room }) => {
     const [name, setName] = useState(rName);
     const [description, setDescription] = useState(rDescription);
     const [price, setPrice] = useState(rPrice);
-    const [currency, setCurrency] = useState(currencyId);
 
     const [info, setInfo] = useState({
         bedroomCount: bedroom,
@@ -145,10 +141,6 @@ const EditRoomContent = ({ room }) => {
     const {
         listing: { privacies },
     } = useSelector(privacyState);
-
-    const {
-        listing: { currencies },
-    } = useSelector(currencyState);
 
     const {
         listing: { rules: rulesArray },
@@ -210,7 +202,6 @@ const EditRoomContent = ({ room }) => {
             dispatch(fetchPrivacies(1));
             dispatch(fetchCategories());
             dispatch(fetchAmenities());
-            dispatch(fetchCurrencies());
             dispatch(fetchRules());
         }
     }, [activeStep]);
@@ -224,16 +215,15 @@ const EditRoomContent = ({ room }) => {
             roomEntity = {
                 activeStep: 0,
                 name,
-                amentities: amenities,
+                amenities,
                 bedroomCount: parseInt($("#bedNumber").text()),
                 bathroomCount: parseInt($("#bathRoomNumber").text()),
-                accomodatesCount: parseInt($("#guestNumber").text()),
+                guestCount: parseInt($("#guestNumber").text()),
                 bedCount: parseInt($("#bedRoomNumber").text()),
-                currency,
                 category,
                 description,
                 price: parseInt(price),
-                privacyType,
+                privacy: privacyType,
                 rules,
             };
         }
@@ -268,7 +258,7 @@ const EditRoomContent = ({ room }) => {
         }
         if (activeStep === 2) {
             const { roomImages, thumbnail: lcsThumbnail } = JSON.parse(
-                localStorage.getItem("room")
+                localStorage.getItem("roomAdmin")
             );
 
             roomEntity = {
@@ -488,41 +478,6 @@ const EditRoomContent = ({ room }) => {
                                                                 />
                                                             </FormControl>
                                                             <div className='my-5'>
-                                                                <FormControl fullWidth>
-                                                                    <InputLabel>
-                                                                        Currencies
-                                                                    </InputLabel>
-                                                                    <Select
-                                                                        value={currency}
-                                                                        label='Currencies'
-                                                                        onChange={e => {
-                                                                            setCurrency(
-                                                                                e.target.value
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        {currencies.map(
-                                                                            currency => (
-                                                                                <MenuItem
-                                                                                    value={
-                                                                                        currency.id
-                                                                                    }
-                                                                                    id={
-                                                                                        currency.unit
-                                                                                    }
-                                                                                >
-                                                                                    {
-                                                                                        currency.symbol
-                                                                                    }{" "}
-                                                                                    ({currency.unit}
-                                                                                    )
-                                                                                </MenuItem>
-                                                                            )
-                                                                        )}
-                                                                    </Select>
-                                                                </FormControl>
-                                                            </div>
-                                                            <div className='mb-5'>
                                                                 <FormControl fullWidth required>
                                                                     <InputLabel>Rules</InputLabel>
                                                                     <Select
@@ -579,7 +534,7 @@ const EditRoomContent = ({ room }) => {
 
                                 {activeStep === 2 && (
                                     <div className='flex justify-center'>
-                                        <AddRoomImages setIsPhotosChanged={setIsPhotosChanged} />
+                                        <AddRoomImages />
                                     </div>
                                 )}
 

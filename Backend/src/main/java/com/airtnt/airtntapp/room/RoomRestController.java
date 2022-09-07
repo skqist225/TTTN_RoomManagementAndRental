@@ -160,7 +160,7 @@ public class RoomRestController {
         RoomDetailsDTO roomDetailsDTO = RoomDetailsDTO.buildRoomDetailsDTO(room, reviewDTOs, amenityRoomDetailsDTOs,
                 hostDTO, bookedDates, avgRatings);
 
-        return new OkResponse<RoomDetailsDTO>(roomDetailsDTO).response();
+        return new OkResponse<>(roomDetailsDTO).response();
     }
 
     @GetMapping("/calendar/{selectedMonth}/{selectedYear}")
@@ -306,7 +306,7 @@ public class RoomRestController {
         // } else {
         Page<Room> roomsPage = roomService.fetchUserOwnedRooms(host, pageNumber, filters);
         for (Room room : roomsPage.getContent()) {
-            roomListingsDTOs.add(RoomListingsDTO.buildRoomListingsDTO(room));
+            roomListingsDTOs.add(RoomListingsDTO.build(room));
             // redisTemplate.opsForHash().put("ROOM", room.getId().toString(),
             // RoomListingsDTO.buildRoomListingsDTO(room));
         }
@@ -320,12 +320,12 @@ public class RoomRestController {
         roomsOwnedByUserResponseEntity.setTotalRecords(roomsPage.getTotalElements());
         // }
 
-        return new OkResponse<RoomsOwnedByUserResponseEntity>(roomsOwnedByUserResponseEntity).response();
+        return new OkResponse<>(roomsOwnedByUserResponseEntity).response();
 
     }
 
     @GetMapping("/api/rooms/average-price")
     public ResponseEntity<StandardJSONResponse<Double>> getAverageRoomPrice() {
-        return new OkResponse<Double>(roomService.getAverageRoomPrice()).response();
+        return new OkResponse<>(roomService.getAverageRoomPrice()).response();
     }
 }
