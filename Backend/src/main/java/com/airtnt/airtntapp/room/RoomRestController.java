@@ -5,12 +5,10 @@ import com.airtnt.airtntapp.amenity.dto.AmenityRoomDetailsDTO;
 import com.airtnt.airtntapp.booking.BookedDateDTO;
 import com.airtnt.airtntapp.booking.BookingService;
 import com.airtnt.airtntapp.calendar.CalendarClass;
-import com.airtnt.airtntapp.city.CityService;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
 import com.airtnt.airtntapp.exception.UserNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.success.OkResponse;
-import com.airtnt.airtntapp.review.ReviewService;
 import com.airtnt.airtntapp.review.dto.ReviewDTO;
 import com.airtnt.airtntapp.room.dto.HostDTO;
 import com.airtnt.airtntapp.room.dto.PostAddRoomDTO;
@@ -24,6 +22,7 @@ import com.airtnt.airtntapp.security.UserDetailsImpl;
 import com.airtnt.airtntapp.user.UserService;
 import com.airtnt.entity.Address;
 import com.airtnt.entity.Amentity;
+import com.airtnt.entity.BookingDetail;
 import com.airtnt.entity.City;
 import com.airtnt.entity.Image;
 import com.airtnt.entity.Review;
@@ -91,12 +90,6 @@ public class RoomRestController {
     private AddressService addressService;
 
     @Autowired
-    private ReviewService reviewService;
-
-    @Autowired
-    private CityService cityService;
-
-    @Autowired
     private Environment env;
 
     @RequestMapping("/api/rooms")
@@ -129,7 +122,7 @@ public class RoomRestController {
         rooms.forEach(
                 room -> roomHomePageDTOs.add(RoomHomePageDTO.build(room, roomService.getLikedUsers(room.getId()))));
 
-        return new OkResponse<List<RoomHomePageDTO>>(roomHomePageDTOs).response();
+        return new OkResponse<>(roomHomePageDTOs).response();
     }
 
     @GetMapping("/api/room/{roomId}")
@@ -137,28 +130,26 @@ public class RoomRestController {
             throws RoomNotFoundException, ParseException {
         Room room = roomService.getById(id);
 
-        List<Integer> bookingIds = bookingService.getBookingIdsByRoom(room);
-
-        List<Review> reviews = reviewService.getReviewsByBookings(bookingIds);
-
-        float avgRatings = 0;
-        for (Review r : reviews) {
-            avgRatings += r.getFinalRating();
+        List<Review> reviews = new ArrayList<>();
+        for (BookingDetail bookingDetail : room.getBookingDetails()) {
+            if (Objects.nonNull(bookingDetail.getReview())) {
+                reviews.add(bookingDetail.getReview());
+            }
         }
 
-        if (reviews.size() > 0) {
-            avgRatings /= reviews.size();
-        }
+        System.out.println(reviews.size());
 
         List<AmenityRoomDetailsDTO> amenityRoomDetailsDTOs = room.getAmentities().stream()
-                .map(amenity -> AmenityRoomDetailsDTO.build(amenity)).collect(Collectors.toList());
-        List<ReviewDTO> reviewDTOs = reviews.stream().map(review -> ReviewDTO.build(review))
+                .map(AmenityRoomDetailsDTO::build).collect(Collectors.toList());
+
+        List<ReviewDTO> reviewDTOs = reviews.stream().map(ReviewDTO::build)
                 .collect(Collectors.toList());
+
         List<BookedDateDTO> bookedDates = bookingService.getBookedDates(room);
 
         HostDTO hostDTO = HostDTO.buildHostDTO(room);
-        RoomDetailsDTO roomDetailsDTO = RoomDetailsDTO.buildRoomDetailsDTO(room, reviewDTOs, amenityRoomDetailsDTOs,
-                hostDTO, bookedDates, avgRatings);
+        RoomDetailsDTO roomDetailsDTO = RoomDetailsDTO.build(room, reviewDTOs, amenityRoomDetailsDTOs,
+                hostDTO, bookedDates, room.getAverageRatings());
 
         return new OkResponse<>(roomDetailsDTO).response();
     }
@@ -181,7 +172,7 @@ public class RoomRestController {
         GregorianCalendar gCal = new GregorianCalendar(selectedYear, selectedMonth - 1, 1);
         int startInWeek = gCal.get(Calendar.DAY_OF_WEEK); // ngày thứ mấy trong tuần đó
 
-        return new OkResponse<CalendarResponseEntity>(new CalendarResponseEntity(strDaysInMonth, startInWeek))
+        return new OkResponse<>(new CalendarResponseEntity(strDaysInMonth, startInWeek))
                 .response();
     }
 
@@ -219,7 +210,6 @@ public class RoomRestController {
         for (int i = 0; i < payload.getImages().length; i++) {
             images.add(new Image(payload.getImages()[i]));
         }
-
 
         Address savedAddress = null;
         Address address = addressService.findByStreetAndCity(payload.getStreet(), new City(payload.getCity()));
@@ -281,6 +271,10 @@ public class RoomRestController {
             @RequestParam(name = "STATUSES", required = false, defaultValue = "ACTIVE UNLISTED") String status) {
         User host = userDetailsImpl.getUser();
 
+        System.out.println(bathRoomsCount);
+        System.out.println(bedRoomsCount);
+        System.out.println(bedsCount);
+
         Map<String, String> filters = new HashMap<>();
         filters.put("bedroomCount", bedRoomsCount);
         filters.put("bathroomCount", bathRoomsCount);
@@ -293,35 +287,16 @@ public class RoomRestController {
         List<RoomListingsDTO> roomListingsDTOs = new ArrayList<>();
         RoomsOwnedByUserResponseEntity roomsOwnedByUserResponseEntity = new RoomsOwnedByUserResponseEntity();
 
-        // if (redisTemplate.opsForHash().get("TOTAL_PAGES", "TOTAL_PAGES") != null) {
-        // roomListingsDTOs = redisTemplate.opsForHash().values("ROOM");
-
-        // roomsOwnedByUserResponseEntity.setRooms(roomListingsDTOs);
-        // roomsOwnedByUserResponseEntity
-        // .setTotalPages((int) redisTemplate.opsForHash().get("TOTAL_PAGES",
-        // "TOTAL_PAGES"));
-        // roomsOwnedByUserResponseEntity
-        // .setTotalRecords((long) redisTemplate.opsForHash().get("TOTAL_ELS",
-        // "TOTAL_ELS"));
-        // } else {
         Page<Room> roomsPage = roomService.fetchUserOwnedRooms(host, pageNumber, filters);
         for (Room room : roomsPage.getContent()) {
             roomListingsDTOs.add(RoomListingsDTO.build(room));
-            // redisTemplate.opsForHash().put("ROOM", room.getId().toString(),
-            // RoomListingsDTO.buildRoomListingsDTO(room));
         }
-        // redisTemplate.opsForHash().put("TOTAL_PAGES", "TOTAL_PAGES", (Integer)
-        // roomsPage.getTotalPages());
-        // redisTemplate.opsForHash().put("TOTAL_ELS", "TOTAL_ELS", (Long)
-        // roomsPage.getTotalElements());
 
         roomsOwnedByUserResponseEntity.setRooms(roomListingsDTOs);
         roomsOwnedByUserResponseEntity.setTotalPages(roomsPage.getTotalPages());
         roomsOwnedByUserResponseEntity.setTotalRecords(roomsPage.getTotalElements());
-        // }
 
         return new OkResponse<>(roomsOwnedByUserResponseEntity).response();
-
     }
 
     @GetMapping("/api/rooms/average-price")

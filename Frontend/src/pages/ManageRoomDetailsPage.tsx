@@ -2,7 +2,7 @@ import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import Header from "../components/Header";
-import { fetchRoomById, roomState } from "../features/room/roomSlice";
+import { clearUpdateSuccessState, fetchRoomById, roomState } from "../features/room/roomSlice";
 
 import {
     EditLocation,
@@ -46,6 +46,12 @@ const ManageRoomDetailsPage: FC<IManageRoomDetailsPageProps> = () => {
             callToast("success", "Cập nhật thông tin phòng thành công!");
         }
     }, [updateSuccess]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearUpdateSuccessState());
+        };
+    }, []);
 
     return (
         <>

@@ -127,8 +127,8 @@ public class User extends BaseEntity {
 
 
         Role role = new Role(2);
-        if(Objects.nonNull(registerDTO.getRoleId())) {
-             role = new Role(registerDTO.getRoleId());
+        if (Objects.nonNull(registerDTO.getRoleId())) {
+            role = new Role(registerDTO.getRoleId());
         }
 
 
@@ -155,11 +155,15 @@ public class User extends BaseEntity {
 
     @Transient
     public String getFullPathAddress() {
-        if (this.address != null) {
-            City city = this.address.getCity();
-            State state = city.getState();
-            return String.format("%s, %s, %s, %s", this.address.getStreet(), city.getName(),
-                    state.getName(), state.getCountry().getName());
+        try {
+            if (this.address != null) {
+                City city = this.address.getCity();
+                State state = city.getState();
+                return String.format("%s, %s, %s, %s", this.address.getStreet(), city.getName(),
+                        state.getName(), state.getCountry().getName());
+            }
+        } catch (NullPointerException ex) {
+            return "";
         }
 
         return "";
@@ -167,24 +171,29 @@ public class User extends BaseEntity {
 
     @Transient
     public ObjectNode getAddressDetails() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode objectNode = mapper.createObjectNode();
-        ObjectNode countryNode = mapper.createObjectNode();
-        ObjectNode stateNode = mapper.createObjectNode();
-        ObjectNode cityNode = mapper.createObjectNode();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode objectNode = mapper.createObjectNode();
+            ObjectNode countryNode = mapper.createObjectNode();
+            ObjectNode stateNode = mapper.createObjectNode();
+            ObjectNode cityNode = mapper.createObjectNode();
 
-        if (this.address != null) {
-            City city = this.address.getCity();
-            State state = city.getState();
-            Country country = state.getCountry();
+            if (this.address != null) {
+                City city = this.address.getCity();
+                State state = city.getState();
+                Country country = state.getCountry();
 
-            objectNode.set("country", countryNode.put("id", country.getId()).put("name", country.getName()));
-            objectNode.set("state", stateNode.put("id", state.getId()).put("name", state.getName()));
-            objectNode.set("city", cityNode.put("id", city.getId()).put("name", city.getName()));
-            objectNode.put("street", this.address.getStreet());
+                objectNode.set("country", countryNode.put("id", country.getId()).put("name", country.getName()));
+                objectNode.set("state", stateNode.put("id", state.getId()).put("name", state.getName()));
+                objectNode.set("city", cityNode.put("id", city.getId()).put("name", city.getName()));
+                objectNode.put("street", this.address.getStreet());
+            }
+
+            return objectNode;
+        } catch (NullPointerException ex) {
+            return null;
         }
 
-        return objectNode;
     }
 
     @Transient

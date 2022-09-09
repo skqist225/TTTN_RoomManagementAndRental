@@ -11,5 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class WishlistsDTO {
     private Integer id;
-    private String[] images;
+    private String thumbnail;
+    private String name;
+    private String category;
+    private Integer numberOfReviews;
+    private Float price;
+    private Float averageRating;
 }

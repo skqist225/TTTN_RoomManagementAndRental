@@ -61,7 +61,7 @@ const FilterByLine: FC<IFilterByLineProps> = () => {
                 </div>
             </div>
 
-            <FilterButton
+            {/* <FilterButton
                 dataDropDown='listings__filter-roomAndBedRoom'
                 title='Phòng và phòng ngủ'
                 width='300px'
@@ -94,8 +94,8 @@ const FilterByLine: FC<IFilterByLineProps> = () => {
                     </>
                 }
                 footerOf='roomAndBedRoom'
-            />
-            <FilterButton
+            /> */}
+            {/* <FilterButton
                 dataDropDown='listings__filter-amentities'
                 title='Tiện nghi'
                 width='500px'
@@ -110,7 +110,7 @@ const FilterByLine: FC<IFilterByLineProps> = () => {
                     </>
                 }
                 footerOf='amenities'
-            />
+            /> */}
             <FilterButton
                 dataDropDown='listings__filter-status'
                 title='Tình trạng nhà/phòng cho thuê'
@@ -156,7 +156,7 @@ const FilterByLine: FC<IFilterByLineProps> = () => {
                 footerOf='others'
             /> */}
 
-            <FilterButton
+            {/* <FilterButton
                 dataDropDown='clearFilter'
                 title='Xóa toàn bộ bộ lọc'
                 width=''
@@ -164,7 +164,7 @@ const FilterByLine: FC<IFilterByLineProps> = () => {
                 content={<></>}
                 footerOf=''
                 haveBox={false}
-            />
+            /> */}
         </div>
     );
 };

@@ -315,6 +315,9 @@ const roomSlice = createSlice({
         setPhotos: (state, { payload }) => {
             state.photos = [...state.photos, payload];
         },
+        clearUpdateSuccessState(state) {
+            state.updateSuccess = false;
+        },
     },
     extraReducers: builder => {
         builder
@@ -382,6 +385,7 @@ export const {
         setSortField,
         setSortDir,
         setPhotos,
+        clearUpdateSuccessState,
     },
 } = roomSlice;
 

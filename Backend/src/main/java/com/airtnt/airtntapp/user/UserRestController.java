@@ -18,7 +18,6 @@ import com.airtnt.airtntapp.user.dto.WishlistsDTO;
 import com.airtnt.entity.Address;
 import com.airtnt.entity.Booking;
 import com.airtnt.entity.City;
-import com.airtnt.entity.Image;
 import com.airtnt.entity.Room;
 import com.airtnt.entity.Sex;
 import com.airtnt.entity.User;
@@ -113,7 +112,7 @@ public class UserRestController {
 
     @GetMapping("wishlists")
     public ResponseEntity<StandardJSONResponse<WishlistsDTO[]>> fetchWishlists(
-            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) throws RoomNotFoundException {
         User user = userDetailsImpl.getUser();
 
         WishlistsDTO[] wishlists = new WishlistsDTO[user.getFavRooms().size()];
@@ -122,18 +121,17 @@ public class UserRestController {
         for (Room r : user.getFavRooms()) {
             WishlistsDTO wlDTO = new WishlistsDTO();
             wlDTO.setId(r.getId());
-            String[] images = new String[3];
-            int j = 0;
-            for (Image image : r.getImages()) {
-                if (j == 3)
-                    break;
-                images[j++] = image.getImagePath(r.getHost().getEmail(), r.getId());
-            }
-            wlDTO.setImages(images);
+            wlDTO.setName(r.getName());
+            wlDTO.setCategory(r.getCategory().getName());
+            wlDTO.setPrice(r.getPrice());
+            wlDTO.setThumbnail(r.renderThumbnailImage());
+            Room innerRoome = roomService.findById(r.getId());
+            wlDTO.setNumberOfReviews(innerRoome.getNumberOfReviews());
+            wlDTO.setAverageRating(innerRoome.getAverageRatings());
             wishlists[i++] = wlDTO;
         }
 
-        return new OkResponse<WishlistsDTO[]>(wishlists).response();
+        return new OkResponse<>(wishlists).response();
     }
 
     @PutMapping("update-personal-info")
@@ -239,8 +237,24 @@ public class UserRestController {
             case "phoneNumber": {
                 String newPhoneNumber = updateData.get("phoneNumber");
 
+                ArrayNode arrays = objectMapper.createArrayNode();
+
                 if (userService.checkPhoneNumber(newPhoneNumber, true, currentUser.getId())) {
-                    return new BadResponse<User>("Phone number has already been taken").response();
+                    ObjectNode node = objectMapper.createObjectNode();
+                    node.put("phoneNumber", "Phone number has already been taken");
+                    arrays.add(node);
+                }
+
+                try {
+                    Integer.parseInt(newPhoneNumber);
+                } catch (Exception ex) {
+                    ObjectNode node = objectMapper.createObjectNode();
+                    node.put("phoneNumber", "Phone number is not valid");
+                    arrays.add(node);
+                }
+
+                if (arrays.size() > 0) {
+                    return new BadResponse<User>(arrays.toString()).response();
                 }
 
                 currentUser.setPhoneNumber(newPhoneNumber);

@@ -136,6 +136,16 @@ export const fetchBookedRooms = createAsyncThunk(
     }
 );
 
+export interface IFavRoom {
+    id: number;
+    name: string;
+    thumbnail: string;
+    category: string;
+    numberOfReviews: number;
+    price: number;
+    averageRating: number;
+}
+
 type UserState = {
     user: IUser | null;
     loading: boolean;
@@ -147,13 +157,8 @@ type UserState = {
         errorMessage: string | null;
         successMessage: string | null;
     };
-    updatePassword: {
-        loading: boolean;
-        errorMessage: string | null;
-        successMessage: string | null;
-    };
     wishlistsIDs: number[];
-    wishlists: RoomWishlists[];
+    wishlists: IFavRoom[];
     bookedRooms: IBookedRoom[];
 };
 
@@ -164,11 +169,6 @@ const initialState: UserState = {
     errorMessage: null,
     successMessage: "",
     update: {
-        loading: true,
-        errorMessage: null,
-        successMessage: null,
-    },
-    updatePassword: {
         loading: true,
         errorMessage: null,
         successMessage: null,
@@ -187,6 +187,9 @@ const userSlice = createSlice({
         },
         clearUSAErrorMessage(state) {
             state.update.errorMessage = null;
+        },
+        clearUpdateState(state) {
+            state.update.successMessage = null;
         },
     },
     extraReducers: builder => {
@@ -247,6 +250,6 @@ const userSlice = createSlice({
     },
 });
 
-export const { setUser, clearUSAErrorMessage } = userSlice.actions;
+export const { setUser, clearUSAErrorMessage, clearUpdateState } = userSlice.actions;
 export const userState = (state: RootState) => state.user;
 export default userSlice.reducer;

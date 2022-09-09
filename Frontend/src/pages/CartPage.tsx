@@ -31,6 +31,7 @@ import "./css/cart.css";
 import { MyNumberForMat } from "../components/utils";
 import {
     bookingDetailState,
+    clearDeleteBookingDetailAction,
     deleteBookingDetail,
 } from "../features/bookingDetail/bookingDetailSlice";
 
@@ -172,6 +173,12 @@ const CartPage: FC<ICartPageProps> = () => {
             }
         }
     }, [successMessage]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearDeleteBookingDetailAction());
+        };
+    }, []);
 
     const handleProcessToOrder = () => {
         const bookingIds: number[] = [];

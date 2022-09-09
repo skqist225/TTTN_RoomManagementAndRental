@@ -31,7 +31,6 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
     const {
         user,
         update: { errorMessage },
-        updatePassword: { successMessage, errorMessage: upaErrorMessage },
     } = useSelector(userState);
 
     function updateInfo(updateInfo: IUserUpdate, field: string) {
@@ -118,6 +117,7 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
             }
             case "phoneNumber": {
                 const { phoneNumber } = data;
+
                 updateInfo(
                     {
                         updatedField: "phoneNumber",
@@ -184,7 +184,7 @@ export const FormEdit: FC<IFormEditProps> = ({ dataEdit }) => {
                         />
                     )}
                     {dataEdit === "password" && (
-                        <PasswordEdit register={register} errorMessage={upaErrorMessage} />
+                        <PasswordEdit register={register} errorMessage={errorMessage} />
                     )}
                     {dataEdit === "phoneNumber" && (
                         <PhoneNumberEdit

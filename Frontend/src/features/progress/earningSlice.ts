@@ -1,16 +1,44 @@
-import { createSlice, createAsyncThunk, isAnyOf } from '@reduxjs/toolkit';
-import api from '../../axios';
-import { RootState } from '../../store';
-import { Booking } from '../../types/progress/type_Earning';
+import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
+import api from "../../axios";
+import { RootState } from "../../store";
+import { Booking } from "../../types/progress/type_Earning";
 
 export const fetchEarnings = createAsyncThunk(
-    'earning/fetchEarnings',
-    async ({ year = 2022 }: { year: number }, { dispatch, getState, rejectWithValue }) => {
+    "earning/fetchEarnings",
+    async (
+        { year = new Date().getFullYear() }: { year: number },
+        { dispatch, getState, rejectWithValue }
+    ) => {
         try {
             const {
                 data: { bookings, feesInMonth, numberOfBookingsInMonth, totalFee },
             } = await api.get(`/progress/earnings?year=${year}`);
-            return { bookings, feesInMonth, numberOfBookingsInMonth, totalFee };
+            return {
+                bookings,
+                feesInMonth,
+                numberOfBookingsInMonth,
+                totalFee,
+            };
+        } catch (error) {}
+    }
+);
+
+export const countApprovedBookingsInMonth = createAsyncThunk(
+    "earning/countApprovedBookingsInMonth",
+    async (
+        {
+            year = new Date().getFullYear(),
+            month = new Date().getMonth() + 1,
+        }: { year: number; month: number },
+        { dispatch, getState, rejectWithValue }
+    ) => {
+        try {
+            const { data } = await api.get(
+                `/progress/earnings/countApprovedBookingsInMonth?year=${year}&month=${month}`
+            );
+            return {
+                data,
+            };
         } catch (error) {}
     }
 );
@@ -21,6 +49,7 @@ type EarningState = {
     numberOfBookingsInMonth: { [key: number]: number };
     totalFee: number;
     loading: boolean;
+    numberOfBookingsInMonth2: number;
 };
 
 const initialState: EarningState = {
@@ -29,10 +58,11 @@ const initialState: EarningState = {
     numberOfBookingsInMonth: {},
     totalFee: 0,
     loading: true,
+    numberOfBookingsInMonth2: 0,
 };
 
 const earningSlice = createSlice({
-    name: 'earning',
+    name: "earning",
     initialState,
     reducers: {},
     extraReducers: builder => {
@@ -43,6 +73,9 @@ const earningSlice = createSlice({
                 state.feesInMonth = payload?.feesInMonth;
                 state.numberOfBookingsInMonth = payload?.numberOfBookingsInMonth;
                 state.totalFee = payload?.totalFee;
+            })
+            .addCase(countApprovedBookingsInMonth.fulfilled, (state, { payload }) => {
+                state.numberOfBookingsInMonth2 = payload?.data;
             })
             .addCase(fetchEarnings.pending, state => {
                 state.loading = true;

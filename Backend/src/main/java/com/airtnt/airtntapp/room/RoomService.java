@@ -1,6 +1,5 @@
 package com.airtnt.airtntapp.room;
 
-import com.airtnt.airtntapp.FileUploadUtil;
 import com.airtnt.airtntapp.address.AddressService;
 import com.airtnt.airtntapp.dashboard.dto.CountCreatedRoomDTO;
 import com.airtnt.airtntapp.exception.RoomNotFoundException;
@@ -50,7 +49,7 @@ import java.util.Set;
 @Service
 @Transactional
 public class RoomService {
-    public static final int MAX_ROOM_PER_FETCH = 40;
+    public static final int MAX_ROOM_PER_FETCH = 50;
     public static final int ROOMS_PER_PAGE = 20;
 
     @Autowired
@@ -171,12 +170,6 @@ public class RoomService {
         return rooms;
     }
 
-    // public Page<Room> getRoomsByCategoryId(Integer categoryId, boolean status,
-    // int pageNumber,
-    // Map<String, String> filters) throws ParseException {
-
-    // }
-
     public Page<Room> getRoomsByCategoryId(Integer categoryId, boolean status, int pageNumber,
                                            Map<String, String> filters) throws ParseException {
         float minPrice = Float.parseFloat(filters.get("minPrice"));
@@ -238,23 +231,6 @@ public class RoomService {
 
     public int completeRentalProcess(Integer roomId) {
         return updateRoomStatus(roomId);
-    }
-
-    public void deleteRoom(Integer roomId) {
-        Room room = roomRepository.getById(roomId);
-        room.getAmentities().clear();
-        room.getImages().clear();
-
-        User host = userRepository.findById(room.getHost().getId()).get();
-        host.removeFromWishLists(room);
-
-        String uploadPath = "../room_images/" + room.getHost().getEmail() + "/" + room.getId();
-        try {
-            roomRepository.delete(room);
-            FileUploadUtil.removeDir(uploadPath);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     public String updateField(Integer roomId, String fieldName, Map<String, String> values) {
@@ -389,20 +365,6 @@ public class RoomService {
         }
     }
 
-    public Page<Room> listByPage(int pageNum, String sortField, String sortDir, String keyword) {
-        Sort sort = Sort.by(sortField);
-
-        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
-
-        Pageable pageable = PageRequest.of(pageNum - 1, ROOMS_PER_PAGE, sort);
-
-        if (keyword != null) {
-            return roomRepository.findAll(keyword, pageable);
-        }
-
-        return roomRepository.findAll(pageable);
-    }
-
     public void updateRoomEnabledStatus(Integer id, Boolean status) {
         roomRepository.updateStatus(id, status);
     }
@@ -501,6 +463,10 @@ public class RoomService {
         if (!StringUtils.isEmpty(query)) {
             predicates.add(criteriaBuilder.and(criteriaBuilder.like(roomName, "%" + query + "%")));
         }
+        
+       System.out.println(bedroomCount);
+       System.out.println(bathroomCount);
+       System.out.println(bedCount);
 
         predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(roomBedroomCount, bedroomCount)));
         predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(roomBathroomCount, bathroomCount)));

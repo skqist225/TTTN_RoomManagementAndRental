@@ -23,7 +23,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
     @Query(value = "SELECT count(temp.id) as numberOfBookings FROM (SELECT bs.* FROM airtn.bookings as bs" +
             " LEFT JOIN booking_details as bds on bs.id = bds.booking_id" +
             " WHERE bds.room_id in (select id from rooms as r where r.host_id = :hostId)" +
-            " group by bs.id) as temp",nativeQuery = true)
+            " group by bs.id) as temp", nativeQuery = true)
     public Integer getNumberOfBookingsOfHost(Integer hostId);
 
     public List<Booking> findByCustomerAndState(User customer, Status state);
@@ -72,6 +72,16 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
 
     @Query(value = "SELECT b.booking_date as date, SUM(b.total_fee) as revenue FROM bookings b WHERE YEAR(b.booking_date) = :year AND b.is_complete=true AND b.is_refund=false group by YEAR(b.booking_date), Month(b.booking_date) order by b.booking_date", nativeQuery = true)
     public List<BookingStatsPerDayDTO> getBookingStatsPerMonth(Integer year);
+
+
+    @Query(value = "select count(temp.id) from (SELECT distinct(b.id) FROM airtn.bookings as b" +
+            " left join booking_details as bds on bds.booking_id = b.id" +
+            " left join rooms as r on r.id = bds.room_id" +
+            " where" +
+            " b.state = \"APPROVED\" and" +
+            " r.host_id = :hostId and" +
+            " month(b.booking_date) = :month and year(b.booking_date) = :year) as temp", nativeQuery = true)
+    public Integer countNumberOfBookingsByHost(Integer hostId, Integer month, Integer year);
 
     public static interface RevenueByYear {
 

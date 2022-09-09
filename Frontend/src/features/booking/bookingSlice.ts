@@ -432,6 +432,9 @@ const bookingSlice = createSlice({
             state.cancelBookingAction.successMessage = null;
             state.cancelBookingAction.errorMessage = null;
         },
+        clearCreateReviewSuccessState(state) {
+            state.createReviewSuccess = false;
+        },
     },
     extraReducers: builder => {
         builder
@@ -555,6 +558,7 @@ export const {
     clearAllFetchData,
     setCancelledBooking,
     clearApproveAndDenyState,
+    clearCreateReviewSuccessState,
 } = bookingSlice.actions;
 export const bookingState = (state: RootState) => state.booking;
 export default bookingSlice.reducer;

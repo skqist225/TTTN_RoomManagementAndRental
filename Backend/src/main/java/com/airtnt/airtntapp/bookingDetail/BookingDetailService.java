@@ -104,8 +104,8 @@ public class BookingDetailService {
         return bookingDetailRepository.findByRoom(room);
     }
 
-    public List<BookingDetail> getBookingDetailsByRooms(Integer[] rooms, LocalDateTime startDate, LocalDateTime endDate) {
-        return bookingDetailRepository.getBookingDetailsByRooms(rooms, startDate, endDate);
+    public List<BookingDetail> getBookingDetailsByRoomsInOneYear(Integer[] rooms, LocalDateTime startDate, LocalDateTime endDate) {
+        return bookingDetailRepository.getBookingDetailsByRoomsInOneYear(rooms, startDate, endDate);
     }
 
     public List<BookingDetail> getBookingDetailsByRooms(List<Integer> roomIds) {

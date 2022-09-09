@@ -16,6 +16,7 @@ import "./css/booked_rooms.css";
 import {
     bookingState,
     cancelUserBooking,
+    clearCreateReviewSuccessState,
     fetchUserBookedOrders,
 } from "../features/booking/bookingSlice";
 import Toast from "../components/notify/Toast";
@@ -80,6 +81,12 @@ const BookedRoomsPage: FC<IBookedRoomsPageProps> = () => {
     useEffect(() => {
         if (createReviewSuccess) callToast("success", "Đánh giá phòng thành công");
     }, [createReviewSuccess]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearCreateReviewSuccessState());
+        };
+    }, []);
 
     useEffect(() => {
         dispatch(fetchUserBookedOrders());

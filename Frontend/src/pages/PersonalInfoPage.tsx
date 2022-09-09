@@ -9,7 +9,7 @@ import Toast from "../components/notify/Toast";
 
 import "./css/personal_info.css";
 import { Image } from "../globalStyle";
-import { refreshUserData, userState } from "../features/user/userSlice";
+import { clearUpdateState, refreshUserData, userState } from "../features/user/userSlice";
 
 type IPersonalInfoPageProps = {};
 
@@ -32,6 +32,12 @@ const PersonalInfoPage: FC<IPersonalInfoPageProps> = () => {
             callToast("success", "Cập nhật thành công");
         }
     }, [successMessage]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearUpdateState());
+        };
+    }, []);
 
     return (
         <>

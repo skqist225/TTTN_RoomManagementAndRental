@@ -45,15 +45,12 @@ const PropertyLocationPage: FC<IPropertyLocationPageProps> = () => {
                 );
             }
             if (state) {
-                console.log(state);
                 setLState(parseInt(state.toString()));
             }
             if (city) {
-                console.log(city);
                 setLCity(parseInt(city.toString()));
             }
             if (street) {
-                console.log(street);
                 $("#street").val(street);
             }
         }

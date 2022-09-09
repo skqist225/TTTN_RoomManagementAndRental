@@ -187,42 +187,6 @@ const FilterFooter: FC<IFilterFooterProps> = ({ footerOf }) => {
                 const dataModify = $(this).data("modify");
 
                 switch (dataModify) {
-                    case "roomAndBedRoom": {
-                        let bathRooms = 0;
-                        let bedRooms = 0;
-                        let beds = 0;
-                        const query = $("#listings__search-input").val()!.toString().trim();
-
-                        $(".listings__minus-btn").each(function () {
-                            const dataEdit = $(this).data("edit");
-                            const spanValue = $(this).siblings(`#${dataEdit}`).text();
-
-                            if (dataEdit === "listings__bath-room-count")
-                                bathRooms = parseInt(spanValue);
-                            else if (dataEdit === "listings__bed-room-count")
-                                bedRooms = parseInt(spanValue);
-                            else beds = parseInt(spanValue);
-                        });
-
-                        console.log(bathRooms);
-                        console.log(bedRooms);
-                        console.log(beds);
-
-                        break;
-                    }
-                    case "amenities": {
-                        let amentitiesID: number[] = [];
-
-                        $(".amenity").each(function () {
-                            if ($(this).children("span").hasClass("ant-checkbox-checked")) {
-                                amentitiesID.push(
-                                    parseInt($(this).children().children().val() as string)
-                                );
-                            }
-                        });
-
-                        break;
-                    }
                     case "status": {
                         let statuses: string[] = [];
                         $(".statusSelected").each(function () {

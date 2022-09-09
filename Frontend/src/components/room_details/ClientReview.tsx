@@ -18,6 +18,8 @@ const ClientReview: FC<IClientReviewProps> = ({ room }) => {
         }
     }, []);
 
+    console.log(room!.reviews.length);
+
     return (
         <div id='rdt__review'>
             <div>
@@ -49,8 +51,8 @@ const ClientReview: FC<IClientReviewProps> = ({ room }) => {
                     </div>
                 </div>
                 <div id='ratingDetailsContainer'>
-                    {room!.reviews.map(review => (
-                        <div className='rdt__review-box' key={review.createdAt}>
+                    {room!.reviews.map((review, index) => (
+                        <div className='rdt__review-box' key={review.createdAt + index.toString()}>
                             {Object.keys(review.rating).map(k => {
                                 return (
                                     <ReviewValue

@@ -50,6 +50,10 @@
     justify-content: space-between;
 }
 
+.boxPreviewFavRoomPage:hover #boxPreviewFavRoomPageRoomThumbnail {
+    transform: scale(1.1);
+}
+
 #boxPreview-footer {
     padding-top: 10px;
 }

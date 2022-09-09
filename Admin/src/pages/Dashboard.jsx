@@ -261,7 +261,7 @@ function Dashboard() {
                         {pathname === "/" && (
                             <>
                                 {/* Welcome banner */}
-                                <WelcomeBanner />
+                                {/* <WelcomeBanner /> */}
 
                                 {/* Dashboard actions */}
                                 <div className='sm:flex sm:justify-between sm:items-center mb-8'>
@@ -354,34 +354,6 @@ function Dashboard() {
                                                 label='Sales Over Time (all bookings)'
                                             />
                                         )}
-                                    </div>
-                                    <div>
-                                        <div className='flex items-center justify-evenly'>
-                                            <SimpleStatNumber
-                                                label='All Booking Order'
-                                                type='All'
-                                                backgroundColor={`bg-violet-500`}
-                                                number={numberOfAllBookings}
-                                            />
-                                            <SimpleStatNumber
-                                                label='Approved Booking Order'
-                                                type='Approved'
-                                                backgroundColor={`bg-green-500`}
-                                                number={numberOfApproved}
-                                            />
-                                            <SimpleStatNumber
-                                                label='Pending Booking Order'
-                                                type='Pending'
-                                                backgroundColor={`bg-blue-500`}
-                                                number={numberOfPending}
-                                            />
-                                            <SimpleStatNumber
-                                                label='Cancelled Booking Order'
-                                                type='Cancelled'
-                                                backgroundColor={`bg-rose-500`}
-                                                number={numberOfCancelled}
-                                            />
-                                        </div>
                                     </div>
                                 </div>
                             </>

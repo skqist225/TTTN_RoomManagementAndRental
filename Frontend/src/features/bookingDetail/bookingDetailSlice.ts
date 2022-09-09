@@ -88,7 +88,11 @@ const initialState: BookingDetailState = {
 const bookingDetailSlice = createSlice({
     name: "bookingDetail",
     initialState,
-    reducers: {},
+    reducers: {
+        clearDeleteBookingDetailAction(state) {
+            state.deleteBookingDetailAction.successMessage = null;
+        },
+    },
     extraReducers: builder => {
         builder
             .addCase(upsertBookingDetail.fulfilled, (state, { payload }) => {})
@@ -108,6 +112,6 @@ const bookingDetailSlice = createSlice({
     },
 });
 
-export const {} = bookingDetailSlice.actions;
+export const { clearDeleteBookingDetailAction } = bookingDetailSlice.actions;
 export const bookingDetailState = (state: RootState) => state.bookingDetail;
 export default bookingDetailSlice.reducer;

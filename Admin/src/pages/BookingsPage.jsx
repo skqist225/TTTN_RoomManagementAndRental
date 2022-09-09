@@ -39,18 +39,18 @@ const BookingsPage = () => {
 
     return (
         <>
-            {/* <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <Tabs value={value} onChange={handleChange} aria-label='basic tabs example'>
                     <Tab label='All' {...a11yProps(0)} />
                     <Tab label='Approved' {...a11yProps(1)} />
                     <Tab label='Pending' {...a11yProps(1)} />
                     <Tab label='Cancelled' {...a11yProps(2)} />
                 </Tabs>
-            </Box> */}
+            </Box>
             <TabPanel value={value} index={0}>
                 <BookingTable type='ALL' />
             </TabPanel>
-            {/* <TabPanel value={value} index={1}>
+            <TabPanel value={value} index={1}>
                 <BookingTable type='APPROVED' />
             </TabPanel>
             <TabPanel value={value} index={2}>
@@ -58,7 +58,7 @@ const BookingsPage = () => {
             </TabPanel>
             <TabPanel value={value} index={3}>
                 <BookingTable type='CANCELLED' />
-            </TabPanel> */}
+            </TabPanel>
         </>
     );
 };

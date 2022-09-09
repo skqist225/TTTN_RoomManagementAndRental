@@ -10,6 +10,18 @@ interface IPhoneNumberEditProps {
 }
 
 const PhoneNumberEdit: FC<IPhoneNumberEditProps> = ({ register, defaultValue, errorMessage }) => {
+    let phoneNumberError = null;
+
+    const errors = JSON.parse(errorMessage);
+
+    if (errors && errors.length > 0) {
+        errors.forEach((error: any) => {
+            if (error.phoneNumber) {
+                phoneNumberError = error.phoneNumber;
+            }
+        });
+    }
+
     return (
         <>
             <div className='input-group mb-3'>
@@ -27,8 +39,11 @@ const PhoneNumberEdit: FC<IPhoneNumberEditProps> = ({ register, defaultValue, er
                 />
                 <UserEditError id='phoneNumberError' />
             </div>
-            {errorMessage === "Phone number has already been taken" && (
+            {phoneNumberError === "Phone number has already been taken" && (
                 <FormError message={"Số điện thoại đã được sử dụng"} />
+            )}
+            {phoneNumberError === "Phone number is not valid" && (
+                <FormError message={"Số điện thoại phải là chữ số"} />
             )}
         </>
     );

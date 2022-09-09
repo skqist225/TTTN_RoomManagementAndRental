@@ -84,7 +84,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
 
         if (data) {
             const filesArr = (data as any).roomImages.map((e: any) => {
-                console.log(e);
                 var array = new Uint8Array(e.bytes);
                 const blob = new Blob([array], { type: "image/jpeg" });
                 return new File([blob], e.name, {
@@ -137,9 +136,7 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
                 parent.append(image);
                 // parent.append(photoAction);
             }
-            console.log(modifier);
             fileReaderResult.set(modifier, e.target.result);
-            console.log(fileReaderResult.keys());
         };
 
         fileReader.onloadend = function () {
@@ -214,11 +211,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
         var promise = previewImage(files[0], subImagesContainer, false, photos.length);
 
         promise.done(function () {
-            // setPhotos(photos => {
-            //     console.log(photos);
-            //     return [...photos, files[0]];
-            // });
-            // dispatch(setPhotos(files[0]));
             photos.push(files[0]);
             count++;
 
@@ -259,13 +251,11 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
 
                 var promise = doPreviewImage(files, subImagesContainer);
                 promise.done(function () {
-                    console.log("promise call back");
                     addEmptyImage(files, uploadPhotos, subImagesContainer);
                 });
             }
         } else {
             if (files.length > 0) {
-                console.log("doPreviewImageSecondTime");
                 const singleImageContainer = $(".singleImageContainer");
                 singleImageContainer.remove();
 
@@ -442,7 +432,6 @@ const ManageRoomPhotosPage: FC<IManageRoomPhotosPageProps> = () => {
         photos
             .filter(photo => photo !== undefined)
             .forEach(photo => formData.append("photos", photo));
-        // console.log(formData);
 
         console.log(photos);
 

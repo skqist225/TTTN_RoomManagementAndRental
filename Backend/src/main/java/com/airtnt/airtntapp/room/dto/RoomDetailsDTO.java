@@ -63,7 +63,7 @@ public class RoomDetailsDTO {
 
     @Transient
     @JsonIgnore
-    public static RoomDetailsDTO buildRoomDetailsDTO(Room room, List<ReviewDTO> reviewDTOs,
+    public static RoomDetailsDTO build(Room room, List<ReviewDTO> reviewDTOs,
                                                      List<AmenityRoomDetailsDTO> amenityRoomDetailsDTOs, HostDTO hostDTO,
                                                      List<BookedDateDTO> bookedDates,
                                                      float avgRatings) {

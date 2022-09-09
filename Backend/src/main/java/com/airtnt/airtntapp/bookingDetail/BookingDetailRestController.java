@@ -59,9 +59,9 @@ public class BookingDetailRestController {
         LocalDateTime bookingDateldt = convertDateToLocalDateTime(checkoutDate);
         LocalDateTime currentDate = LocalDateTime.now();
 
-        if (checkinDateldt.isBefore(currentDate) || bookingDateldt.isBefore(currentDate)) {
-            return new BadResponse<BookingDetail>("Invalid checkin date and checkout date as it before current date").response();
-        }
+//        if (checkinDateldt.isBefore(currentDate) || bookingDateldt.isBefore(currentDate)) {
+//            return new BadResponse<BookingDetail>("Invalid checkin date and checkout date as it before current date").response();
+//        }
 
         if (bookingDetailService.isBooked(checkinDate, checkoutDate, roomId)) {
             return new BadResponse<BookingDetail>("You have booked this room").response();

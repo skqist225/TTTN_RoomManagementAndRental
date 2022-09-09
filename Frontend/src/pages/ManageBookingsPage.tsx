@@ -27,7 +27,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button, Stack, TableCell } from "@mui/material";
+import { Stack, TableCell } from "@mui/material";
 import { TablePagination } from "@material-ui/core";
 import MaterialTable from "material-table";
 import { tableIcons } from "./tableIcon";
@@ -35,7 +35,7 @@ import { BookingDetail } from "../types/booking/type_Booking";
 import Toast from "../components/notify/Toast";
 import BookingStatus from "../components/common/BookingStatus";
 import { FilterButton } from "../components/hosting/listings/components";
-import { Col, Slider } from "antd";
+import { Button } from "antd";
 
 interface IManageBookingPageProps {}
 
@@ -81,6 +81,12 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
             dispatch(fetchUserBookings({ ...fetchData, page: parseInt(params.page!) }));
         }
     }, [successMessage]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearApproveAndDenyState());
+        };
+    }, []);
 
     useEffect(() => {
         if (errorMessage) {
@@ -227,6 +233,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
             title: "Thao tác",
             field: "",
             render: (rowData: any) => {
+                console.log(rowData);
                 return (
                     <div style={{ width: "255px" }}>
                         <Stack spacing={2} direction='row'>
@@ -235,7 +242,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                                 onClick={() => {
                                     apprBooking(rowData.id);
                                 }}
-                                disabled={!rowData.canDoAction}
+                                disabled={!rowData.canDoAction || rowData.state == "APPROVED"}
                             >
                                 Phê duyệt
                             </Button>
@@ -244,7 +251,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
                                 onClick={() => {
                                     dropoutBooking(rowData.id);
                                 }}
-                                disabled={!rowData.canDoAction}
+                                disabled={!rowData.canDoAction || rowData.state == "CANCELLED"}
                             >
                                 Từ chối
                             </Button>

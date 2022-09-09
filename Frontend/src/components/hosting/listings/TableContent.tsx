@@ -59,7 +59,7 @@ const TableContent: FC<ITableContentProps> = ({
                             <ColumnHeader columnName='phòng tắm' sortField='bathroomCount' />
                         </th>
                         <th style={{ width: "400px" }}>
-                            <ColumnHeader columnName='vị trí' sortField='location' />
+                            <ColumnHeader columnName='vị trí' />
                         </th>
                         <th data-column='LASTMODIFIED'>
                             <ColumnHeader columnName='sửa đổi lần cuối' sortField='lastModified' />

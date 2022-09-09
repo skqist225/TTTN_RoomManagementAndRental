@@ -37,7 +37,7 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
     }
 
     const [minPrice, setMinPrice] = useState(0);
-    const [maxPrice, setMaxPrice] = useState(100000000);
+    const [maxPrice, setMaxPrice] = useState(50000000);
 
     function onChange(event: CheckboxChangeEvent) {
         if (event.target.checked) {
@@ -166,9 +166,9 @@ const FilterRoomBox: FC<IFilterRoomBoxProps> = () => {
                                     </div> */}
                                     <Div className='flex-center' height='50px'>
                                         <Slider
-                                            defaultValue={[0, 100000000]}
+                                            defaultValue={[0, 50000000]}
                                             min={0}
-                                            max={100000000}
+                                            max={50000000}
                                             step={500000}
                                             range={{ draggableTrack: true }}
                                             style={{ width: "400px" }}

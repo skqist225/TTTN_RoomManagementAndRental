@@ -10,7 +10,7 @@ import { bookingState, fetchUserBookings } from "../../features/booking/bookingS
 
 interface IColumnHeaderProps {
     columnName: string;
-    sortField: string;
+    sortField?: string;
     isSortableHeader?: boolean;
 }
 
