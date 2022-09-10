@@ -1,18 +1,24 @@
 import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
 import api from "../../axios";
-import { setUserToLocalStorage } from "../common";
 import { fetchRooms } from "../room/roomSlice";
 
 export const fetchUsers = createAsyncThunk(
     "user/fetchUsers",
-    async (page, { dispatch, getState, rejectWithValue }) => {
+    async (
+        { page = 1, query = "", roles = "User,Host,Admin", statuses = "1,0" },
+        { dispatch, getState, rejectWithValue }
+    ) => {
         try {
             const {
                 data: { users, totalElements, totalPages },
-            } = await api.get(`/admin/users?page=${page}`);
+            } = await api.get(
+                `/admin/users/listings/${page}?query=${query}&roles=${roles}&statuses=${statuses}`
+            );
 
             return { users, totalElements, totalPages };
-        } catch (error) {}
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
     }
 );
 
@@ -23,7 +29,9 @@ export const fetchUser = createAsyncThunk(
             const { data } = await api.get(`/admin/users/${id}`);
 
             return { data };
-        } catch (error) {}
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
     }
 );
 

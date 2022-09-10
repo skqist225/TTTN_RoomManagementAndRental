@@ -10,14 +10,15 @@ import {
     cancelBooking,
     clearAllFetchData,
     clearApproveAndDenyState,
+    fetchBookingsCount,
     fetchUserBookings,
     setBookingDate,
     setBookingDateMonth,
     setBookingDateYear,
     setTotalFee,
 } from "../features/booking/bookingSlice";
-import { Image } from "../globalStyle";
-import { callToast, getImage, seperateNumber } from "../helpers";
+import { Div, Image } from "../globalStyle";
+import { callToast, getImage } from "../helpers";
 import "./css/manage_booking_page.css";
 
 import $ from "jquery";
@@ -36,12 +37,12 @@ import Toast from "../components/notify/Toast";
 import BookingStatus from "../components/common/BookingStatus";
 import { FilterButton } from "../components/hosting/listings/components";
 import { Button } from "antd";
+import SimpleStatNumber from "../components/booking/SimpleStatNumber";
 
 interface IManageBookingPageProps {}
 
 const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
     const [page, setPage] = useState(0);
-    const [searchText, setSearchText] = useState("");
 
     const dispatch = useDispatch();
     const params = useParams();
@@ -51,14 +52,25 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
         bookings,
         totalElements,
         fetchData,
-        totalPages,
         approveBookingAction: { successMessage, errorMessage },
         cancelBookingAction: { successMessage: cbaSuccessMessage, errorMessage: cbaErrorMessage },
+        countBookingAction: {
+            numberOfApproved,
+            numberOfPending,
+            numberOfCancelled,
+            numberOfAllBookings,
+        },
     } = useSelector(bookingState);
+
+    console.log(numberOfApproved, numberOfPending, numberOfCancelled, numberOfAllBookings);
 
     useEffect(() => {
         dispatch(fetchUserBookings({ ...fetchData, page: parseInt(params.page!) }));
     }, [params.page!]);
+
+    useEffect(() => {
+        dispatch(fetchBookingsCount());
+    }, []);
 
     function handleFindBookingByRoomIdAndName(event: any) {
         setLocalQuery(event.currentTarget.value);
@@ -72,13 +84,10 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
     }
 
     useEffect(() => {
-        dispatch(clearApproveAndDenyState());
-    }, []);
-
-    useEffect(() => {
         if (successMessage) {
             callToast("success", "Duyệt đơn đặt phòng thành công");
             dispatch(fetchUserBookings({ ...fetchData, page: parseInt(params.page!) }));
+            dispatch(fetchBookingsCount());
         }
     }, [successMessage]);
 
@@ -98,6 +107,7 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
         if (cbaSuccessMessage) {
             callToast("success", "Hủy đơn đặt phòng thành công");
             dispatch(fetchUserBookings({ ...fetchData, page: parseInt(params.page!) }));
+            dispatch(fetchBookingsCount());
         }
     }, [cbaSuccessMessage]);
 
@@ -153,18 +163,13 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
         dispatch(setBookingDateYear(value));
     }
 
-    function handleBookingDateChange(event: any) {
-        const { value } = event.currentTarget;
-        enableDeleteButton(value, "bookingDate");
-        dispatch(setBookingDate(value));
-    }
-
     function apprBooking(bookingId: string) {
         dispatch(approveBooking({ bookingId: parseInt(bookingId) }));
     }
 
     function dropoutBooking(bookingId: number) {
         dispatch(cancelBooking({ bookingId: bookingId! }));
+        dispatch(fetchBookingsCount());
     }
 
     const onChange = (value: number) => {
@@ -233,7 +238,6 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
             title: "Thao tác",
             field: "",
             render: (rowData: any) => {
-                console.log(rowData);
                 return (
                     <div style={{ width: "255px" }}>
                         <Stack spacing={2} direction='row'>
@@ -268,145 +272,180 @@ const ManageBookingsPage: FC<IManageBookingPageProps> = () => {
         <>
             <Header includeMiddle={true} excludeBecomeHostAndNavigationHeader={true} />
 
-            <div className='normal-flex' style={{ marginTop: "100px" }}>
-                <div className='listings__search-room'>
-                    <div className='listings__search-icon-container'>
-                        <Image src={getImage("/svg/search.svg")} size='12px' />
-                    </div>
-                    <div className='f1' style={{ marginLeft: "10px" }}>
-                        <input
-                            type='text'
-                            placeholder='Tìm kiếm theo mã đơn, tên khách hàng'
-                            id='listings__search-input'
-                            value={localQuery}
-                            onChange={handleFindBookingByRoomIdAndName}
-                        />
-                    </div>
-                </div>
-                <div>
-                    <FilterButton
-                        dataDropDown='listings__filter-bookingStatus'
-                        title='Trạng thái đặt phòng'
-                        width='300px'
-                        height='300px'
-                        content={
-                            <>
-                                <div className='listings__filter-wrapper'>
-                                    <div style={{ padding: "24px" }} className='f1'>
-                                        <div
-                                            className='normal-flex listings__filter-status-row'
-                                            style={{ marginBottom: "10px" }}
-                                        >
-                                            <div
-                                                style={{ marginRight: "10px" }}
-                                                className='normal-flex'
-                                            >
-                                                <input
-                                                    type='checkbox'
-                                                    className='isCompleteSelected'
-                                                    value='APPROVED'
-                                                />
-                                            </div>
-                                            <BookingStatus
-                                                rowData={{
-                                                    state: "APPROVED",
-                                                }}
-                                            />
-                                        </div>
-                                        <div
-                                            className='normal-flex listings__filter-status-row'
-                                            style={{ marginBottom: "10px" }}
-                                        >
-                                            <div
-                                                style={{ marginRight: "10px" }}
-                                                className='normal-flex'
-                                            >
-                                                <input
-                                                    type='checkbox'
-                                                    className='isCompleteSelected'
-                                                    value='PENDING'
-                                                />
-                                            </div>
-                                            <BookingStatus
-                                                rowData={{
-                                                    state: "PENDING",
-                                                }}
-                                            />
-                                        </div>
-                                        <div
-                                            className='normal-flex listings__filter-status-row'
-                                            style={{ marginBottom: "10px" }}
-                                        >
-                                            <div
-                                                style={{ marginRight: "10px" }}
-                                                className='normal-flex'
-                                            >
-                                                <input
-                                                    type='checkbox'
-                                                    className='isCompleteSelected'
-                                                    value='CANCELLED'
-                                                />
-                                            </div>
-                                            <BookingStatus
-                                                rowData={{
-                                                    state: "CANCELLED",
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        }
-                        footerOf='bookingStatus'
+            <div style={{ marginTop: "100px" }}>
+                <div
+                    className='flex items-center justify-between w-full'
+                    style={{ maxWidth: "1200px", margin: "0 auto" }}
+                >
+                    <SimpleStatNumber
+                        label='Tổng đơn đặt phòng'
+                        type='All'
+                        backgroundColor={`rgb(139 92 246)`}
+                        number={numberOfAllBookings}
+                    />
+                    <SimpleStatNumber
+                        label='Tổng đơn đặt phòng thành công'
+                        type='Approved'
+                        backgroundColor={`rgb(34 197 94)`}
+                        number={numberOfApproved}
+                    />
+                    <SimpleStatNumber
+                        label='Tổng đơn đặt phòng đã hủy'
+                        type='Cancelled'
+                        backgroundColor={`rgb(244 63 94)`}
+                        number={numberOfCancelled}
+                    />
+                    <SimpleStatNumber
+                        label='Tổng đơn đặt phòng chờ duyệt'
+                        type='Pending'
+                        backgroundColor={`rgb(245 158 11)`}
+                        number={numberOfPending}
                     />
                 </div>
-                <div>
-                    {/* <FilterButton
-                        dataDropDown='listings__filter-totalFee'
-                        title='Tổng phí'
-                        width='300px'
-                        height='200px'
-                        content={
-                            <>
-                                <div className='listings__filter-wrapper'>
-                                    <div className='filter-box overflow-hidden'>
-                                        <div className='normal-flex listings__filter-others-row'>
-                                            <Col span={24}>
-                                                <Slider
-                                                    min={0}
-                                                    max={100000000}
-                                                    step={500000}
-                                                    onChange={onChange}
-                                                    tooltipVisible={false}
-                                                    value={fetchData.totalFee!}
-                                                />
-                                            </Col>
-                                        </div>
-                                        <div className='normal-flex listings__filter-others-row'>
+                <div className='normal-flex'>
+                    <div className='listings__search-room'>
+                        <div className='listings__search-icon-container'>
+                            <Image src={getImage("/svg/search.svg")} size='12px' />
+                        </div>
+                        <div className='f1' style={{ marginLeft: "10px" }}>
+                            <input
+                                type='text'
+                                placeholder='Tìm kiếm theo mã đơn, tên khách hàng'
+                                id='listings__search-input'
+                                value={localQuery}
+                                onChange={handleFindBookingByRoomIdAndName}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <FilterButton
+                            dataDropDown='listings__filter-findByMonthAndYear'
+                            title='Tìm kiếm theo tháng và năm'
+                            width='200px'
+                            height='300px'
+                            content={
+                                <>
+                                    <Div className='filter-box' height='80%' padding='24px'>
+                                        <div>
                                             <input
                                                 type='text'
-                                                id='totalFeeInput'
-                                                value={seperateNumber(fetchData.totalFee!)}
-                                                className='form-control'
+                                                placeholder='Tháng'
+                                                className='form-control mb-5'
+                                                id='bookingDateMonthInput'
+                                                pattern='^[1-12]{1,2}$'
+                                                minLength={1}
+                                                maxLength={2}
+                                                value={fetchData.bookingDateMonth}
+                                                onChange={handleMonthChange}
                                             />
                                         </div>
+                                        <div>
+                                            <input
+                                                type='text'
+                                                placeholder='Năm'
+                                                className='form-control'
+                                                id='bookingDateYearInput'
+                                                pattern='^[0-9]+'
+                                                minLength={4}
+                                                maxLength={4}
+                                                value={fetchData.bookingDateYear}
+                                                onChange={handleYearChange}
+                                            />
+                                        </div>
+                                    </Div>
+                                </>
+                            }
+                            footerOf='findByMonthAndYear'
+                        />
+                    </div>
+                    <div>
+                        <FilterButton
+                            dataDropDown='listings__filter-bookingStatus'
+                            title='Trạng thái đặt phòng'
+                            width='300px'
+                            height='300px'
+                            content={
+                                <>
+                                    <div className='listings__filter-wrapper'>
+                                        <div style={{ padding: "24px" }} className='f1'>
+                                            <div
+                                                className='normal-flex listings__filter-status-row'
+                                                style={{ marginBottom: "10px" }}
+                                            >
+                                                <div
+                                                    style={{ marginRight: "10px" }}
+                                                    className='normal-flex'
+                                                >
+                                                    <input
+                                                        type='checkbox'
+                                                        className='isCompleteSelected'
+                                                        value='APPROVED'
+                                                    />
+                                                </div>
+                                                <BookingStatus
+                                                    rowData={{
+                                                        state: "APPROVED",
+                                                    }}
+                                                />
+                                            </div>
+                                            <div
+                                                className='normal-flex listings__filter-status-row'
+                                                style={{ marginBottom: "10px" }}
+                                            >
+                                                <div
+                                                    style={{ marginRight: "10px" }}
+                                                    className='normal-flex'
+                                                >
+                                                    <input
+                                                        type='checkbox'
+                                                        className='isCompleteSelected'
+                                                        value='PENDING'
+                                                    />
+                                                </div>
+                                                <BookingStatus
+                                                    rowData={{
+                                                        state: "PENDING",
+                                                    }}
+                                                />
+                                            </div>
+                                            <div
+                                                className='normal-flex listings__filter-status-row'
+                                                style={{ marginBottom: "10px" }}
+                                            >
+                                                <div
+                                                    style={{ marginRight: "10px" }}
+                                                    className='normal-flex'
+                                                >
+                                                    <input
+                                                        type='checkbox'
+                                                        className='isCompleteSelected'
+                                                        value='CANCELLED'
+                                                    />
+                                                </div>
+                                                <BookingStatus
+                                                    rowData={{
+                                                        state: "CANCELLED",
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </>
-                        }
-                        footerOf='totalFee'
-                    /> */}
-                </div>
-                <div>
-                    <FilterButton
-                        dataDropDown='clearFilter'
-                        title='Xóa toàn bộ bộ lọc'
-                        width=''
-                        height=''
-                        content={<></>}
-                        footerOf=''
-                        haveBox={false}
-                    />
+                                </>
+                            }
+                            footerOf='bookingStatus'
+                        />
+                    </div>
+                    <div>
+                        <FilterButton
+                            dataDropDown='clearFilter'
+                            title='Xóa toàn bộ bộ lọc'
+                            width=''
+                            height=''
+                            content={<></>}
+                            footerOf=''
+                            haveBox={false}
+                        />
+                    </div>
                 </div>
             </div>
             <>

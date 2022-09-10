@@ -1,13 +1,7 @@
 import React, { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import {
-    fetchUserOwnedRoom,
-    roomState,
-    setAmenities,
-    setRoomInfo,
-    setStatus,
-} from "../../features/room/roomSlice";
+import { fetchUserOwnedRoom, roomState } from "../../features/room/roomSlice";
 import { getPageNumber } from "../../helpers";
 
 import $ from "jquery";
@@ -15,11 +9,9 @@ import "./css/filter_footer.css";
 import {
     bookingState,
     fetchUserBookings,
-    setBookingDate,
     setBookingDateMonth,
     setBookingDateYear,
     setIsComplete,
-    setTotalFee,
 } from "../../features/booking/bookingSlice";
 
 interface IFilterFooterProps {
@@ -128,17 +120,6 @@ const FilterFooter: FC<IFilterFooterProps> = ({ footerOf }) => {
                             );
                             break;
                         }
-                        case "bookingDate": {
-                            const bookingDateInput = $("#bookingDateInput").val()!.toString();
-                            dispatch(
-                                fetchUserBookings({
-                                    ...fetchData,
-                                    bookingDate: bookingDateInput,
-                                })
-                            );
-                            setCurrentFilterTitle("bookingDate", bookingDateInput);
-                            break;
-                        }
                         case "bookingStatus": {
                             const statuses = $("input.isCompleteSelected");
                             let isComplete: string[] = [];
@@ -157,20 +138,6 @@ const FilterFooter: FC<IFilterFooterProps> = ({ footerOf }) => {
                                 );
                             }
 
-                            break;
-                        }
-                        case "totalFee": {
-                            const totalFee = $("#totalFeeInput")
-                                .val()!
-                                .toString()
-                                .replace(/,/g, "");
-                            console.log(fetchData);
-                            dispatch(
-                                fetchUserBookings({
-                                    ...fetchData,
-                                    totalFee: parseInt(totalFee),
-                                })
-                            );
                             break;
                         }
                     }
@@ -202,18 +169,8 @@ const FilterFooter: FC<IFilterFooterProps> = ({ footerOf }) => {
                         dispatch(setBookingDateYear(""));
                         break;
                     }
-                    case "bookingDate": {
-                        $("#bookingDateInput").val("");
-                        $(".listings__filter--option.bookingDate").text("Ngày đặt phòng");
-                        dispatch(setBookingDate(""));
-                        break;
-                    }
                     case "bookingStatus": {
-                        dispatch(setIsComplete("0,1,2"));
-                        break;
-                    }
-                    case "totalFee": {
-                        dispatch(setTotalFee(0));
+                        dispatch(setIsComplete("APPROVED,PENDING,CANCELLED"));
                         break;
                     }
                 }

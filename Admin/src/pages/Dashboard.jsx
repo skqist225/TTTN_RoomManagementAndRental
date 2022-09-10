@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     AmenitiesPage,
     AmenityCategoriesPage,
-    BookingDetailsPage,
     BookingsPage,
     CategoriesPage,
     PrivaciesPage,
@@ -35,7 +34,6 @@ import { fetchAmenities, fetchAmenityCategories } from "../features/amenity/amen
 import { fetchRules } from "../features/rule/ruleSlice";
 import { fetchPrivacies } from "../features/privacy/privacySlice";
 import { authState } from "../features/auth/authSlice";
-import { fetchBookingDetails } from "../features/bookingDetail/bookingDetailSlice";
 import SimpleStatNumber from "../components/booking/SimpleStatNumber";
 import StackedBarChart from "../partials/dashboard/DashboardCard09";
 import {
@@ -160,23 +158,15 @@ function Dashboard() {
                 break;
             }
             case "/users": {
-                dispatch(fetchUsers(1));
-                console.log("asd");
+                dispatch(
+                    fetchUsers({
+                        page: 1,
+                    })
+                );
                 break;
-            }
-            case "/bookings/details": {
-                dispatch(fetchBookingDetails(1));
             }
         }
     }, [pathname]);
-
-    useEffect(() => {
-        if (!loading) {
-            if (!user) {
-                // navigate("/login");
-            }
-        }
-    }, [loading]);
 
     const dataSet1 = Array.from({ length: 12 }).fill(0);
     const dataSet2 = Array.from({ length: 12 }).fill(0);
@@ -228,11 +218,6 @@ function Dashboard() {
                                 <BookingsPage />
                             </>
                         )}
-                        {pathname === "/bookings/details" && (
-                            <>
-                                <BookingDetailsPage />
-                            </>
-                        )}
                         {pathname === "/categories" && (
                             <>
                                 <CategoriesPage />
@@ -260,30 +245,8 @@ function Dashboard() {
                         )}
                         {pathname === "/" && (
                             <>
-                                {/* Welcome banner */}
                                 {/* <WelcomeBanner /> */}
 
-                                {/* Dashboard actions */}
-                                <div className='sm:flex sm:justify-between sm:items-center mb-8'>
-                                    {/* Left: Avatars */}
-                                    {/* <DashboardAvatars />
-
-                                    <div className='grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2'>
-                                        <FilterButton />
-                                        <Datepicker />
-                                        <button className='btn bg-indigo-500 hover:bg-indigo-600 text-white'>
-                                            <svg
-                                                className='w-4 h-4 fill-current opacity-50 shrink-0'
-                                                viewBox='0 0 16 16'
-                                            >
-                                                <path d='M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z' />
-                                            </svg>
-                                            <span className='hidden xs:block ml-2'>Add view</span>
-                                        </button>
-                                    </div> */}
-                                </div>
-
-                                {/* Cards */}
                                 <div>
                                     <div className='flex items-center justify-between w-full'>
                                         <SimpleStatNumber

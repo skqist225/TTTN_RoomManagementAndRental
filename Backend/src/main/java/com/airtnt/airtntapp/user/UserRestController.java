@@ -16,6 +16,7 @@ import com.airtnt.airtntapp.user.dto.PostUpdateUserDTO;
 import com.airtnt.airtntapp.user.dto.UserSexDTO;
 import com.airtnt.airtntapp.user.dto.WishlistsDTO;
 import com.airtnt.entity.Address;
+import com.airtnt.entity.BaseEntity;
 import com.airtnt.entity.Booking;
 import com.airtnt.entity.City;
 import com.airtnt.entity.Room;
@@ -107,16 +108,15 @@ public class UserRestController {
         User user = userDetailsImpl.getUser();
 
         return new OkResponse<>(
-                user.getFavRooms().stream().map(favRoom -> favRoom.getId()).collect(Collectors.toList())).response();
+                user.getFavRooms().stream().map(BaseEntity::getId).collect(Collectors.toList())).response();
     }
 
     @GetMapping("wishlists")
-    public ResponseEntity<StandardJSONResponse<WishlistsDTO[]>> fetchWishlists(
+    public ResponseEntity<StandardJSONResponse<List<WishlistsDTO>>> fetchWishlists(
             @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) throws RoomNotFoundException {
         User user = userDetailsImpl.getUser();
 
-        WishlistsDTO[] wishlists = new WishlistsDTO[user.getFavRooms().size()];
-        int i = 0;
+        List<WishlistsDTO>  wishlists = new ArrayList<>();
 
         for (Room r : user.getFavRooms()) {
             WishlistsDTO wlDTO = new WishlistsDTO();
@@ -125,10 +125,11 @@ public class UserRestController {
             wlDTO.setCategory(r.getCategory().getName());
             wlDTO.setPrice(r.getPrice());
             wlDTO.setThumbnail(r.renderThumbnailImage());
-            Room innerRoome = roomService.findById(r.getId());
-            wlDTO.setNumberOfReviews(innerRoome.getNumberOfReviews());
-            wlDTO.setAverageRating(innerRoome.getAverageRatings());
-            wishlists[i++] = wlDTO;
+            Room room = roomService.findById(r.getId());
+            wlDTO.setNumberOfReviews(room.getNumberOfReviews());
+            wlDTO.setAverageRating(room.getAverageRatings());
+
+            wishlists.add(wlDTO);
         }
 
         return new OkResponse<>(wishlists).response();

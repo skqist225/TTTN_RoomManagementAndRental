@@ -7,7 +7,6 @@ import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.error.BadResponse;
 import com.airtnt.airtntapp.response.success.OkResponse;
 import com.airtnt.airtntapp.user.dto.UpdateUserDTO;
-import com.airtnt.airtntapp.user.dto.UserListDTO;
 import com.airtnt.airtntapp.user.dto.UserListResponse;
 import com.airtnt.entity.Address;
 import com.airtnt.entity.City;
@@ -19,7 +18,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +28,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,42 +51,20 @@ public class AdminUserRestController {
     @Value("${env}")
     private String environment;
 
-    @GetMapping("users")
-    public ResponseEntity<StandardJSONResponse<UserListResponse>> getAllUsers(@RequestParam("page") int pageNumber,
-                                                                              @RequestParam(value = "keyword", defaultValue = "", required = false) String keyword) {
-        Page<User> userPages = userService.getAllUsers(pageNumber, keyword);
+    @GetMapping(value = "/users/listings/{page}")
+    public ResponseEntity<StandardJSONResponse<UserListResponse>> listings(
+            @PathVariable("page") Integer page,
+            @RequestParam(name = "roles", required = false, defaultValue = "User,Host,Admin") String roles,
+            @RequestParam(name = "statuses", required = false, defaultValue = "1,0") String statuses,
+            @RequestParam(name = "query", required = false, defaultValue = "") String query) throws ParseException {
+        Map<String, String> filters = new HashMap<>();
+        filters.put("query", query);
+        filters.put("roles", roles);
+        filters.put("statuses", statuses);
 
-        List<UserListDTO> userListDTOs = new ArrayList<>();
-        UserListResponse userListResponse = new UserListResponse();
+        UserListResponse userListResponse = userService.getAllUsers(filters, page);
 
-        for (User user : userPages.getContent()) {
-            userListDTOs.add(UserListDTO.build(user));
-            // redisTemplate.opsForHash().put("ROOM", room.getId().toString(),
-            // RoomListingsDTO.buildRoomListingsDTO(room));
-        }
-
-        // if (redisTemplate.opsForHash().get("TOTAL_PAGES", "TOTAL_PAGES") != null) {
-        // roomListingsDTOs = redisTemplate.opsForHash().values("ROOM");
-
-        // roomsOwnedByUserResponseEntity.setRooms(roomListingsDTOs);
-        // roomsOwnedByUserResponseEntity
-        // .setTotalPages((int) redisTemplate.opsForHash().get("TOTAL_PAGES",
-        // "TOTAL_PAGES"));
-        // roomsOwnedByUserResponseEntity
-        // .setTotalRecords((long) redisTemplate.opsForHash().get("TOTAL_ELS",
-        // "TOTAL_ELS"));
-        // } else {
-
-        // redisTemplate.opsForHash().put("TOTAL_PAGES", "TOTAL_PAGES", (Integer)
-        // roomsPage.getTotalPages());
-        // redisTemplate.opsForHash().put("TOTAL_ELS", "TOTAL_ELS", (Long)
-        // roomsPage.getTotalElements());
-
-        userListResponse.setUsers(userListDTOs);
-        userListResponse.setTotalPages(userPages.getTotalPages());
-        userListResponse.setTotalElements(userPages.getTotalElements());
-
-        return new OkResponse<UserListResponse>(userListResponse).response();
+        return new OkResponse<>(userListResponse).response();
     }
 
     @GetMapping("users/{id}")
@@ -95,7 +72,7 @@ public class AdminUserRestController {
         try {
             User user = userService.findById(id);
 
-            return new OkResponse<User>(user).response();
+            return new OkResponse<>(user).response();
         } catch (UserNotFoundException e) {
             return new BadResponse<User>(e.getMessage()).response();
         }
@@ -104,7 +81,7 @@ public class AdminUserRestController {
     @DeleteMapping("users/{userId}")
     public ResponseEntity<StandardJSONResponse<String>> deleteUser(@PathVariable(value = "userId") Integer userId) {
         try {
-            return new OkResponse<String>(userService.deleteById(userId)).response();
+            return new OkResponse<>(userService.deleteById(userId)).response();
         } catch (UserNotFoundException | VerifiedUserException e) {
             return new BadResponse<String>(e.getMessage()).response();
         }
@@ -117,7 +94,7 @@ public class AdminUserRestController {
             user.setStatus(action.equals("enable"));
             userService.saveUser(user);
 
-            return new OkResponse<String>("Update User Successfully").response();
+            return new OkResponse<>("Update User Successfully").response();
         } catch (UserNotFoundException e) {
             return new BadResponse<String>(e.getMessage()).response();
         }

@@ -114,7 +114,7 @@ const ProgressReviewsPage: FC<IProgressReviewsPageProps> = () => {
                     </div>
                     <section id='reviews__reviews-container'>
                         <div id='reviews__reviews-header' className='normal-flex'>
-                            <div
+                            {/* <div
                                 className='
                             reviews__select-rating
                           flex-center
@@ -123,10 +123,10 @@ const ProgressReviewsPage: FC<IProgressReviewsPageProps> = () => {
                                 data-star='all'
                             >
                                 Tất cả
-                            </div>
-                            {[5, 4, 3, 2, 1].map(value => (
+                            </div> */}
+                            {/* {[5, 4, 3, 2, 1].map(value => (
                                 <Star dataStar={value} key={value} />
-                            ))}
+                            ))} */}
                         </div>
                         <div style={{ marginTop: "20px" }} className='grid-2'>
                             {reviews.map(review => (

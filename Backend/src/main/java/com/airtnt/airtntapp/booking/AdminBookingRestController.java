@@ -1,19 +1,27 @@
 package com.airtnt.airtntapp.booking;
 
-import com.airtnt.airtntapp.booking.dto.*;
+import com.airtnt.airtntapp.booking.dto.BookingListDTO;
+import com.airtnt.airtntapp.booking.dto.CountBookingByMonthInYear;
+import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
+import com.airtnt.airtntapp.booking.dto.RevenueByYearAndStatus;
 import com.airtnt.airtntapp.exception.BookingNotFoundException;
 import com.airtnt.airtntapp.response.StandardJSONResponse;
 import com.airtnt.airtntapp.response.error.BadResponse;
 import com.airtnt.airtntapp.response.success.OkResponse;
-import com.airtnt.entity.Booking;
+import com.airtnt.airtntapp.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/")
@@ -21,23 +29,23 @@ public class AdminBookingRestController {
     @Autowired
     private BookingService bookingService;
 
-    @GetMapping("bookings")
-    public ResponseEntity<StandardJSONResponse<BookingListDTO>> getAllBookings(@RequestParam("page") int page,
-                                                                               @RequestParam(value = "type", defaultValue = "all", required = false) String type) throws ParseException {
-        Page<Booking> bookingsPage = bookingService.getAllBookings(page, type);
+    @GetMapping(value = "/bookings/{page}")
+    public ResponseEntity<StandardJSONResponse<BookingListDTO>> listings(
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+            @PathVariable("page") Integer page,
+            @RequestParam(name = "booking_date_month", required = false, defaultValue = "") String bookingDateMonth,
+            @RequestParam(name = "booking_date_year", required = false, defaultValue = "") String bookingDateYear,
+            @RequestParam(name = "query", required = false, defaultValue = "") String query,
+            @RequestParam(name = "is_complete", required = false, defaultValue = "") String isComplete) throws ParseException {
+        Map<String, String> filters = new HashMap<>();
+        filters.put("query", query);
+        filters.put("isComplete", isComplete);
+        filters.put("bookingDateMonth", bookingDateMonth);
+        filters.put("bookingDateYear", bookingDateYear);
 
-        List<BookingUserOrderDTO> bookingListingsDTOs = new ArrayList<>();
-        BookingListDTO bookingListResponse = new BookingListDTO();
+        BookingListDTO bookings = bookingService.getBookingListByRoomsAdmin(filters, page);
 
-        for (Booking booking : bookingsPage.getContent()) {
-            bookingListingsDTOs.add(BookingUserOrderDTO.build(booking));
-        }
-
-        bookingListResponse.setBookings(bookingListingsDTOs);
-        bookingListResponse.setTotalPages(bookingsPage.getTotalPages());
-        bookingListResponse.setTotalElements(bookingsPage.getTotalElements());
-
-        return new OkResponse<BookingListDTO>(bookingListResponse).response();
+        return new OkResponse<>(bookings).response();
     }
 
     @DeleteMapping("bookings/{bookingid}")
@@ -52,21 +60,21 @@ public class AdminBookingRestController {
 
     @GetMapping("bookings/count")
     public ResponseEntity<StandardJSONResponse<CountBookingDTO>> getBookingState() throws BookingNotFoundException {
-        return new OkResponse<CountBookingDTO>(bookingService.countBookingByState()).response();
+        return new OkResponse<>(bookingService.countBookingByState()).response();
     }
 
     @GetMapping("bookings/countByMonth")
     public ResponseEntity<StandardJSONResponse<CountBookingByMonthInYear>> countBookingByMonth(@RequestParam("year") Integer year)  {
-        return new OkResponse<CountBookingByMonthInYear>(bookingService.countBookingByMonth(year)).response();
+        return new OkResponse<>(bookingService.countBookingByMonth(year)).response();
     }
 
     @GetMapping("bookings/getRevenueByYear")
     public ResponseEntity<StandardJSONResponse<RevenueByYearAndStatus>> getRevenueByYear(@RequestParam("year") String year)  {
-        return new OkResponse<RevenueByYearAndStatus>(bookingService.getRevenueByYear(year)).response();
+        return new OkResponse<>(bookingService.getRevenueByYear(year)).response();
     }
 
     @GetMapping("bookings/getCurrentMonthSale")
     public ResponseEntity<StandardJSONResponse<Long>> getCurrentMonthSale()  {
-        return new OkResponse<Long>(bookingService.getCurrentMonthSale()).response();
+        return new OkResponse<>(bookingService.getCurrentMonthSale()).response();
     }
 }

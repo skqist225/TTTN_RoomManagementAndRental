@@ -10,30 +10,46 @@ import Paper from "@mui/material/Paper";
 import { Stack, TableCell } from "@mui/material";
 import { TablePagination } from "@material-ui/core";
 import { callToast, getImage } from "../../helpers";
-import { Image } from "../../globalStyle";
+import { Div, Image } from "../../globalStyle";
 import { BookingStatus, MyButton } from "../common";
 import MyNumberForMat from "../../utils/MyNumberFormat";
 import {
     approveBooking,
     bookingState,
     cancelBooking,
-    deleteBooking,
-    fetchBookings,
+    fetchAdminUserBookings,
+    fetchBookingsCount,
+    clearApproveAndDenyState,
 } from "../../features/booking/bookingSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "../notify/Toast";
+import SimpleStatNumber from "./SimpleStatNumber";
+import $ from "jquery";
 
-function BookingTable({ type }) {
+function BookingTable() {
     const [page, setPage] = useState(0);
+    const [localQuery, setLocalQuery] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedYear, setSelectedYear] = useState("");
 
     const dispatch = useDispatch();
 
     const {
-        listing: { bookings, totalElements, totalPages, loading },
-        deleteBookingAction: { successMessage, errorMessage },
+        listing: { bookings, totalElements },
+        fetchData,
         cancelBookingAction: { successMessage: cbaSuccessMessage, errorMessage: cbaErrorMessage },
         approveBookingAction: { successMessage: abaSuccessMessage, errorMessage: abaErrorMessage },
+        countBookingAction: {
+            numberOfApproved,
+            numberOfPending,
+            numberOfCancelled,
+            numberOfAllBookings,
+        },
     } = useSelector(bookingState);
+
+    useEffect(() => {
+        dispatch(fetchBookingsCount());
+    }, []);
 
     const handleApprove = bookingid => {
         dispatch(approveBooking({ bookingid }));
@@ -69,6 +85,14 @@ function BookingTable({ type }) {
             render: rowData => <BookingStatus rowData={rowData} />,
         },
         {
+            title: "Booking Date",
+            field: "bookingDate",
+        },
+        {
+            title: "Cancel Date",
+            field: "cancelDate",
+        },
+        {
             title: "Host",
             field: "",
             render: rowData => {
@@ -90,10 +114,8 @@ function BookingTable({ type }) {
         },
         {
             title: "Total Fee",
-            field: "totalFee",
-            render: rowData => (
-                <MyNumberForMat currency='đ' price={rowData.totalFee} removeStayType />
-            ),
+            field: "totalPrice",
+            render: rowData => <MyNumberForMat price={rowData.totalPrice} />,
         },
         {
             title: "Action",
@@ -105,16 +127,17 @@ function BookingTable({ type }) {
                             label='Booking'
                             type='approve'
                             onClick={() => {
-                                handleApprove(rowData.bookingId);
+                                handleApprove(rowData.id);
                             }}
+                            disabled={!rowData.canDoAction || rowData.state == "APPROVED"}
                         />
                         <MyButton
                             label='Booking'
                             type='deny'
                             onClick={() => {
-                                console.log("abc");
-                                handleDeny(rowData.bookingId);
+                                handleDeny(rowData.id);
                             }}
+                            disabled={!rowData.canDoAction || rowData.state == "CANCELLED"}
                         />
                     </Stack>
                 </div>
@@ -123,74 +146,46 @@ function BookingTable({ type }) {
     ];
 
     const handlePageChange = (e, pn) => {
+        setPage(pn);
+
         dispatch(
-            fetchBookings({
+            fetchAdminUserBookings({
                 page: pn + 1,
-                type,
+                query: localQuery,
+                bookingDateMonth: selectedMonth,
+                bookingDateYear: selectedYear,
+                isComplete:
+                    getSelectedState().length > 0
+                        ? getSelectedState().join(",")
+                        : "APPROVED,PENDING,CANCELLED",
             })
         );
-        setPage(pn);
     };
 
     useEffect(() => {
-        if (type === "ALL") {
-            dispatch(
-                fetchBookings({
-                    page: 1,
-                    type,
-                })
-            );
-        } else if (type === "APPROVED") {
-            dispatch(
-                fetchBookings({
-                    page: 1,
-                    type,
-                })
-            );
-        } else if (type === "PENDING") {
-            dispatch(
-                fetchBookings({
-                    page: 1,
-                    type,
-                })
-            );
-        } else {
-            dispatch(
-                fetchBookings({
-                    page: 1,
-                    type,
-                })
-            );
-        }
-    }, [type]);
-
-    useEffect(() => {
-        if (successMessage) {
-            callToast("success", successMessage);
-            dispatch(
-                fetchBookings({
-                    page: page + 1,
-                    type,
-                })
-            );
-        }
-    }, [successMessage]);
-
-    useEffect(() => {
-        if (errorMessage) {
-            callToast("error", errorMessage);
-        }
-    }, [errorMessage]);
+        dispatch(
+            fetchAdminUserBookings({
+                page: 1,
+            })
+        );
+    }, []);
 
     useEffect(() => {
         if (cbaSuccessMessage) {
             callToast("success", cbaSuccessMessage);
             dispatch(
-                fetchBookings({
+                fetchAdminUserBookings({
                     page: page + 1,
-                    type,
+                    query: localQuery,
+                    bookingDateMonth: selectedMonth,
+                    bookingDateYear: selectedYear,
+                    isComplete:
+                        getSelectedState().length > 0
+                            ? getSelectedState().join(",")
+                            : "APPROVED,PENDING,CANCELLED",
                 })
             );
+            dispatch(fetchBookingsCount());
         }
     }, [cbaSuccessMessage]);
 
@@ -204,11 +199,18 @@ function BookingTable({ type }) {
         if (abaSuccessMessage) {
             callToast("success", abaSuccessMessage);
             dispatch(
-                fetchBookings({
+                fetchAdminUserBookings({
                     page: page + 1,
-                    type,
+                    query: localQuery,
+                    bookingDateMonth: selectedMonth,
+                    bookingDateYear: selectedYear,
+                    isComplete:
+                        getSelectedState().length > 0
+                            ? getSelectedState().join(",")
+                            : "APPROVED,PENDING,CANCELLED",
                 })
             );
+            dispatch(fetchBookingsCount());
         }
     }, [abaSuccessMessage]);
 
@@ -218,8 +220,207 @@ function BookingTable({ type }) {
         }
     }, [abaErrorMessage]);
 
+    useEffect(() => {
+        return () => {
+            dispatch(clearApproveAndDenyState());
+        };
+    }, []);
+
+    function handleMonthChange(event) {
+        const { value } = event.currentTarget;
+        setSelectedMonth(value);
+    }
+
+    function handleYearChange(event) {
+        const { value } = event.currentTarget;
+        setSelectedYear(value);
+    }
+
+    function getSelectedState() {
+        const statuses = $("input.isCompleteSelected");
+        let isComplete = [];
+        statuses.each(function () {
+            if ($(this).prop("checked")) {
+                isComplete.push($(this).val());
+            }
+        });
+
+        return isComplete;
+    }
+
     return (
         <>
+            <div className='flex items-center justify-between w-full'>
+                <SimpleStatNumber
+                    label='Total Bookings'
+                    type='All'
+                    backgroundColor={`bg-violet-500`}
+                    number={numberOfAllBookings}
+                />
+                <SimpleStatNumber
+                    label='Approved Bookings'
+                    type='Approved'
+                    backgroundColor={`bg-green-500`}
+                    number={numberOfApproved}
+                />
+                <SimpleStatNumber
+                    label='Pending Bookings'
+                    type='Pending'
+                    backgroundColor={`bg-amber-500`}
+                    number={numberOfCancelled}
+                />
+                <SimpleStatNumber
+                    label='Cancelled Bookings'
+                    type='Cancelled'
+                    backgroundColor={`bg-rose-500`}
+                    number={numberOfPending}
+                />
+            </div>
+            <div className='normal-flex my-5 items-center justify-between'>
+                <div className='listings__search-room'>
+                    <div className='f1' style={{ marginLeft: "10px" }}>
+                        <input
+                            type='text'
+                            placeholder='id, customer'
+                            id='listings__search-input'
+                            value={localQuery}
+                            onChange={event => {
+                                setLocalQuery(event.target.value);
+                            }}
+                        />
+                    </div>
+                </div>
+                <div>
+                    <Div className='filter-box' height='80%' padding='24px'>
+                        <div>
+                            <input
+                                type='text'
+                                placeholder='Tháng'
+                                className='form-control mb-5'
+                                id='bookingDateMonthInput'
+                                pattern='^[1-12]{1,2}$'
+                                minLength={1}
+                                maxLength={2}
+                                value={selectedMonth}
+                                onChange={handleMonthChange}
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type='text'
+                                placeholder='Năm'
+                                className='form-control'
+                                id='bookingDateYearInput'
+                                pattern='^[0-9]+'
+                                minLength={4}
+                                maxLength={4}
+                                value={selectedYear}
+                                onChange={handleYearChange}
+                            />
+                        </div>
+                    </Div>
+                </div>
+                <div>
+                    <div className='listings__filter-wrapper'>
+                        <div style={{ padding: "24px" }} className='f1'>
+                            <div
+                                className='normal-flex listings__filter-status-row'
+                                style={{ marginBottom: "10px" }}
+                            >
+                                <div style={{ marginRight: "10px" }} className='normal-flex'>
+                                    <input
+                                        type='checkbox'
+                                        className='isCompleteSelected'
+                                        value='APPROVED'
+                                    />
+                                </div>
+                                <BookingStatus
+                                    rowData={{
+                                        state: "APPROVED",
+                                    }}
+                                />
+                            </div>
+                            <div
+                                className='normal-flex listings__filter-status-row'
+                                style={{ marginBottom: "10px" }}
+                            >
+                                <div style={{ marginRight: "10px" }} className='normal-flex'>
+                                    <input
+                                        type='checkbox'
+                                        className='isCompleteSelected'
+                                        value='PENDING'
+                                    />
+                                </div>
+                                <BookingStatus
+                                    rowData={{
+                                        state: "PENDING",
+                                    }}
+                                />
+                            </div>
+                            <div
+                                className='normal-flex listings__filter-status-row'
+                                style={{ marginBottom: "10px" }}
+                            >
+                                <div style={{ marginRight: "10px" }} className='normal-flex'>
+                                    <input
+                                        type='checkbox'
+                                        className='isCompleteSelected'
+                                        value='CANCELLED'
+                                    />
+                                </div>
+                                <BookingStatus
+                                    rowData={{
+                                        state: "CANCELLED",
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className='flex items-center'>
+                    <div className='mr-2'>
+                        <MyButton
+                            type='search'
+                            onClick={() => {
+                                dispatch(
+                                    fetchAdminUserBookings({
+                                        page: page + 1,
+                                        query: localQuery,
+                                        bookingDateMonth: selectedMonth,
+                                        bookingDateYear: selectedYear,
+                                        isComplete:
+                                            getSelectedState().length > 0
+                                                ? getSelectedState().join(",")
+                                                : "APPROVED,PENDING,CANCELLED",
+                                    })
+                                );
+                            }}
+                        />
+                    </div>
+                    <MyButton
+                        type='clearFilter'
+                        onClick={() => {
+                            setLocalQuery("");
+                            setPage(0);
+                            setSelectedMonth("");
+                            setSelectedYear("");
+
+                            const statuses = $("input.isCompleteSelected");
+                            statuses.each(function () {
+                                if ($(this).prop("checked")) {
+                                    $(this).prop("checked", false);
+                                }
+                            });
+
+                            dispatch(
+                                fetchAdminUserBookings({
+                                    page: page + 1,
+                                })
+                            );
+                        }}
+                    />
+                </div>
+            </div>
             <MaterialTable
                 title={
                     <>
@@ -237,15 +438,21 @@ function BookingTable({ type }) {
                         fontFamily: "verdana",
                     },
                     actionsColumnIndex: -1,
-                    pageSizeOptions: [10],
                     pageSize: 10,
-                    exportButton: true,
+                    exportButton: {
+                        pdf: true,
+                        csv: false,
+                    },
+                    search: false,
+                    exportAllData: true, // optional
+                    toolbar: true,
                 }}
                 components={{
                     Pagination: _ => (
                         <TablePagination
                             onChangePage={handlePageChange}
                             rowsPerPage={10}
+                            rowsPerPageOptions={[]}
                             page={page}
                             count={totalElements}
                         />
@@ -266,7 +473,7 @@ function BookingTable({ type }) {
                                                         <TableCell>Total Fee</TableCell>
                                                         <TableCell>Checkin Date</TableCell>
                                                         <TableCell>Checkout Date</TableCell>
-                                                        <TableCell>Action</TableCell>
+                                                        <TableCell>Review</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -313,7 +520,28 @@ function BookingTable({ type }) {
                                                                     {" "}
                                                                     {bookingDetail.checkoutDate}
                                                                 </TableCell>
-                                                                <TableCell></TableCell>
+                                                                <TableCell>
+                                                                    {bookingDetail.review && (
+                                                                        <span>
+                                                                            {
+                                                                                bookingDetail.review
+                                                                                    .comment
+                                                                            }
+                                                                            &nbsp; (
+                                                                            {Math.floor(
+                                                                                bookingDetail.review
+                                                                                    .finalRating
+                                                                            )}
+                                                                            <Image
+                                                                                src={getImage(
+                                                                                    "/svg/yellowstar.svg"
+                                                                                )}
+                                                                                size='20px'
+                                                                            />
+                                                                            )
+                                                                        </span>
+                                                                    )}
+                                                                </TableCell>
                                                             </TableRow>
                                                         );
                                                     })}

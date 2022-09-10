@@ -226,66 +226,64 @@ const RoomsPage = () => {
                     </div>
                 </div>
                 <div>
-                    <div>
-                        <div className='listings__filter-wrapper'>
-                            <div style={{ padding: "24px" }} className='f1'>
-                                <div
-                                    className='normal-flex listings__filter-status-row'
-                                    style={{ marginBottom: "10px" }}
-                                >
-                                    <div style={{ marginRight: "10px" }} className='normal-flex'>
-                                        <input
-                                            type='checkbox'
-                                            className='isCompleteSelected'
-                                            value='1'
-                                        />
+                    <div className='listings__filter-wrapper'>
+                        <div style={{ padding: "24px" }} className='f1'>
+                            <div
+                                className='normal-flex listings__filter-status-row'
+                                style={{ marginBottom: "10px" }}
+                            >
+                                <div style={{ marginRight: "10px" }} className='normal-flex'>
+                                    <input
+                                        type='checkbox'
+                                        className='isCompleteSelected'
+                                        value='1'
+                                    />
+                                </div>
+                                <div className='normal-flex'>
+                                    <div className='mr-10'>
+                                        <svg
+                                            viewBox='0 0 16 16'
+                                            xmlns='http://www.w3.org/2000/svg'
+                                            style={{
+                                                display: "block",
+                                                height: "16px",
+                                                width: "16px",
+                                                fill: "#008a05",
+                                            }}
+                                            aria-hidden='true'
+                                            role='presentation'
+                                            focusable='false'
+                                        >
+                                            <path d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm3.159 4.869L6.67 9.355 4.42 7.105 3.289 8.236 6.67 11.62 12.291 6z'></path>
+                                        </svg>
                                     </div>
-                                    <div className='normal-flex'>
-                                        <div className='mr-10'>
-                                            <svg
-                                                viewBox='0 0 16 16'
-                                                xmlns='http://www.w3.org/2000/svg'
-                                                style={{
-                                                    display: "block",
-                                                    height: "16px",
-                                                    width: "16px",
-                                                    fill: "#008a05",
-                                                }}
-                                                aria-hidden='true'
-                                                role='presentation'
-                                                focusable='false'
-                                            >
-                                                <path d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zm3.159 4.869L6.67 9.355 4.42 7.105 3.289 8.236 6.67 11.62 12.291 6z'></path>
-                                            </svg>
-                                        </div>
-                                        <div>Available</div>
-                                    </div>
+                                    <div>Available</div>
+                                </div>
+                            </div>
+                            <div
+                                className='normal-flex listings__filter-status-row'
+                                style={{ marginBottom: "10px" }}
+                            >
+                                <div style={{ marginRight: "10px" }} className='normal-flex'>
+                                    <input
+                                        type='checkbox'
+                                        className='isCompleteSelected'
+                                        value='0'
+                                    />
                                 </div>
                                 <div
-                                    className='normal-flex listings__filter-status-row'
-                                    style={{ marginBottom: "10px" }}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                    }}
                                 >
-                                    <div style={{ marginRight: "10px" }} className='normal-flex'>
-                                        <input
-                                            type='checkbox'
-                                            className='isCompleteSelected'
-                                            value='0'
-                                        />
-                                    </div>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <img
-                                            src={getImage("/svg/reddot.svg")}
-                                            width='10px'
-                                            height='10px'
-                                            className='mr-10'
-                                        />
-                                        <span>Unavailable</span>
-                                    </div>
+                                    <img
+                                        src={getImage("/svg/reddot.svg")}
+                                        width='10px'
+                                        height='10px'
+                                        className='mr-10'
+                                    />
+                                    <span>Unavailable</span>
                                 </div>
                             </div>
                         </div>

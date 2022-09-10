@@ -26,30 +26,29 @@ function MyButton(props) {
             break;
         }
         case "delete": {
-            // label = `Delete ${label}`;
             buttonClassName = "bg-rose-500 hover:bg-rose-500";
             buttonDisableClassName = "bg-rose-200 hover:bg-rose-200";
             break;
         }
         case "disable": {
-            // label = `Delete ${label}`;
             buttonClassName = "bg-rose-500 hover:bg-rose-500";
             buttonDisableClassName = "bg-rose-200 hover:bg-rose-200";
             break;
         }
         case "enable": {
-            // label = `Delete ${label}`;
             buttonClassName = "bg-green-500 hover:bg-green-500";
             buttonDisableClassName = "bg-green-200 hover:bg-green-200";
             break;
         }
         case "deny": {
-            // label = `Delete ${label}`;
-            buttonClassName = "bg-rose-500 hover:bg-rose-500";
+            if (disabled) {
+                buttonDisableClassName = "bg-rose-200 hover:bg-rose-200";
+            } else {
+                buttonClassName = "bg-rose-500 hover:bg-rose-500";
+            }
             break;
         }
         case "edit": {
-            // label = `Add ${label}`;
             buttonClassName = "bg-blue-500 hover:bg-blue-500";
             break;
         }
@@ -74,8 +73,11 @@ function MyButton(props) {
             break;
         }
         case "approve": {
-            // label = `Add ${label}`;
-            buttonClassName = "bg-green-600 hover:bg-green-600";
+            if (disabled) {
+                buttonDisableClassName = "bg-green-200 hover:bg-green-200";
+            } else {
+                buttonClassName = "bg-green-500 hover:bg-green-500";
+            }
             break;
         }
         case "next": {

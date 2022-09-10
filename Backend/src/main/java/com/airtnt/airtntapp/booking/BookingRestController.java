@@ -3,6 +3,7 @@ package com.airtnt.airtntapp.booking;
 import com.airtnt.airtntapp.booking.dto.BookingDTO;
 import com.airtnt.airtntapp.booking.dto.BookingListDTO;
 import com.airtnt.airtntapp.booking.dto.BookingUserOrderDTO;
+import com.airtnt.airtntapp.booking.dto.CountBookingDTO;
 import com.airtnt.airtntapp.booking.dto.CreateBookingDTO;
 import com.airtnt.airtntapp.booking.dto.CreateReviewDTO;
 import com.airtnt.airtntapp.booking.dto.TransferToPendingBookingDTO;
@@ -108,19 +109,20 @@ public class BookingRestController {
         List<Integer> roomIds = roomService.getRoomIdByHost(host);
 
         Map<String, String> filters = new HashMap<>();
-        filters.put("sortField", sortField);
-        filters.put("sortDir", sortDir);
         filters.put("query", query);
         filters.put("isComplete", isComplete);
-        filters.put("bookingDate", bookingDate);
         filters.put("bookingDateMonth", bookingDateMonth);
         filters.put("bookingDateYear", bookingDateYear);
-        filters.put("totalFee", totalFee);
 
         BookingListDTO bookings = bookingService.getBookingListByRooms(roomIds, filters, page, host.getId());
 
         return new OkResponse<>(bookings).response();
+    }
 
+    @GetMapping("count")
+    public ResponseEntity<StandardJSONResponse<CountBookingDTO>> getBookingState( @AuthenticationPrincipal UserDetailsImpl userDetailsImpl) throws BookingNotFoundException {
+        User host = userDetailsImpl.getUser();
+        return new OkResponse<>(bookingService.countBookingByState(host.getId())).response();
     }
 
     @PutMapping(value = "/{bookingId}/host/canceled")

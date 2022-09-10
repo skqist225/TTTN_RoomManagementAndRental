@@ -135,10 +135,21 @@ public class BookingService {
         return new CountBookingDTO(numberOfApproved, numberOfPending, numberOfCancelled, countAllBookings());
     }
 
+    public CountBookingDTO countBookingByState(Integer hostId) {
+        Integer numberOfApproved = bookingRepository.getNumberOfBookingsOfHost(hostId, "APPROVED");
+        Integer numberOfPending = bookingRepository.getNumberOfBookingsOfHost(hostId, "PENDING");
+        Integer numberOfCancelled = bookingRepository.getNumberOfBookingsOfHost(hostId, "CANCELLED");
+
+        System.out.println("numberOfApproved" + numberOfApproved);
+        System.out.println(numberOfPending);
+        System.out.println(numberOfCancelled);
+
+        return new CountBookingDTO(numberOfApproved, numberOfPending, numberOfCancelled, numberOfApproved + numberOfPending + numberOfCancelled);
+    }
+
     public Integer countAllBookings() {
         return bookingRepository.countAllBooking();
     }
-
 
     public CountBookingByMonthInYear countBookingByMonth(Integer year) {
 
@@ -239,13 +250,11 @@ public class BookingService {
         LocalDateTime cancelDate = LocalDateTime.now();
 
         // if user sent request is not host of the room
-        if (!user.getId().equals(canceledBooking.getBookingDetails().iterator().next().getRoom().getHost().getId()))
-            throw new ForbiddenException("You are not the host of the room");
+//        if (!user.getId().equals(canceledBooking.getBookingDetails().iterator().next().getRoom().getHost().getId())) {
+//            throw new ForbiddenException("You are not the host of the room");
+//        }
 
-        float totalFee = canceledBooking.getBookingDetails().stream().reduce(0f, (subtotal, bookingDetail) -> {
-            return subtotal + bookingDetail.getTotalFee();
-        }, Float::sum);
-
+        float totalFee = canceledBooking.getBookingDetails().stream().reduce(0f, (subtotal, bookingDetail) -> subtotal + bookingDetail.getTotalFee(), Float::sum);
 
         canceledBooking.setCancelDate(cancelDate);
         canceledBooking.setState(Status.CANCELLED);
@@ -298,12 +307,11 @@ public class BookingService {
         return bookingRepository.save(canceledBooking);
     }
 
-    public BookingListDTO getBookingListByRooms(List<Integer> roomIds, Map<String, String> filters, int page, Integer hostId) {
-        String query = filters.get("query");
+    public BookingListDTO getBookingListByRoomsAdmin(Map<String, String> filters, int page) {
+        String searchQuery = filters.get("query");
         String isCompleteStr = filters.get("isComplete");
         String bookingDateYear = filters.get("bookingDateYear");
         String bookingDateMonth = filters.get("bookingDateMonth");
-        Float totalFee = Float.parseFloat(filters.get("totalFee"));
 
         Sort sort = Sort.by("id").descending();
         Pageable pageable = PageRequest.of(page - 1, MAX_BOOKING_PER_FETCH_BY_HOST, sort);
@@ -319,11 +327,8 @@ public class BookingService {
         Expression<String> customerLastName = root.get("customer").get("lastName");
         Expression<String> bookingDate = root.get("bookingDate");
         Expression<Status> state = root.get("state");
-        Join<Booking, BookingDetail> joinOptions = root.join("bookingDetails", JoinType.LEFT);
 
-        predicates.add(criteriaBuilder.and(joinOptions.get("room").get("id").in(roomIds)));
-
-        if (!StringUtils.isEmpty(query)) {
+        if (!StringUtils.isEmpty(searchQuery)) {
             Expression<String> wantedQueryField = criteriaBuilder.concat(bookingId, " ");
             wantedQueryField = criteriaBuilder.concat(wantedQueryField, customerFirstName);
             wantedQueryField = criteriaBuilder.concat(wantedQueryField, " ");
@@ -331,7 +336,7 @@ public class BookingService {
             wantedQueryField = criteriaBuilder.concat(wantedQueryField, " ");
             wantedQueryField = criteriaBuilder.concat(wantedQueryField, bookingDate);
 
-            predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + query + "%")));
+            predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + searchQuery + "%")));
         }
 
         List<Status> bookingStatuses = new ArrayList<>();
@@ -351,70 +356,122 @@ public class BookingService {
             predicates.add(criteriaBuilder.and(state.in(bookingStatuses)));
         }
 
+        if (!StringUtils.isEmpty(bookingDateMonth) && !StringUtils.isEmpty(bookingDateYear)) {
+            predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+                    criteriaBuilder.function("MONTH", Integer.class, root.get("bookingDate")),
+                    bookingDateMonth)));
+            predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+                    criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
+                    bookingDateYear)));
+        } else if (!StringUtils.isEmpty(bookingDateMonth)) {
+            predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+                    criteriaBuilder.function("MONTH", Integer.class, root.get("bookingDate")),
+                    bookingDateMonth)));
+        } else if (!StringUtils.isEmpty(bookingDateYear)) {
+            predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+                    criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
+                    bookingDateYear)));
+        }
 
-//                if (!StringUtils.isEmpty(bookingDateMonth) && !StringUtils.isEmpty(bookingDateYear)) {
-//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
-//                            criteriaBuilder.function("MONTH", Integer.class, root.get("bookingDate")),
-//                            bookingDateMonth)));
-//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
-//                            criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
-//                            bookingDateYear)));
-//                } else if (!StringUtils.isEmpty(bookingDateMonth)) {
-//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
-//                            criteriaBuilder.function("MONTH", Integer.class, root.get("bookingDate")),
-//                            bookingDateMonth)));
-//                } else if (!StringUtils.isEmpty(bookingDateYear)) {
-//                    predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
-//                            criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
-//                            bookingDateYear)));
+        criteriaQuery
+                .where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])))
+                .orderBy(criteriaBuilder.desc(root.get("id")));
 
+        TypedQuery<Booking> typedQuery = entityManager.createQuery(criteriaQuery);
+        int totalRows = typedQuery.getResultList().size();
+        typedQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        typedQuery.setMaxResults(pageable.getPageSize());
 
-//
+        Page<Booking> result = new PageImpl<>(typedQuery.getResultList(), pageable, totalRows);
 
-//        CriteriaBuilder bdCriteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<BookingDetail> bdCriteriaQuery = bdCriteriaBuilder.createQuery(BookingDetail.class);
-//        Root<BookingDetail> bdRoot = bdCriteriaQuery.from(BookingDetail.class);
-//
-//        Expression<Float> roomPrice = bdRoot.get("room").get("price");
-//        Expression<Float> cleanFee = bdRoot.get("cleanFee");
-//        Expression<Float> siteFee = bdRoot.get("siteFee");
-//
-//        Expression<String> second = new UnitExpression(null, String.class, "SECOND");
-//        Expression<Float> numberOfDays = bdCriteriaBuilder.function("timestampdiff", Integer.class, second,
-//                bdRoot.get("checkinDate"), bdRoot.get("checkoutDate")).as(Float.class);
-//        Expression<Float> roomFee = bdCriteriaBuilder.prod(numberOfDays, roomPrice);
-//        Expression<Float> totalPrice = bdCriteriaBuilder.sum(bdCriteriaBuilder.sum(roomFee, siteFee), cleanFee);
+        List<BookingUserOrderDTO> bookingListDTOs = new ArrayList<>();
+        for (Booking b : result.getContent()) {
+            bookingListDTOs.add(BookingUserOrderDTO.build(b));
+        }
 
-//        bdCriteriaQuery.select(bdCriteriaBuilder.construct(BookingDetailSum.class,
-//                bdRoot.get("booking").get("id"),
-//                bdCriteriaBuilder.sum(bdRoot.get("siteFee")),
-//                bdCriteriaBuilder.sum(bdRoot.get("cleanFee")),
-//                bdCriteriaBuilder.sum(totalPrice)
-//                )
-//        );
+        return new BookingListDTO(bookingListDTOs, result.getTotalElements(), result.getTotalPages());
+    }
 
-//        Expression<Float> roomPrice = joinOptions.get("room").get("price");
-//        Expression<Float> cleanFee = joinOptions.get("cleanFee");
-//        Expression<Float> siteFee = joinOptions.get("siteFee");
-//
-//        Expression<String> second = new UnitExpression(null, String.class, "SECOND");
-//        Expression<Float> numberOfDays = criteriaBuilder.function("datediff", Integer.class, second,
-//                joinOptions.get("checkoutDate"), joinOptions.get("checkinDate")).as(Float.class);
-//        Expression<Float> roomFee = criteriaBuilder.prod(numberOfDays, roomPrice);
-//        Expression<Float> totalPrice = criteriaBuilder.sum(criteriaBuilder.sum(roomFee, siteFee), cleanFee);
+    public BookingListDTO getBookingListByRooms(List<Integer> roomIds, Map<String, String> filters, int page, Integer hostId) {
+        String searchQuery = filters.get("query");
+        String isCompleteStr = filters.get("isComplete");
+        String bookingDateYear = filters.get("bookingDateYear");
+        String bookingDateMonth = filters.get("bookingDateMonth");
 
-//        predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(totalPrice, totalFee)));
+        Sort sort = Sort.by("id").descending();
+        Pageable pageable = PageRequest.of(page - 1, MAX_BOOKING_PER_FETCH_BY_HOST, sort);
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Booking> criteriaQuery = criteriaBuilder.createQuery(Booking.class);
+        Root<Booking> root = criteriaQuery.from(Booking.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        Expression<String> bookingId = root.get("id");
+        Expression<String> customerFirstName = root.get("customer").get("firstName");
+        Expression<String> customerLastName = root.get("customer").get("lastName");
+        Expression<String> bookingDate = root.get("bookingDate");
+        Expression<Status> state = root.get("state");
+        Join<Booking, BookingDetail> joinOptions = root.join("bookingDetails", JoinType.LEFT);
+
+        predicates.add(criteriaBuilder.and(joinOptions.get("room").get("id").in(roomIds)));
+
+        if (!StringUtils.isEmpty(searchQuery)) {
+            Expression<String> wantedQueryField = criteriaBuilder.concat(bookingId, " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, customerFirstName);
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, customerLastName);
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, " ");
+            wantedQueryField = criteriaBuilder.concat(wantedQueryField, bookingDate);
+
+            predicates.add(criteriaBuilder.and(criteriaBuilder.like(wantedQueryField, "%" + searchQuery + "%")));
+        }
+
+        List<Status> bookingStatuses = new ArrayList<>();
+        if (isCompleteStr.split(",").length > 0) {
+            for (String status : isCompleteStr.split(",")) {
+                if (Objects.equals(status, "APPROVED")) {
+                    bookingStatuses.add(Status.APPROVED);
+                } else if (Objects.equals(status, "PENDING")) {
+                    bookingStatuses.add(Status.PENDING);
+                } else {
+                    bookingStatuses.add(Status.CANCELLED);
+                }
+            }
+        }
+
+        if (bookingStatuses.size() > 0) {
+            predicates.add(criteriaBuilder.and(state.in(bookingStatuses)));
+        }
+
+        if (!StringUtils.isEmpty(bookingDateMonth) && !StringUtils.isEmpty(bookingDateYear)) {
+            predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+                    criteriaBuilder.function("MONTH", Integer.class, root.get("bookingDate")),
+                    bookingDateMonth)));
+            predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+                    criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
+                    bookingDateYear)));
+        } else if (!StringUtils.isEmpty(bookingDateMonth)) {
+            predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+                    criteriaBuilder.function("MONTH", Integer.class, root.get("bookingDate")),
+                    bookingDateMonth)));
+        } else if (!StringUtils.isEmpty(bookingDateYear)) {
+            predicates.add(criteriaBuilder.and(criteriaBuilder.equal(
+                    criteriaBuilder.function("YEAR", Integer.class, root.get("bookingDate")),
+                    bookingDateYear)));
+        }
+
         criteriaQuery
                 .where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])))
                 .orderBy(criteriaBuilder.desc(root.get("id")))
                 .groupBy(joinOptions.get("booking").get("id"));
 
-        TypedQuery<Booking> query2 = entityManager.createQuery(criteriaQuery);
-        int totalRows = query2.getResultList().size();
-        query2.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
-        query2.setMaxResults(pageable.getPageSize());
+        TypedQuery<Booking> typedQuery = entityManager.createQuery(criteriaQuery);
+        int totalRows = typedQuery.getResultList().size();
+        typedQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        typedQuery.setMaxResults(pageable.getPageSize());
 
-        Page<Booking> result = new PageImpl<>(query2.getResultList(), pageable, totalRows);
+        Page<Booking> result = new PageImpl<>(typedQuery.getResultList(), pageable, totalRows);
 
         List<BookingUserOrderDTO> bookingListDTOs = new ArrayList<>();
         for (Booking b : result.getContent()) {

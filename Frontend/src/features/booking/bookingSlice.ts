@@ -18,17 +18,7 @@ interface IFetchUserBookings {
 export const fetchUserBookings = createAsyncThunk(
     "booking/fetchUserBookings",
     async (
-        {
-            page,
-            query = "",
-            bookingDateMonth,
-            bookingDateYear,
-            bookingDate,
-            isComplete,
-            totalFee,
-            sortField = "bookingDate",
-            sortDir = "desc",
-        }: IFetchUserBookings,
+        { page, query = "", bookingDateMonth, bookingDateYear, isComplete }: IFetchUserBookings,
         { dispatch, getState, rejectWithValue }
     ) => {
         try {
@@ -36,50 +26,50 @@ export const fetchUserBookings = createAsyncThunk(
             const state = getState() as RootState;
             const { fetchData } = state.booking;
 
-            // if (
-            //     (bookingDateMonth && bookingDateYear) ||
-            //     (fetchData.bookingDateMonth && fetchData.bookingDateYear)
-            // ) {
-            //     fetchUrl += `&booking_date_month=${
-            //         bookingDateMonth || fetchData.bookingDateMonth
-            //     }&booking_date_year=${bookingDateYear || fetchData.bookingDateYear}`;
-            //     dispatch(setBookingDateMonth(bookingDateMonth || fetchData.bookingDateMonth));
-            //     dispatch(setBookingDateYear(bookingDateYear || fetchData.bookingDateYear));
-            // } else if (bookingDateMonth || fetchData.bookingDateMonth) {
-            //     fetchUrl += `&booking_date_month=${bookingDateMonth || fetchData.bookingDateMonth}`;
-            //     dispatch(setBookingDateMonth(bookingDateMonth || fetchData.bookingDateMonth));
-            // } else if (bookingDateYear || fetchData.bookingDateYear) {
-            //     fetchUrl += `&booking_date_year=${bookingDateYear || fetchData.bookingDateYear}`;
-            //     dispatch(setBookingDateYear(bookingDateYear || fetchData.bookingDateYear));
-            // }
+            if (
+                (bookingDateMonth && bookingDateYear) ||
+                (fetchData.bookingDateMonth && fetchData.bookingDateYear)
+            ) {
+                fetchUrl += `&booking_date_month=${
+                    bookingDateMonth || fetchData.bookingDateMonth
+                }&booking_date_year=${bookingDateYear || fetchData.bookingDateYear}`;
+                dispatch(setBookingDateMonth(bookingDateMonth || fetchData.bookingDateMonth));
+                dispatch(setBookingDateYear(bookingDateYear || fetchData.bookingDateYear));
+            } else if (bookingDateMonth || fetchData.bookingDateMonth) {
+                fetchUrl += `&booking_date_month=${bookingDateMonth || fetchData.bookingDateMonth}`;
+                dispatch(setBookingDateMonth(bookingDateMonth || fetchData.bookingDateMonth));
+            } else if (bookingDateYear || fetchData.bookingDateYear) {
+                fetchUrl += `&booking_date_year=${bookingDateYear || fetchData.bookingDateYear}`;
+                dispatch(setBookingDateYear(bookingDateYear || fetchData.bookingDateYear));
+            }
 
-            // if (bookingDate || fetchData.bookingDate) {
-            //     fetchUrl += `&booking_date=${bookingDate || fetchData.bookingDate}`;
-            //     dispatch(setBookingDate(bookingDate || fetchData.bookingDate));
-            // }
-            console.log();
             if (isComplete || fetchData.isComplete) {
                 fetchUrl += `&is_complete=${isComplete || fetchData.isComplete}`;
                 dispatch(setIsComplete(isComplete || fetchData.isComplete));
             }
 
-            if (totalFee || fetchData.bookingDate) {
-                fetchUrl += `&total_fee=${totalFee || fetchData.totalFee}`;
-                dispatch(setTotalFee(totalFee || fetchData.totalFee));
-            }
-
             dispatch(setQuery(query || fetchData.query));
-            // fetchUrl += `&sort_field=${sortField}&sort_dir=${sortDir}`;
-            // dispatch(setSortField(sortField || fetchData.sortField));
-            // dispatch(setSortDir(sortDir || fetchData.sortDir));
-
-            console.info(fetchUrl);
 
             const {
                 data: { bookings, totalElements, totalPages },
             } = await api.get(fetchUrl);
 
             return { bookings, totalElements, totalPages };
+        } catch ({ data: { error } }) {
+            return rejectWithValue(error);
+        }
+    }
+);
+
+export const fetchBookingsCount = createAsyncThunk(
+    "booking/fetchBookingsCount",
+    async (_, { dispatch, getState, rejectWithValue }) => {
+        try {
+            const {
+                data: { numberOfAllBookings, numberOfApproved, numberOfPending, numberOfCancelled },
+            } = await api.get(`/booking/count`);
+
+            return { numberOfAllBookings, numberOfApproved, numberOfPending, numberOfCancelled };
         } catch ({ data: { error } }) {
             return rejectWithValue(error);
         }
@@ -259,9 +249,6 @@ export const cancelBooking = createAsyncThunk(
     async ({ bookingId }: { bookingId: number }, { dispatch, getState, rejectWithValue }) => {
         try {
             const { data } = await api.put(`/booking/${bookingId}/host/canceled`);
-            const state = getState() as RootState;
-            const { fetchData } = state.booking;
-            // dispatch(fetchUserBookings({ ...fetchData }));
 
             return { data };
         } catch ({ data: { error } }) {
@@ -325,6 +312,12 @@ type BookingState = {
         successMessage: string | null;
         errorMessage: string | null;
     };
+    countBookingAction: {
+        numberOfApproved: number;
+        numberOfPending: number;
+        numberOfCancelled: number;
+        numberOfAllBookings: number;
+    };
 };
 
 const initialState: BookingState = {
@@ -378,6 +371,12 @@ const initialState: BookingState = {
         loading: true,
         successMessage: null,
         errorMessage: null,
+    },
+    countBookingAction: {
+        numberOfApproved: 0,
+        numberOfPending: 0,
+        numberOfCancelled: 0,
+        numberOfAllBookings: 0,
     },
 };
 
@@ -451,6 +450,12 @@ const bookingSlice = createSlice({
             .addCase(createBooking.fulfilled, (state, { payload }) => {
                 state.loading = false;
                 state.newlyCreatedBooking = payload;
+            })
+            .addCase(fetchBookingsCount.fulfilled, (state, { payload }) => {
+                state.countBookingAction.numberOfApproved = payload.numberOfApproved;
+                state.countBookingAction.numberOfPending = payload.numberOfPending;
+                state.countBookingAction.numberOfCancelled = payload.numberOfCancelled;
+                state.countBookingAction.numberOfAllBookings = payload.numberOfAllBookings;
             })
             .addCase(cancelBooking.pending, (state, { payload }) => {
                 state.cancelBookingAction.loading = false;
