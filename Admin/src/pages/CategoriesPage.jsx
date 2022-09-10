@@ -244,7 +244,7 @@ const CategoriesPage = () => {
                         </div>
                         <MyButton type='add' label='Category' onClick={handleClickOpen} />
                         <Dialog open={open} onClose={handleClose} className='w-full'>
-                            <DialogTitle>Add Category</DialogTitle>
+                            <DialogTitle>{!editMode ? "Add" : "Edit"} Category</DialogTitle>
                             <DialogContentText style={{ width: "500px" }}></DialogContentText>
                             <DialogContent>
                                 <TextField
