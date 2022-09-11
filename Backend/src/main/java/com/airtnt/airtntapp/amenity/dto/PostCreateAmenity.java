@@ -16,6 +16,5 @@ public class PostCreateAmenity {
     private String name;
     private Integer amenityCategoryId;
     private String description;
-    private String type;
     private MultipartFile iconImage;
 }

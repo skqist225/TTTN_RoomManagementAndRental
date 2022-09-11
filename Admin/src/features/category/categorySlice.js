@@ -103,7 +103,12 @@ const initialState = {
 const roomSlice = createSlice({
     name: "category",
     initialState,
-    reducers: {},
+    reducers: {
+        clearDeleteActionState(state) {
+            state.deleteCategoryAction.successMessage = null;
+            state.deleteCategoryAction.errorMessage = null;
+        },
+    },
     extraReducers: builder => {
         builder
             .addCase(fetchCategories.fulfilled, (state, { payload }) => {
@@ -167,5 +172,6 @@ const roomSlice = createSlice({
     },
 });
 
+export const { clearDeleteActionState } = roomSlice.actions;
 export const categoryState = state => state.category;
 export default roomSlice.reducer;

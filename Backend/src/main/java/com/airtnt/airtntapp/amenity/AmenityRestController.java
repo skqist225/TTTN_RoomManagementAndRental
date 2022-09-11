@@ -68,7 +68,6 @@ public class AmenityRestController {
             @ModelAttribute PostCreateAmenity postCreateAmenity) throws IOException {
         Integer id = postCreateAmenity.getId();
         String name = postCreateAmenity.getName();
-        String type = postCreateAmenity.getType();
         MultipartFile multipartFile = postCreateAmenity.getIconImage();
         String description = postCreateAmenity.getDescription();
         Integer amenityCategoryId = postCreateAmenity.getAmenityCategoryId();
@@ -88,15 +87,15 @@ public class AmenityRestController {
         }
         if (id != null) {
             if (amentityCategory != null) {
-                amenity = new Amentity(id, name, description, amentityCategory, type);
+                amenity = new Amentity(id, name, description, amentityCategory);
             } else {
-                amenity = new Amentity(id, name, description, type);
+                amenity = new Amentity(id, name, description);
             }
         } else {
             if (amenityCategoryId != null) {
-                amenity = new Amentity(name, description, amentityCategory, type);
+                amenity = new Amentity(name, description, amentityCategory);
             } else {
-                amenity = new Amentity(name, description, type);
+                amenity = new Amentity(name, description);
             }
         }
 

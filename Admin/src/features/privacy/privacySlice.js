@@ -98,7 +98,12 @@ const initialState = {
 const privacySlice = createSlice({
     name: "privacy",
     initialState,
-    reducers: {},
+    reducers: {
+        clearDeleteActionState(state) {
+            state.deletePrivacyAction.successMessage = null;
+            state.deletePrivacyAction.errorMessage = null;
+        },
+    },
     extraReducers: builder => {
         builder
             .addCase(fetchPrivacies.fulfilled, (state, { payload }) => {
@@ -157,6 +162,6 @@ const privacySlice = createSlice({
             });
     },
 });
-
+export const { clearDeleteActionState } = privacySlice.actions;
 export const privacyState = state => state.privacy;
 export default privacySlice.reducer;

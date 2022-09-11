@@ -24,6 +24,7 @@ import "../css/page/rooms.css";
 import { Image } from "../globalStyle";
 import {
     addRule,
+    clearDeleteActionState,
     deleteRule,
     fetchRule,
     fetchRules,
@@ -46,8 +47,6 @@ const RulesPage = () => {
         updateRuleAction: { successMessage: upaSuccessMessage },
         deleteRuleAction: { successMessage: dpaSuccessMessage, errorMessage },
     } = useSelector(ruleState);
-
-    const handleView = () => {};
 
     const roomColumns = [
         {
@@ -127,6 +126,12 @@ const RulesPage = () => {
             showPreviewImage(filesArr);
         }
     }
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearDeleteActionState());
+        };
+    }, []);
 
     const handleSubmit = () => {
         const formData = new FormData();

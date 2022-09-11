@@ -104,7 +104,12 @@ const initialState = {
 const ruleSlice = createSlice({
     name: "rule",
     initialState,
-    reducers: {},
+    reducers: {
+        clearDeleteActionState(state) {
+            state.deleteRuleAction.successMessage = null;
+            state.deleteRuleAction.errorMessage = null;
+        },
+    },
     extraReducers: builder => {
         builder
             .addCase(fetchRules.fulfilled, (state, { payload }) => {
@@ -161,6 +166,6 @@ const ruleSlice = createSlice({
             });
     },
 });
-
+export const { clearDeleteActionState } = ruleSlice.actions;
 export const ruleState = state => state.rule;
 export default ruleSlice.reducer;

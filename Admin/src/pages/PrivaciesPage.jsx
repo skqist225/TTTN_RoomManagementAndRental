@@ -19,6 +19,7 @@ import Toast from "../components/notify/Toast";
 import "../css/page/rooms.css";
 import {
     addRoomPrivacy,
+    clearDeleteActionState,
     deletePrivacy,
     fetchPrivacies,
     fetchPrivacy,
@@ -123,6 +124,12 @@ const PrivaciesPage = () => {
             dispatch(fetchPrivacies(1));
         }
     }, [errorMessage]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearDeleteActionState());
+        };
+    }, []);
 
     const roomColumns = [
         {

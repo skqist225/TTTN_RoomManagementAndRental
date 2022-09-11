@@ -24,10 +24,6 @@ public class Amentity extends BaseEntity {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    private boolean prominent;
-    private boolean favorite;
-    private boolean safe;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "amtcategory_id")
     private AmentityCategory amentityCategory;
@@ -42,6 +38,12 @@ public class Amentity extends BaseEntity {
         this.description = description;
         this.amentityCategory = amentityCategory;
     }
+    
+    public Amentity(int id, String name, String description) {
+        super(id);
+        this.name = name;
+        this.description = description;
+    }
 
     public Amentity(String name, String description, AmentityCategory amentityCategory) {
         this.name = name;
@@ -52,109 +54,11 @@ public class Amentity extends BaseEntity {
     public Amentity(String name, String description, String type) {
         this.name = name;
         this.description = description;
-        switch (type) {
-            case "prominent": {
-                this.prominent = true;
-                this.favorite = false;
-                this.safe = false;
-                break;
-            }
-            case "favorite": {
-                this.prominent = false;
-                this.favorite = true;
-                this.safe = false;
-                break;
-            }
-            case "safe": {
-                this.prominent = false;
-                this.favorite = false;
-                this.safe = true;
-                break;
-            }
-
-        }
     }
-
-    public Amentity(int id, String name, String description, String type) {
-        super(id);
+    
+    public Amentity(String name, String description) {
         this.name = name;
         this.description = description;
-        switch (type) {
-            case "prominent": {
-                this.prominent = true;
-                this.favorite = false;
-                this.safe = false;
-                break;
-            }
-            case "favorite": {
-                this.prominent = false;
-                this.favorite = true;
-                this.safe = false;
-                break;
-            }
-            case "safe": {
-                this.prominent = false;
-                this.favorite = false;
-                this.safe = true;
-                break;
-            }
-
-        }
-    }
-
-    public Amentity(int id, String name, String description, AmentityCategory amentityCategory, String type) {
-        super(id);
-        this.name = name;
-        this.description = description;
-        this.amentityCategory = amentityCategory;
-        switch (type) {
-            case "prominent": {
-                this.prominent = true;
-                this.favorite = false;
-                this.safe = false;
-                break;
-            }
-            case "favorite": {
-                this.prominent = false;
-                this.favorite = true;
-                this.safe = false;
-                break;
-            }
-            case "safe": {
-                this.prominent = false;
-                this.favorite = false;
-                this.safe = true;
-                break;
-            }
-
-        }
-    }
-
-    public Amentity(String name, String description, AmentityCategory amentityCategory, String type) {
-        this.name = name;
-        this.description = description;
-        this.amentityCategory = amentityCategory;
-        switch (type) {
-            case "prominent": {
-                this.prominent = true;
-                this.favorite = false;
-                this.safe = false;
-                break;
-            }
-            case "favorite": {
-                this.prominent = false;
-                this.favorite = true;
-                this.safe = false;
-                break;
-            }
-            case "safe": {
-                this.prominent = false;
-                this.favorite = false;
-                this.safe = true;
-                break;
-            }
-
-        }
     }
 
     @Transient
@@ -163,23 +67,22 @@ public class Amentity extends BaseEntity {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(this.getId(), amentityCategory, description, favorite, iconImage, name, prominent, safe);
-    }
+	public int hashCode() {
+		return Objects.hash(amentityCategory, description, iconImage, name);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Amentity other = (Amentity) obj;
-        return Objects.equals(amentityCategory, other.amentityCategory)
-                && Objects.equals(description, other.description) && favorite == other.favorite
-                && Objects.equals(iconImage, other.iconImage) && Objects.equals(name, other.name)
-                && prominent == other.prominent && safe == other.safe;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Amentity other = (Amentity) obj;
+		return Objects.equals(amentityCategory, other.amentityCategory)
+				&& Objects.equals(description, other.description) && Objects.equals(iconImage, other.iconImage)
+				&& Objects.equals(name, other.name);
+	}
 
 }

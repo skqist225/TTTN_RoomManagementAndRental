@@ -23,6 +23,7 @@ import $ from "jquery";
 import "../css/page/rooms.css";
 import {
     addCategory,
+    clearDeleteActionState,
     deleteCategory,
     fetchCategories,
     fetchCategory,
@@ -184,6 +185,12 @@ const CategoriesPage = () => {
         showPreviewImage(e.target.files);
         setImage(file);
     };
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearDeleteActionState());
+        };
+    }, []);
 
     const roomColumns = [
         {

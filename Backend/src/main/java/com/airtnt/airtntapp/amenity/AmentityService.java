@@ -19,19 +19,6 @@ public class AmentityService {
     @Autowired
     AmentityRepository amentityRepository;
 
-    public List<Amentity> getAmentities(String findCriteria) {
-        List<Amentity> amentities = null;
-        if (findCriteria == "prominent") {
-            amentities = amentityRepository.findByProminent(true);
-        } else if (findCriteria == "favorite") {
-            amentities = amentityRepository.findByFavorite(true);
-        } else {
-            amentities = amentityRepository.findBySafe(true);
-        }
-
-        return amentities;
-    }
-
     public List<Amentity> getFirst18Amentities() {
         List<Amentity> amentities = amentityRepository.getFirst18Amentities();
 

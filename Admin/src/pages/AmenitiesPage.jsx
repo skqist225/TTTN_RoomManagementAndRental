@@ -28,6 +28,7 @@ import axios from "../axios";
 import { MyButton } from "../components/common";
 import {
     addAmenity,
+    clearDeleteAmenityActionState,
     deleteAmenity,
     fetchAmenities,
     updateAmenity,
@@ -45,7 +46,7 @@ const AmenitiesPage = () => {
 
     let {
         listing: { amenities, totalElements, loading },
-        addAmenityAction: { successMessage },
+        addAmenityAction: { successMessage, errorMessage: aaAErrorMessage },
         fetchAmenityAction: { amenity },
         fetchAmenityCategoriesAction: { amenityCategories },
         updateAmenityAction: { successMessage: upaSuccessMessage },
@@ -58,6 +59,12 @@ const AmenitiesPage = () => {
             amtCategory: amenity.amentityCategory ? amenity.amentityCategory.name : "None",
         }));
     }
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearDeleteAmenityActionState());
+        };
+    }, []);
 
     const roomColumns = [
         {
@@ -159,8 +166,6 @@ const AmenitiesPage = () => {
             callToast("error", "Description is required");
             return;
         }
-        if (!type) {
-        }
 
         if (editMode) {
             formData.set("id", Amenity.id);
@@ -170,8 +175,16 @@ const AmenitiesPage = () => {
             dispatch(updateAmenity(formData));
         } else {
             formData.set("name", name);
-            formData.set("iconImage", image);
+            if (image) {
+                formData.set("iconImage", image);
+            }
+
             formData.set("status", true);
+
+            if (amtCategory) {
+                formData.set("amenityCategoryId", amtCategory);
+            }
+
             dispatch(addAmenity(formData));
         }
     };
@@ -210,35 +223,41 @@ const AmenitiesPage = () => {
     useEffect(() => {
         if (upaSuccessMessage) {
             handleClose();
-            dispatch(fetchAmenitiess(1));
+            dispatch(fetchAmenities(1));
         }
     }, [upaSuccessMessage]);
 
     const handlePageChange = (e, pn) => {
-        dispatch(fetchAmenitiess(pn + 1));
+        dispatch(fetchAmenities(pn + 1));
         setPage(pn);
     };
 
     useEffect(() => {
         if (dpaSuccessMessage) {
             callToast("success", dpaSuccessMessage);
-            dispatch(fetchAmenitiess(1));
+            dispatch(fetchAmenities(1));
         }
     }, [dpaSuccessMessage]);
 
     useEffect(() => {
         if (errorMessage) {
             callToast("error", errorMessage);
-            dispatch(fetchAmenitiess(1));
+            dispatch(fetchAmenities(1));
         }
     }, [errorMessage]);
 
     useEffect(() => {
         if (successMessage) {
             handleClose();
-            dispatch(fetchAmenitiess(1));
+            dispatch(fetchAmenities(1));
         }
     }, [successMessage]);
+
+    useEffect(() => {
+        if (aaAErrorMessage) {
+            callToast("error", aaAErrorMessage);
+        }
+    }, [aaAErrorMessage]);
 
     function showPreviewImage(file) {
         file = file[0];
@@ -294,7 +313,7 @@ const AmenitiesPage = () => {
                                         }}
                                     >
                                         {amenityCategories.map(category => (
-                                            <MenuItem value={category.name} id={category.id}>
+                                            <MenuItem value={category.id} id={category.id}>
                                                 {category.name}
                                             </MenuItem>
                                         ))}
@@ -313,27 +332,6 @@ const AmenitiesPage = () => {
                                     value={description}
                                     onChange={e => setDescription(e.target.value)}
                                 />
-                            </DialogContent>
-                            <DialogContent className='h-20'>
-                                <FormControl fullWidth>
-                                    <Select
-                                        value={amtCategory}
-                                        label='Category'
-                                        onChange={e => {
-                                            setAmtCateogry(e.target.value);
-                                        }}
-                                    >
-                                        <MenuItem value='prominent' key={"prominent"}>
-                                            Prominent
-                                        </MenuItem>
-                                        <MenuItem value='safe' key={"safe"}>
-                                            Safe
-                                        </MenuItem>
-                                        <MenuItem value='favorite' key={"favorite"}>
-                                            Favorite
-                                        </MenuItem>
-                                    </Select>
-                                </FormControl>
                             </DialogContent>
                             <DialogContent className='h-20'>
                                 <div className='flex items-center w-full h-full justify-between'>
